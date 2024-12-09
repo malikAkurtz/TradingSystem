@@ -1,27 +1,65 @@
 #include <vector>
 #include <stdexcept>
 
-double calculateSMA(std::vector<double> prices, int period) {
-    if (period > prices.size()) {
+
+double calculateCurSMA(std::vector<double> prices, int n) {
+    double cumSum = 0;
+    for (int i = 0; i < n; i++) {
+        cumSum += prices[i];
+    }
+    return cumSum / n;
+}
+
+std::vector<double> calculateSMAValues(std::vector<double> prices, int n) {
+    if (n > prices.size()) {
         throw std::invalid_argument("period can't be greater than length of price vector");
     }
     else {
-        int cumSum = 0;
-        for (int i = 0; i < prices.size(); i++) {
-            cumSum += prices[i];
+        std::vector<double> SMA_Values;
+
+        for (int i = 0; (i + n) <= prices.size(); i++) {
+
+            std::vector<double>::const_iterator first = prices.begin() + i;
+            std::vector<double>::const_iterator last = prices.begin() + (n + i);
+            std::vector<double> n_elements(first, last);
+            SMA_Values.push_back(calculateCurSMA(n_elements, n));
         }
-        return (double) cumSum / period;
+        return SMA_Values;
     }
+
 }
 
-double calculateEMA(std::vector<double> prices, int period, int smoothing) {
-    if (period > prices.size()) {
+double calculateCurEMA(double current_price, double Prev_EMA_val, double multiplier) {
+    return (current_price * multiplier) + (Prev_EMA_val * (1-multiplier));
+}
+
+std::vector<double> calculateEMAValues(std::vector<double> prices, int n, int smoothing = 2) {
+    if (n > prices.size()) {
         throw std::invalid_argument("period can't be greater than length of price vector");
     }
     else {
-        int latest_price = prices[prices.size() - 1];
-        double multiplier = (double) smoothing / (prices.size() + 1);
 
+        std::vector<double> EMA_Values;
+
+        double multiplier = (double) smoothing / (n + 1);
+
+        std::vector<double>::const_iterator first = prices.begin();
+        std::vector<double>::const_iterator last = prices.begin() + n;
+        std::vector<double> first_n_vector(first, last);
+        double EMA_Start = calculateCurSMA(first_n_vector, n);
+
+        EMA_Values.push_back(EMA_Start);
+
+        for (int i = n; i < prices.size(); i++) {
+            double curPrice = prices[i];
+            double prevEMA = EMA_Values[i-n];
+            double curEMA = calculateCurEMA(curPrice, prevEMA, multiplier);
+            EMA_Values.push_back(curEMA);
+        }
+
+        return EMA_Values;
 
     }
 }
+
+
