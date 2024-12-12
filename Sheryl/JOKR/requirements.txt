@@ -1,0 +1,14 @@
+alpaca-trade-api
+numpy
+pandas
+yfinance
+requests
+beautifulsoup4
+scikit-learn
+matplotlib
+python-dotenv
+pytz
+fredapi
+sqlalchemy
+schedule
+django

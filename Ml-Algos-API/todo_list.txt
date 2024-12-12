@@ -1,0 +1,31 @@
+Machine Learning Algorithms
+1. Linear Regression (Multi-Dimensional):                       Done
+2. Logistic Regression (Multi-Dimensional):                     Done
+3. K-Means Clustering (Multi-Dimensional):                      Done (Implemented in Sheryl)
+4. K Nearest Neighbors                                          Done
+5. Support Vector Machines                                      Next Up
+6. Decisions Trees
+7. Random Forests
+8. Gradient Boosting Machines
+9. Principal Component Analysis (PCA)
+10. Naive Bayes
+11. Feedforward Neural Networks
+12. Convolutional Nueral Networks
+13. Recurrent Neural Networks
+14. Long Short-Term Memory
+15. Autoencoders
+
+Financial Models
+1. Binomial Option Pricing Model (For European Options)         Done 
+2. Black-Scholes                                                Done
+3. Jump-Diffusion Models                                        Next Up
+4. Monte Carlo Simulation            
+5. Value at Risk
+6. Vasicek Model
+7. Hull-White Model
+8. Merton Jump-Diffusion Model
+9. Copulas
+10. Heston Model
+11. GARCH Model
+12. Cox-Ingersoll-Ross (CIR) Model (similar to Vasicek)
+13. Local Volatility Models (extension of Black-Scholes)
