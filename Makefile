@@ -8,7 +8,7 @@ CXXFLAGS = -std=c++11 -Wall
 TARGET = out
 
 # Source files
-SOURCES = main.cpp Indicators.cpp
+SOURCES = linear_regression.cpp
 
 # Object files
 OBJECTS = $(SOURCES:.cpp=.o)
@@ -26,4 +26,4 @@ $(TARGET): $(OBJECTS)
 
 # Clean up object files and the executable
 clean:
-	rm -f $(OBJECTS) $(TARGET)
+	rm -f $(OBJECTS) $(TARGET) utility.o
