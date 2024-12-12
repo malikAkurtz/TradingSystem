@@ -42,6 +42,23 @@ T calculateMSE(std::vector<T> predictions, std::vector<T> labels) {
     return cumSum / predictions.size();
 }
 
+template <typename T>
+T calculateDistance(std::vector<T> v1, std::vector<T> v2) {
+    std::vector<T> resultant;
+
+    for (int i = 0; i < v1.size(); i++) {
+        resultant.push_back(v2[i]-v1[i]);
+    }
+
+    double sum_of_squares = 0;
+    for (int i = 0; i < resultant.size(); i++) {
+        
+        sum_of_squares += pow(resultant[i], 2);
+    }
+
+    return sqrt(sum_of_squares);
+}
+
 
 
 

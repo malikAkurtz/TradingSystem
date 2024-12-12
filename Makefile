@@ -8,7 +8,7 @@ CXXFLAGS = -std=c++11 -Wall
 TARGET = out
 
 # Source files
-SOURCES = linear_regression.cpp
+SOURCES = k_means_clustering.cpp
 
 # Object files
 OBJECTS = $(SOURCES:.cpp=.o)

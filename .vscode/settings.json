@@ -66,6 +66,7 @@
         "iomanip": "cpp",
         "map": "cpp",
         "numeric": "cpp",
-        "stack": "cpp"
+        "stack": "cpp",
+        "random": "cpp"
     }
 }
