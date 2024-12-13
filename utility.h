@@ -3,6 +3,11 @@
 
 #include <vector>
 #include <cmath>
+#include <string>
+#include <fstream>
+#include <sstream>
+#include <iostream>
+
 
 template <typename T>
 void printVector(const std::vector<T>& vec) {
@@ -43,6 +48,15 @@ T calculateMSE(std::vector<T> predictions, std::vector<T> labels) {
 }
 
 template <typename T>
+T calculateLogLoss(std::vector<T> predictions, std::vector<T> labels) {
+    T cumSum = 0;
+    for (int i = 0; i < predictions.size(); i++) {
+        cumSum += (labels[i] * std::log(predictions[i])) + ((1-labels[i]) * std::log((1+1e-5)-predictions[i]));
+    }
+    return (-1 * (cumSum / predictions.size()));
+}
+
+template <typename T>
 T calculateDistance(std::vector<T> v1, std::vector<T> v2) {
     std::vector<T> resultant;
 
@@ -58,6 +72,58 @@ T calculateDistance(std::vector<T> v1, std::vector<T> v2) {
 
     return sqrt(sum_of_squares);
 }
+
+template <typename T>
+std::vector<bool> thresholdFunction(std::vector<T> softPredictions, float threshhold) {
+    std::vector<bool> hardPredictions(softPredictions.size());
+
+    for (int i = 0; i < softPredictions.size(); i++) {
+        if (softPredictions[i] >= threshhold) {
+            hardPredictions[i] = 1;
+        } else {
+            hardPredictions[i] = 0;
+        }
+    }
+
+    return hardPredictions;
+}
+
+
+std::vector<std::vector<float>> parseCSV(std::string file_name) {
+    std::vector<std::vector<float>> dataMatrix;
+
+    std::ifstream file(file_name);
+
+    std::string line;
+
+    std::getline(file, line); // skip headers
+
+    while (std::getline(file, line)) {
+        if (line.empty()) {continue;}
+
+        std::stringstream ss(line);
+
+        std::string cell;
+        std::vector<float> rowValues;
+
+        while (std::getline(ss, cell, ',')) {
+            if (cell == "M") {
+                rowValues.push_back(1.0);
+            }
+            else if (cell == "B") {
+                rowValues.push_back(0.0);
+            } else {
+                rowValues.push_back(std::stof(cell));
+            }
+            
+        }
+        dataMatrix.push_back(rowValues);
+    }
+
+    file.close();
+    return dataMatrix;
+}
+
 
 
 
