@@ -1,13 +1,12 @@
 #include <vector>
 #include <cmath>
+#include "LinearAlgebra.h"
 
 float calculateMSE(std::vector<float> predictions, std::vector<float> labels) {
-    float cumSum = 0;
-    for (int i = 0; i < predictions.size(); i++) {
-        // change this to be a matrix multiply
-        cumSum += pow(labels[i] - predictions[i], 2);
-    }
-    return cumSum / predictions.size();
+    int num_elements = predictions.size();
+
+    std::vector<float> resultant = subtractVectors(labels, predictions);
+    return innerProduct(resultant, resultant) / num_elements;
 }
 
 

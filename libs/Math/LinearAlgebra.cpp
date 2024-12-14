@@ -35,19 +35,25 @@ std::vector<float> subtractVectors(std::vector<float> v1, std::vector<float> v2)
     std::vector<float> resultant(num_elements);
 
     for (int i = 0; i < num_elements; i++) {
-        resultant[i] = v2[i]-v1[i];
+        resultant[i] = v1[i]-v2[i];
     }
 
     return resultant;
 }
 
 float calculateNorm(std::vector<float> v1) {
+    
+    return sqrt(innerProduct(v1, v1));
+}
+
+
+float innerProduct(std::vector<float> v1, std::vector<float> v2) {
     int num_elements = v1.size();
-    float sumOfSquares = 0;
+    float innerProduct = 0;
 
     for (int i = 0; i < num_elements; i++) {
-        sumOfSquares += pow(v1[i], 2);
+        innerProduct += (v1[i] * v2[i]);
     }
 
-    return sqrt(sumOfSquares);
+    return innerProduct;
 }
