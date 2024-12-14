@@ -71,8 +71,8 @@ std::vector<std::vector<float>> matrixMultiply(std::vector<std::vector<float>> m
     std::vector<std::vector<float>>  m2_T = takeTranspose(m2);
     // for every row in m1
     for (int i = 0; i < m1.size(); i++) {
-        // for every column in m2
-        for (int j = 0; j < m2[0].size(); j++) {
+        // for every column in m2 aka every row in the transpose
+        for (int j = 0; j < m2_T.size(); j++) {
             resultant[i][j] = innerProduct(m1[i], m2_T[j]);
         }
     }
