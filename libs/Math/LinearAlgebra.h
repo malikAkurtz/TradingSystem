@@ -1,0 +1,13 @@
+#ifndef LIN_ALGEBRA
+#define LIN_ALGEBRA
+
+#include <vector>
+#include <cmath>
+
+std::vector<std::vector<float>> takeTranspose(std::vector<std::vector<float>> inputMatrix);
+std::vector<float> addVectors(std::vector<float> v1, std::vector<float> v2);
+std::vector<float> subtractVectors(std::vector<float> v1, std::vector<float> v2);
+float calculateNorm(std::vector<float> v1);
+
+
+#endif

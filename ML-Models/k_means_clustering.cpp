@@ -5,7 +5,7 @@
 #include <limits>
 #include <iostream>
 #include <cmath>
-#include "utility.h"
+#include "Math/LinearAlgebra.h"
 
 class KMeans {
 public:
@@ -50,7 +50,7 @@ public:
 
             for (int j = 0; j < k; j++) {
                 std::vector<float> cluster_coord = cluster_coordinates[j];
-                float dist = calculateDistance(cluster_coord, data_coord);
+                float dist = calculateNorm(subtractVectors(cluster_coord, data_coord));
 
                 if (dist < dist_closest_cluster) {
                     closest_cluster = j;
@@ -81,7 +81,7 @@ public:
                     cluster_coordinates[i][j] = sum / cluster_assignments[i].size();
                 }
                 std::vector<float> new_cluster_coords = cluster_coordinates[i];
-                cluster_coord_cum_delta += calculateDistance(old_cluster_coords, new_cluster_coords);
+                cluster_coord_cum_delta += calculateNorm(subtractVectors(old_cluster_coords, new_cluster_coords));
             }
             float cluster_coord_avg_delta = cluster_coord_cum_delta / k;
 
@@ -95,7 +95,7 @@ public:
 
                 for (int j = 0; j < k; j++) {
                     std::vector<float> cluster_coord = cluster_coordinates[j];
-                    float dist = calculateDistance(cluster_coord, data_coord);
+                    float dist = calculateNorm(subtractVectors(cluster_coord, data_coord));
 
                     if (dist < dist_closest_cluster) {
                         closest_cluster = j;
@@ -116,49 +116,3 @@ public:
     }
 };
 
-int main() {
-    std::vector<std::vector<float>> data = {
-        {1.0, 1.5},
-        {1.5, 2.0},
-        {2.0, 1.0},
-        {6.0, 7.0},
-        {6.5, 8.0},
-        {7.0, 7.5},
-        {8.0, 1.0},
-        {8.5, 2.0},
-        {9.0, 0.5}
-    };
-
-    KMeans KM(3);
-
-    std::map<int, std::vector<std::vector<float>>> clusters = KM.fit(data);
-
-    // Print cluster assignments
-    std::cout << "Cluster Assignments:" << std::endl;
-    for (const auto& cluster : clusters) {
-        std::cout << "Cluster " << cluster.first << ":" << std::endl;
-        for (const auto& point : cluster.second) {
-            std::cout << "(";
-            for (size_t i = 0; i < point.size(); i++) {
-                std::cout << point[i];
-                if (i != point.size() - 1) std::cout << ", ";
-            }
-            std::cout << ")" << std::endl;
-        }
-        std::cout << std::endl;
-    }
-
-    // Print cluster centroids
-    std::cout << "Cluster Centroids:" << std::endl;
-    for (const auto& coord : KM.cluster_coordinates) {
-        std::cout << "Cluster " << coord.first << ": (";
-        for (size_t i = 0; i < coord.second.size(); i++) {
-            std::cout << coord.second[i];
-            if (i != coord.second.size() - 1) std::cout << ", ";
-        }
-        std::cout << ")" << std::endl;
-    }
-
-
-    return 0;
-}

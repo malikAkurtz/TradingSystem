@@ -1,29 +1,29 @@
 # Compiler
 CXX = g++
 
-# Compiler flags
-CXXFLAGS = -std=c++11 -Wall
+CXXFLAGS = -std=c++11 -Wall -Ilibs -Ilibs/Data-Processing -Ilibs/Math -IML-Models
+
 
 # Target executable
 TARGET = out
 
-# Source files
-SOURCES = logistic_regression.cpp
+# Automatically detect all .cpp files in the project (including ML-Models)
+SOURCES = $(wildcard *.cpp libs/*/*.cpp ML-Models/*.cpp)
 
-# Object files
+# Generate object files from sources
 OBJECTS = $(SOURCES:.cpp=.o)
 
-# Default rule
+# Default rule to build the target
 all: $(TARGET)
 
-# Rule to link object files into the final executable
+# Rule to link all object files into the executable
 $(TARGET): $(OBJECTS)
 	$(CXX) $(CXXFLAGS) -o $(TARGET) $(OBJECTS)
 
-# Rule to compile each source file into an object file
+# Rule to compile each .cpp file into a .o file
 %.o: %.cpp
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 # Clean up object files and the executable
 clean:
-	rm -f $(OBJECTS) $(TARGET) utility.o
+	rm -f $(OBJECTS) $(TARGET)
