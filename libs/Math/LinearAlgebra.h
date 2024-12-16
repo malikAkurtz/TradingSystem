@@ -19,6 +19,8 @@ std::vector<std::vector<float>> vectorToMatrix(std::vector<float> vector);
 std::vector<float> matrixToVector(std::vector<std::vector<float>> matrix);
 std::vector<float> scaleVector(std::vector<float> v1, float scalar);
 void addOnesToFront(std::vector<std::vector<float>>& matrix);
+std::vector<float> getColumn(std::vector<std::vector<float>> matrix, int col_index);
+std::vector<float> getRow(std::vector<std::vector<float>> matrix, int row_index);
 
 
 #endif

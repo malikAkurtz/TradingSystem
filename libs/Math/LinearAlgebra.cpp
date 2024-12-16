@@ -120,6 +120,22 @@ std::vector<std::vector<float>> matrixMultiply(std::vector<std::vector<float>> m
     return resultant;
 }
 
+std::vector<float> getRow(std::vector<std::vector<float>> matrix, int row_index) {
+    return matrix[row_index];
+}
+
+std::vector<float> getColumn(std::vector<std::vector<float>> matrix, int col_index) {
+    int num_rows = matrix.size();
+
+    std::vector<float> column_vector(num_rows);
+
+    for (int i = 0; i < num_rows; i++) {
+        column_vector[i] = matrix[i][col_index];
+    }
+
+    return column_vector;
+}
+
 void addRow(std::vector<std::vector<float>>& matrix, std::vector<float> row) {
     matrix.push_back(row);
 }
