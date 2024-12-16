@@ -1,11 +1,13 @@
 #include <vector>
 #include <cmath>
 #include <stdexcept>
-#include <iostream>
-#include "Output.h"
 
 
 float innerProduct(std::vector<float> v1, std::vector<float> v2) {
+    if (v1.size() != v2.size()) {
+        throw std::invalid_argument("Matrix dimensions do not match");
+    }
+    
     int num_elements = v1.size();
     float innerProduct = 0;
 
@@ -51,6 +53,9 @@ std::vector<float> matrixToVector(std::vector<std::vector<float>> matrix) {
 
 
 std::vector<float> addVectors(std::vector<float> v1, std::vector<float> v2) {
+    if (v1.size() != v2.size()) {
+        throw std::invalid_argument("Matrix dimensions do not match");
+    }
     int num_elements = v1.size();
 
     std::vector<float> resultant(num_elements);
@@ -63,6 +68,9 @@ std::vector<float> addVectors(std::vector<float> v1, std::vector<float> v2) {
 }
 
 std::vector<float> subtractVectors(std::vector<float> v1, std::vector<float> v2) {
+    if (v1.size() != v2.size()) {
+        throw std::invalid_argument("Vector dimensions do not match");
+    }
     int num_elements = v1.size();
 
     std::vector<float> resultant(num_elements);
@@ -116,6 +124,12 @@ void addRow(std::vector<std::vector<float>>& matrix, std::vector<float> row) {
     matrix.push_back(row);
 }
 
+void addOnesToFront(std::vector<std::vector<float>>& matrix) {
+    for (int i = 0; i < matrix.size(); i++) {
+        matrix[i].insert(matrix[i].begin(), 1.0);
+    }
+
+}
 void addColumn(std::vector<std::vector<float>>& matrix, std::vector<float> column) {
     for (int i = 0; i < matrix.size(); i++) {
         matrix[i].push_back(column[i]);
@@ -133,6 +147,9 @@ void deleteRow(std::vector<std::vector<float>>& matrix, int row_index) {
 }
 
 std::vector<float> solveSystem(std::vector<std::vector<float>> matrix, std::vector<float> b) {
+    if (matrix.size() != matrix[0].size()) {
+        throw std::invalid_argument("Matrix dimensions do not match");
+    }
     int solution_size = b.size();
     int num_rows = matrix.size();
     int num_cols = num_rows;
@@ -147,6 +164,9 @@ std::vector<float> solveSystem(std::vector<std::vector<float>> matrix, std::vect
             //if we are at a diagonal entry, divide it by itself to make it 1
             if (i == j) {
                 std::vector<float> original_row = gaussian[i];
+                if (original_row[j] == 0) {
+                    throw std::invalid_argument("Can't have a zero on diagonal of matrix");
+                }
                 gaussian[i] = scaleVector(original_row, (1 / original_row[j]));
 
                 for (int row = i+1; row < num_rows; row++) {

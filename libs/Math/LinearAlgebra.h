@@ -17,6 +17,8 @@ void deleteColumn(std::vector<std::vector<float>>& matrix, int column_index);
 void deleteRow(std::vector<std::vector<float>>& matrix, int row_index);
 std::vector<std::vector<float>> vectorToMatrix(std::vector<float> vector);
 std::vector<float> matrixToVector(std::vector<std::vector<float>> matrix);
+std::vector<float> scaleVector(std::vector<float> v1, float scalar);
+void addOnesToFront(std::vector<std::vector<float>>& matrix);
 
 
 #endif
