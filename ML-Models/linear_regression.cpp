@@ -10,8 +10,7 @@ class LinearRegression {
     float learning_rate;
     std::vector<float> parameters;
 
-    LinearRegression(float learningRate) {
-        this->learning_rate = learningRate;
+    LinearRegression() {
     }
 
     std::vector<float> f(std::vector<std::vector<float>> featuresMatrix, std::vector<float> parameters, float b) {
@@ -32,46 +31,18 @@ class LinearRegression {
     }
 
     void fit(std::vector<std::vector<float>> featuresMatrix, std::vector<float> labels) {
-        for (int i = 0; i < featuresMatrix.size(); i++) {
-            this->parameters.push_back(0);
-        }
+        std::vector<std::vector<float>> featuresMatrix_T = takeTranspose(featuresMatrix);
 
-        float h = 1e-5;
-        bool optimized = false;
+        std::vector<std::vector<float>> A_T_A = matrixMultiply(featuresMatrix_T, featuresMatrix);
+        std::vector<float> A_T_b = matrixToVector(matrixMultiply(featuresMatrix_T, vectorToMatrix(labels)));
 
-        while (optimized != true) {
-            std::vector<float> partialDerivatives(parameters.size());
+        std::vector<float> params_including_b = solveSystem(A_T_A, A_T_b);
 
-            for (int i = 0; i < parameters.size(); i++) {
-                std::vector<float> parameter_plus_h = parameters;
-                parameter_plus_h[i] += h;
-                float loss_plus_h = calculateLoss(featuresMatrix, parameter_plus_h, b, labels);
-                float loss_constant = calculateLoss(featuresMatrix, parameters, b, labels);
-                float partial_derivative =(loss_plus_h - loss_constant) / h;
+        this->b = params_including_b[0];
 
-                partialDerivatives[i] = partial_derivative;
-                this->parameters[i] -= (learning_rate * partial_derivative);
-            }
+        std::vector<float> params(params_including_b.begin() + 1, params_including_b.end());
+        this->parameters = params;
 
-            float loss_b_plus_h = calculateLoss(featuresMatrix, parameters, b+h, labels);
-            float loss_b_constant = calculateLoss(featuresMatrix, parameters, b, labels);
-            float b_partial_derivative = (loss_b_plus_h - loss_b_constant) / h;
-
-            this->b -= (learning_rate * b_partial_derivative);
-
-            std::vector<float> new_predictions = f(featuresMatrix, parameters, b);
-
-            float new_loss = calculateLoss(featuresMatrix, parameters, b, labels);
-            //std::cout << new_loss << std::endl;
-
-            for (int i = 0; i < partialDerivatives.size(); i++) {
-                optimized = true;
-                if (abs(partialDerivatives[i]) > 0.01 or b_partial_derivative > 0.01) {
-                    optimized = false;
-                    break;
-                }
-            }
-        }
     }
 
     std::vector<float> getPredictions(std::vector<std::vector<float>> featuresMatrix) {

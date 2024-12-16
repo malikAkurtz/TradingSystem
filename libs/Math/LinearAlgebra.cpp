@@ -1,6 +1,8 @@
 #include <vector>
 #include <cmath>
 #include <stdexcept>
+#include <iostream>
+#include "Output.h"
 
 
 float innerProduct(std::vector<float> v1, std::vector<float> v2) {
@@ -27,6 +29,24 @@ std::vector<std::vector<float>> takeTranspose(std::vector<std::vector<float>> in
     }
 
     return transposed;
+}
+
+std::vector<std::vector<float>> vectorToMatrix(std::vector<float> vector) {
+    std::vector<std::vector<float>> asMatrix(vector.size(), std::vector<float>(1));
+
+    for (int i = 0; i < vector.size(); i++) {
+        asMatrix[i][0] = vector[i];
+    }
+
+    return asMatrix;
+}
+
+std::vector<float> matrixToVector(std::vector<std::vector<float>> matrix) {
+    std::vector<float> asVector(matrix.size());
+    for (int i = 0; i < matrix.size(); i++) {
+        asVector[i] = matrix[i][0];
+    }
+    return asVector;
 }
 
 
@@ -58,6 +78,18 @@ float calculateNorm(std::vector<float> v1) {
     return sqrt(innerProduct(v1, v1));
 }
 
+std::vector<float> scaleVector(std::vector<float> v1, float scalar) {
+    int num_elements = v1.size();
+
+    std::vector<float> v1_scaled(num_elements);
+
+    for (int i = 0; i < num_elements; i++) {
+        v1_scaled[i] = v1[i] * scalar;
+    }
+
+    return v1_scaled;
+}
+
 
 
 std::vector<std::vector<float>> matrixMultiply(std::vector<std::vector<float>> m1, std::vector<std::vector<float>> m2) {
@@ -79,3 +111,70 @@ std::vector<std::vector<float>> matrixMultiply(std::vector<std::vector<float>> m
 
     return resultant;
 }
+
+void addRow(std::vector<std::vector<float>>& matrix, std::vector<float> row) {
+    matrix.push_back(row);
+}
+
+void addColumn(std::vector<std::vector<float>>& matrix, std::vector<float> column) {
+    for (int i = 0; i < matrix.size(); i++) {
+        matrix[i].push_back(column[i]);
+    }
+}
+
+void deleteColumn(std::vector<std::vector<float>>& matrix, int column_index) {
+    for (int i = 0; i < matrix.size(); i++) {
+        matrix[i].erase(matrix[i].begin() + column_index);
+    }
+}
+
+void deleteRow(std::vector<std::vector<float>>& matrix, int row_index) {
+    matrix.erase(matrix.begin() + row_index);
+}
+
+std::vector<float> solveSystem(std::vector<std::vector<float>> matrix, std::vector<float> b) {
+    int solution_size = b.size();
+    int num_rows = matrix.size();
+    int num_cols = num_rows;
+
+    std::vector<std::vector<float>> gaussian = matrix;
+    addColumn(gaussian, b);
+
+    std::vector<float> solution(solution_size, 0);
+
+    for (int i = 0; i < num_rows; i++) {
+        for (int j = 0; j < num_cols; j++) {
+            //if we are at a diagonal entry, divide it by itself to make it 1
+            if (i == j) {
+                std::vector<float> original_row = gaussian[i];
+                gaussian[i] = scaleVector(original_row, (1 / original_row[j]));
+
+                for (int row = i+1; row < num_rows; row++) {
+                    std::vector<float> this_row = gaussian[row];
+                    std::vector<float> new_row = subtractVectors(this_row, scaleVector(gaussian[i], this_row[j]));
+
+                    gaussian[row] = new_row;
+                }
+            }
+        }
+    }
+
+    std::vector<std::vector<float>> gaussian_T = takeTranspose(gaussian);
+
+
+    std::vector<float> constants = gaussian_T[gaussian_T.size()-1];
+
+
+    deleteColumn(gaussian, gaussian[0].size()-1);
+
+    // population first solution vector value
+    solution[solution_size-1] = constants[solution_size-1];
+
+
+    for (int i = solution_size-2; i >= 0; i--) {
+        solution[i] = constants[i] - innerProduct(gaussian[i], solution);
+    }
+
+    return solution;
+}
+
