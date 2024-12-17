@@ -248,3 +248,7 @@ std::vector<double> createVector(double num, int length) {
     std::vector<double> v1(length, num);
     return v1;
 }
+
+void addElement(std::vector<double>& v1, double value, int col_index) {
+    v1.insert(v1.begin() + col_index, value);
+}

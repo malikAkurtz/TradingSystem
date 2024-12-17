@@ -25,6 +25,7 @@ double accumulateVector(std::vector<double> v1);
 void updateColumn(std::vector<std::vector<double>>& matrix, std::vector<double> v1, int col_index);
 std::vector<double> createVector(double num, int length);
 std::vector<double> divideVector(std::vector<double> v1, double scalar);
+void addElement(std::vector<double>& v1, double value, int col_index);
 
 
 #endif

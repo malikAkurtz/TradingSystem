@@ -85,3 +85,10 @@ std::vector<std::vector<double>> normalizeData(std::vector<std::vector<double>> 
     return normalized_matrix;
 }
 
+double ReLU(double value) {
+    if (value < 0) {
+        return 0;
+    } else {
+        return value;
+    }
+}
