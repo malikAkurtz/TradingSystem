@@ -12,22 +12,24 @@ float calculateMSE(std::vector<float> predictions, std::vector<float> labels) {
 
 float calculateLogLoss(std::vector<float> predictions, std::vector<float> labels) {
     float cumSum = 0;
+    const float epsilon = 1e-10;
     for (int i = 0; i < predictions.size(); i++) {
-        cumSum += (labels[i] * std::log(predictions[i])) + ((1-labels[i]) * std::log((1+1e-5)-predictions[i]));
+        float clipped_prediction = std::max(epsilon, std::min(1-epsilon, predictions[i]));
+        cumSum += (labels[i] * std::log(clipped_prediction)) + ((1-labels[i]) * std::log((1-clipped_prediction)));
     }
     return (-1 * (cumSum / predictions.size()));
 }
 
 
 
-std::vector<bool> thresholdFunction(std::vector<float> softPredictions, float threshhold) {
-    std::vector<bool> hardPredictions(softPredictions.size());
+std::vector<float> thresholdFunction(std::vector<float> softPredictions, float threshhold) {
+    std::vector<float> hardPredictions(softPredictions.size());
 
     for (int i = 0; i < softPredictions.size(); i++) {
         if (softPredictions[i] >= threshhold) {
-            hardPredictions[i] = 1;
+            hardPredictions[i] = 1.0;
         } else {
-            hardPredictions[i] = 0;
+            hardPredictions[i] = 0.0;
         }
     }
 
