@@ -47,7 +47,6 @@ int main1() {
 
 
     std::cout << "Coefficients Begin: " << std::endl;
-    std::cout << "Intercept: " << LR.b << std::endl;
     std::cout << "Parameters" << std::endl;
     printVector(LR.parameters);
     std::cout << "Coefficients End: " << std::endl;
