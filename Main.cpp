@@ -124,41 +124,48 @@ int main() {
     std::vector<std::vector<double>> features = {
     {1.0, 2.5},
     {2.0, 3.7},
-    {3.1, 4.2},
-    {4.0, 5.1},
-    {5.2, 6.8},
-    {6.3, 7.5},
-    {7.4, 8.0},
-    {8.5, 9.1},
-    {9.0, 10.2},
-    {10.1, 11.5}
+    {3.1, 4.2}
+    // {4.0, 5.1},
+    // {5.2, 6.8},
+    // {6.3, 7.5},
+    // {7.4, 8.0},
+    // {8.5, 9.1},
+    // {9.0, 10.2},
+    // {10.1, 11.5}
 };
     std::vector<double> labels = {
     5.0,
     7.1,
-    9.3,
-    10.5,
-    13.2,
-    15.0,
-    16.5,
-    18.3,
-    19.7,
-    21.9
+    9.3
+    // 10.5,
+    // 13.2,
+    // 15.0,
+    // 16.5,
+    // 18.3,
+    // 19.7,
+    // 21.9
 };
 
     std::vector<std::vector<double>> features_T = takeTranspose(features);
-
+    //int num_samples = features.size();
+    int num_features = features_T.size();
+    
     NeuralNetwork Network;
-    NetworkLayer inputLayer;
-    NetworkLayer hiddenLayer1;
-    NetworkLayer outputLayer;
-    Network.layers.push_back(inputLayer);
-    Network.layers.push_back(hiddenLayer1);
-    Network.layers.push_back(outputLayer);
-    for (int i = 0; i < features_T.size(); i++) {
-        Neuron neuron(features_T[i]);
-        inputLayer.nodes.push_back(neuron);
-    }
+
+    InputLayer inputLayer(num_features); // specifying number of input nodes with number of features
+    HiddenLayer hiddenLayer1(3, num_features, RELU);
+    HiddenLayer hiddenLayer2(4, 3, RELU);
+    HiddenLayer hiddenLayer3(3, 4, RELU);
+    OutputLayer outputLayer(1, 3);
+
+    
+    Network.addInputLayer(inputLayer);
+    Network.addHiddenLayer(hiddenLayer1);
+    Network.addHiddenLayer(hiddenLayer2);
+    Network.addHiddenLayer(hiddenLayer3);
+    Network.addOutputLayer(outputLayer);
+
+    std::vector<double> predictions = Network.getPredictions(features);
     
 
 
