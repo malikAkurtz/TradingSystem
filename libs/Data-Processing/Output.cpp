@@ -2,7 +2,7 @@
 #include <vector>
 #include <string>
 
-void printVector(const std::vector<float>& vec) {
+void printVector(const std::vector<double>& vec) {
     std::cout << "[ ";
     for (const auto& elem : vec) {
         std::cout << elem << " ";
@@ -10,7 +10,7 @@ void printVector(const std::vector<float>& vec) {
     std::cout << "]" << std::endl;
 }
 
-void printMatrix(const std::vector<std::vector<float>>& matrix) {
+void printMatrix(const std::vector<std::vector<double>>& matrix) {
     std::cout << "------------------------------------------------------------------------------------------------------" << std::endl;
     for (const auto& vec : matrix) {
         printVector(vec);

@@ -4,12 +4,12 @@
 #include <vector>
 #include <cmath>
 
-float calculateMSE(std::vector<float> predictions, std::vector<float> labels);
-float calculateLogLoss(std::vector<float> predictions, std::vector<float> labels);
-std::vector<float> thresholdFunction(std::vector<float> softPredictions, float threshhold);
-float sigmoid(float value);
-float calculateMean(std::vector<float> v1);
-float calculateSTD(std::vector<float> v1);
-std::vector<std::vector<float>> normalizeData(std::vector<std::vector<float>> featuresMatrix);
+double calculateMSE(std::vector<double> predictions, std::vector<double> labels);
+double calculateLogLoss(std::vector<double> predictions, std::vector<double> labels);
+std::vector<double> thresholdFunction(std::vector<double> softPredictions, double threshhold);
+double sigmoid(double value);
+double calculateMean(std::vector<double> v1);
+double calculateSTD(std::vector<double> v1);
+std::vector<std::vector<double>> normalizeData(std::vector<std::vector<double>> featuresMatrix);
 
 #endif

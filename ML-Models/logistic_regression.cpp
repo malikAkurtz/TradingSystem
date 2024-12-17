@@ -6,63 +6,70 @@
 #include "LinearAlgebra.h"
 #include "GenFunctions.h"
 #include "Output.h"
+#include <random>
 
 class LogisticRegression {
     public:
-    float b = 1;
-    float learning_rate;
-    float loss;
-    std::vector<float> parameters;
+    double b;
+    double learning_rate;
+    double loss;
+    std::vector<double> parameters;
 
-    LogisticRegression(float learningRate) {
+    LogisticRegression(double learningRate) {
         this->learning_rate = learningRate;
     }
 
-    std::vector<float> f(std::vector<std::vector<float>> featuresMatrix, std::vector<float> parameters, float b) {
-        std::vector<float> predictions;
+    std::vector<double> f(std::vector<std::vector<double>> featuresMatrix, std::vector<double> parameters, double b) {
+        std::vector<double> predictions;
 
         // for every sample
         for (int i = 0; i < featuresMatrix.size(); i++) {
-            float dot_product = innerProduct(featuresMatrix[i], parameters);
-            float log_odds = dot_product + b;
+            double dot_product = innerProduct(featuresMatrix[i], parameters);
+            double log_odds = dot_product + b;
             predictions.push_back(sigmoid(log_odds));
         }
 
         return predictions;
     }
     
-    float calculateLoss(std::vector<std::vector<float>> featuresMatrix, std::vector<float> parameters, float b, std::vector<float> labels) {
-        std::vector<float> predictions = f(featuresMatrix, parameters, b);
-        float logLoss = calculateLogLoss(predictions, labels);
+    double calculateLoss(std::vector<std::vector<double>> featuresMatrix, std::vector<double> parameters, double b, std::vector<double> labels) {
+        std::vector<double> predictions = f(featuresMatrix, parameters, b);
+        double logLoss = calculateLogLoss(predictions, labels);
         return logLoss;
     }
 
-    void fit(std::vector<std::vector<float>> featuresMatrix, std::vector<float> labels) {
+    void fit(std::vector<std::vector<double>> featuresMatrix, std::vector<double> labels) {
+        std::random_device rd;                         // Non-deterministic random source
+        std::mt19937 gen(rd());                        // Seed the generator
+        std::uniform_real_distribution<double> dist(0.0, 1.0);
+
         int num_columns = featuresMatrix[0].size();
         // initialize parameters
         this->parameters.clear();
+        this->b = dist(gen);
         for (int i = 0; i < num_columns; i++) {
-            this->parameters.push_back(1);
+            this->parameters.push_back(dist(gen));
         }
+
         int m = featuresMatrix.size(); // aka number of rows aka number of samples
-        std::vector<std::vector<float>> featuresMatrix_T = takeTranspose(featuresMatrix);
+        std::vector<std::vector<double>> featuresMatrix_T = takeTranspose(featuresMatrix);
 
         bool optimized = false;
         while (!optimized) {
 
             // parameters
-            std::vector<float> gradientParameters;
+            std::vector<double> gradientParameters;
 
-            std::vector<float> soft_predictions = f(featuresMatrix, this->parameters, this->b);
+            std::vector<double> soft_predictions = f(featuresMatrix, this->parameters, this->b);
             // print("Soft Predictions");
             // printVector(soft_predictions);
-            std::vector<float> error_vector = subtractVectors(soft_predictions, labels);
-            std::vector<std::vector<float>> error_vector_as_matrix = vectorToMatrix(error_vector);
+            std::vector<double> error_vector = subtractVectors(soft_predictions, labels);
+            std::vector<std::vector<double>> error_vector_as_matrix = vectorToMatrix(error_vector);
             gradientParameters = matrixToVector(matrixMultiply(featuresMatrix_T, error_vector_as_matrix));
             gradientParameters = divideVector(gradientParameters, m);
 
             // bias
-            float gradientBias = accumulateVector(subtractVectors(soft_predictions, labels)) / m;
+            double gradientBias = accumulateVector(subtractVectors(soft_predictions, labels)) / m;
 
 
             for (int i = 0; i < this->parameters.size(); i++) {
@@ -79,8 +86,8 @@ class LogisticRegression {
             // std::cout << "Gradient for bias: " << gradientBias << std::endl;
             std::cout << "Loss: " << this->loss << std::endl;
 
-            float gradientNorm = calculateNorm(gradientParameters);
-            float biasNorm = std::abs(gradientBias);
+            double gradientNorm = calculateNorm(gradientParameters);
+            double biasNorm = std::abs(gradientBias);
 
             if (gradientNorm < 0.005 && biasNorm < 0.005) {
                 optimized = true;
@@ -90,7 +97,7 @@ class LogisticRegression {
         
     }
 
-    std::vector<float> getPredictions(std::vector<std::vector<float>> featuresMatrix) {
+    std::vector<double> getPredictions(std::vector<std::vector<double>> featuresMatrix) {
         return thresholdFunction(f(featuresMatrix, parameters, b), 0.5);
     }
 };

@@ -4,27 +4,27 @@
 #include <vector>
 #include <cmath>
 
-std::vector<std::vector<float>> takeTranspose(std::vector<std::vector<float>> inputMatrix);
-std::vector<float> addVectors(std::vector<float> v1, std::vector<float> v2);
-std::vector<float> subtractVectors(std::vector<float> v1, std::vector<float> v2);
-float calculateNorm(std::vector<float> v1);
-float innerProduct(std::vector<float> v1, std::vector<float> v2);
-std::vector<std::vector<float>> matrixMultiply(std::vector<std::vector<float>> m1, std::vector<std::vector<float>> m2);
-void addRow(std::vector<std::vector<float>>& matrix, std::vector<float> row);
-void addColumn(std::vector<std::vector<float>>& matrix, std::vector<float> column);
-std::vector<float> solveSystem(std::vector<std::vector<float>> matrix, std::vector<float> b);
-void deleteColumn(std::vector<std::vector<float>>& matrix, int column_index);
-void deleteRow(std::vector<std::vector<float>>& matrix, int row_index);
-std::vector<std::vector<float>> vectorToMatrix(std::vector<float> vector);
-std::vector<float> matrixToVector(std::vector<std::vector<float>> matrix);
-std::vector<float> scaleVector(std::vector<float> v1, float scalar);
-void addOnesToFront(std::vector<std::vector<float>>& matrix);
-std::vector<float> getColumn(std::vector<std::vector<float>> matrix, int col_index);
-std::vector<float> getRow(std::vector<std::vector<float>> matrix, int row_index);
-float accumulateVector(std::vector<float> v1);
-void updateColumn(std::vector<std::vector<float>>& matrix, std::vector<float> v1, int col_index);
-std::vector<float> createVector(float num, int length);
-std::vector<float> divideVector(std::vector<float> v1, float scalar);
+std::vector<std::vector<double>> takeTranspose(std::vector<std::vector<double>> inputMatrix);
+std::vector<double> addVectors(std::vector<double> v1, std::vector<double> v2);
+std::vector<double> subtractVectors(std::vector<double> v1, std::vector<double> v2);
+double calculateNorm(std::vector<double> v1);
+double innerProduct(std::vector<double> v1, std::vector<double> v2);
+std::vector<std::vector<double>> matrixMultiply(std::vector<std::vector<double>> m1, std::vector<std::vector<double>> m2);
+void addRow(std::vector<std::vector<double>>& matrix, std::vector<double> row);
+void addColumn(std::vector<std::vector<double>>& matrix, std::vector<double> column);
+std::vector<double> solveSystem(std::vector<std::vector<double>> matrix, std::vector<double> b);
+void deleteColumn(std::vector<std::vector<double>>& matrix, int column_index);
+void deleteRow(std::vector<std::vector<double>>& matrix, int row_index);
+std::vector<std::vector<double>> vectorToMatrix(std::vector<double> vector);
+std::vector<double> matrixToVector(std::vector<std::vector<double>> matrix);
+std::vector<double> scaleVector(std::vector<double> v1, double scalar);
+void addOnesToFront(std::vector<std::vector<double>>& matrix);
+std::vector<double> getColumn(std::vector<std::vector<double>> matrix, int col_index);
+std::vector<double> getRow(std::vector<std::vector<double>> matrix, int row_index);
+double accumulateVector(std::vector<double> v1);
+void updateColumn(std::vector<std::vector<double>>& matrix, std::vector<double> v1, int col_index);
+std::vector<double> createVector(double num, int length);
+std::vector<double> divideVector(std::vector<double> v1, double scalar);
 
 
 #endif

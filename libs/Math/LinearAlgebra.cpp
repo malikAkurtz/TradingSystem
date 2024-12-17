@@ -3,13 +3,13 @@
 #include <stdexcept>
 
 
-float innerProduct(std::vector<float> v1, std::vector<float> v2) {
+double innerProduct(std::vector<double> v1, std::vector<double> v2) {
     if (v1.size() != v2.size()) {
         throw std::invalid_argument("Matrix dimensions do not match on call to innerProduct()");
     }
     
     int num_elements = v1.size();
-    float innerProduct = 0;
+    double innerProduct = 0;
 
     for (int i = 0; i < num_elements; i++) {
         innerProduct += (v1[i] * v2[i]);
@@ -18,11 +18,11 @@ float innerProduct(std::vector<float> v1, std::vector<float> v2) {
     return innerProduct;
 }
 
-std::vector<std::vector<float>> takeTranspose(std::vector<std::vector<float>> inputMatrix) {
+std::vector<std::vector<double>> takeTranspose(std::vector<std::vector<double>> inputMatrix) {
     int numRows = inputMatrix.size();
     int numCols = inputMatrix[0].size();
 
-    std::vector<std::vector<float>> transposed(numCols, std::vector<float>(numRows));
+    std::vector<std::vector<double>> transposed(numCols, std::vector<double>(numRows));
 
     for (int i = 0; i < numRows; i++) {
         for (int j = 0; j < numCols; j++) {
@@ -33,8 +33,8 @@ std::vector<std::vector<float>> takeTranspose(std::vector<std::vector<float>> in
     return transposed;
 }
 
-std::vector<std::vector<float>> vectorToMatrix(std::vector<float> vector) {
-    std::vector<std::vector<float>> asMatrix(vector.size(), std::vector<float>(1));
+std::vector<std::vector<double>> vectorToMatrix(std::vector<double> vector) {
+    std::vector<std::vector<double>> asMatrix(vector.size(), std::vector<double>(1));
 
     for (int i = 0; i < vector.size(); i++) {
         asMatrix[i][0] = vector[i];
@@ -43,8 +43,8 @@ std::vector<std::vector<float>> vectorToMatrix(std::vector<float> vector) {
     return asMatrix;
 }
 
-std::vector<float> matrixToVector(std::vector<std::vector<float>> matrix) {
-    std::vector<float> asVector(matrix.size());
+std::vector<double> matrixToVector(std::vector<std::vector<double>> matrix) {
+    std::vector<double> asVector(matrix.size());
     for (int i = 0; i < matrix.size(); i++) {
         asVector[i] = matrix[i][0];
     }
@@ -52,13 +52,13 @@ std::vector<float> matrixToVector(std::vector<std::vector<float>> matrix) {
 }
 
 
-std::vector<float> addVectors(std::vector<float> v1, std::vector<float> v2) {
+std::vector<double> addVectors(std::vector<double> v1, std::vector<double> v2) {
     if (v1.size() != v2.size()) {
         throw std::invalid_argument("Matrix dimensions do not match on call to addVectors()");
     }
     int num_elements = v1.size();
 
-    std::vector<float> resultant(num_elements);
+    std::vector<double> resultant(num_elements);
 
     for (int i = 0; i < num_elements; i++) {
         resultant[i] = v1[i]+v2[i];
@@ -67,13 +67,13 @@ std::vector<float> addVectors(std::vector<float> v1, std::vector<float> v2) {
     return resultant;
 }
 
-std::vector<float> subtractVectors(std::vector<float> v1, std::vector<float> v2) {
+std::vector<double> subtractVectors(std::vector<double> v1, std::vector<double> v2) {
     if (v1.size() != v2.size()) {
         throw std::invalid_argument("Vector dimensions do not match");
     }
     int num_elements = v1.size();
 
-    std::vector<float> resultant(num_elements);
+    std::vector<double> resultant(num_elements);
 
     for (int i = 0; i < num_elements; i++) {
         resultant[i] = v1[i]-v2[i];
@@ -82,14 +82,14 @@ std::vector<float> subtractVectors(std::vector<float> v1, std::vector<float> v2)
     return resultant;
 }
 
-float calculateNorm(std::vector<float> v1) {
+double calculateNorm(std::vector<double> v1) {
     return sqrt(innerProduct(v1, v1));
 }
 
-std::vector<float> scaleVector(std::vector<float> v1, float scalar) {
+std::vector<double> scaleVector(std::vector<double> v1, double scalar) {
     int num_elements = v1.size();
 
-    std::vector<float> v1_scaled(num_elements);
+    std::vector<double> v1_scaled(num_elements);
 
     for (int i = 0; i < num_elements; i++) {
         v1_scaled[i] = v1[i] * scalar;
@@ -98,10 +98,10 @@ std::vector<float> scaleVector(std::vector<float> v1, float scalar) {
     return v1_scaled;
 }
 
-std::vector<float> divideVector(std::vector<float> v1, float scalar) {
+std::vector<double> divideVector(std::vector<double> v1, double scalar) {
     int num_elements = v1.size();
 
-    std::vector<float> v1_scaled(num_elements);
+    std::vector<double> v1_scaled(num_elements);
 
     for (int i = 0; i < num_elements; i++) {
         v1_scaled[i] = v1[i] / scalar;
@@ -112,15 +112,15 @@ std::vector<float> divideVector(std::vector<float> v1, float scalar) {
 
 
 
-std::vector<std::vector<float>> matrixMultiply(std::vector<std::vector<float>> m1, std::vector<std::vector<float>> m2) {
+std::vector<std::vector<double>> matrixMultiply(std::vector<std::vector<double>> m1, std::vector<std::vector<double>> m2) {
     // if m1 #cols != m2 #rows
     if (m1[0].size() != m2.size()) {
         throw std::invalid_argument("Matrix dimensions do not match on call to matrixMultiply()");
     }
 
-    std::vector<std::vector<float>> resultant(m1.size(), std::vector<float>(m2[0].size()));
+    std::vector<std::vector<double>> resultant(m1.size(), std::vector<double>(m2[0].size()));
 
-    std::vector<std::vector<float>>  m2_T = takeTranspose(m2);
+    std::vector<std::vector<double>>  m2_T = takeTranspose(m2);
     // for every row in m1
     for (int i = 0; i < m1.size(); i++) {
         // for every column in m2 aka every row in the transpose
@@ -132,14 +132,14 @@ std::vector<std::vector<float>> matrixMultiply(std::vector<std::vector<float>> m
     return resultant;
 }
 
-std::vector<float> getRow(std::vector<std::vector<float>> matrix, int row_index) {
+std::vector<double> getRow(std::vector<std::vector<double>> matrix, int row_index) {
     return matrix[row_index];
 }
 
-std::vector<float> getColumn(std::vector<std::vector<float>> matrix, int col_index) {
+std::vector<double> getColumn(std::vector<std::vector<double>> matrix, int col_index) {
     int num_rows = matrix.size();
 
-    std::vector<float> column_vector(num_rows);
+    std::vector<double> column_vector(num_rows);
 
     for (int i = 0; i < num_rows; i++) {
         column_vector[i] = matrix[i][col_index];
@@ -148,33 +148,33 @@ std::vector<float> getColumn(std::vector<std::vector<float>> matrix, int col_ind
     return column_vector;
 }
 
-void addRow(std::vector<std::vector<float>>& matrix, std::vector<float> row) {
+void addRow(std::vector<std::vector<double>>& matrix, std::vector<double> row) {
     matrix.push_back(row);
 }
 
-void addOnesToFront(std::vector<std::vector<float>>& matrix) {
+void addOnesToFront(std::vector<std::vector<double>>& matrix) {
     for (int i = 0; i < matrix.size(); i++) {
         matrix[i].insert(matrix[i].begin(), 1.0);
     }
 
 }
-void addColumn(std::vector<std::vector<float>>& matrix, std::vector<float> column) {
+void addColumn(std::vector<std::vector<double>>& matrix, std::vector<double> column) {
     for (int i = 0; i < matrix.size(); i++) {
         matrix[i].push_back(column[i]);
     }
 }
 
-void deleteColumn(std::vector<std::vector<float>>& matrix, int column_index) {
+void deleteColumn(std::vector<std::vector<double>>& matrix, int column_index) {
     for (int i = 0; i < matrix.size(); i++) {
         matrix[i].erase(matrix[i].begin() + column_index);
     }
 }
 
-void deleteRow(std::vector<std::vector<float>>& matrix, int row_index) {
+void deleteRow(std::vector<std::vector<double>>& matrix, int row_index) {
     matrix.erase(matrix.begin() + row_index);
 }
 
-std::vector<float> solveSystem(std::vector<std::vector<float>> matrix, std::vector<float> b) {
+std::vector<double> solveSystem(std::vector<std::vector<double>> matrix, std::vector<double> b) {
     if (matrix.size() != matrix[0].size()) {
         throw std::invalid_argument("Matrix dimensions do not match on call to solveSystem()");
     }
@@ -182,24 +182,24 @@ std::vector<float> solveSystem(std::vector<std::vector<float>> matrix, std::vect
     int num_rows = matrix.size();
     int num_cols = num_rows;
 
-    std::vector<std::vector<float>> gaussian = matrix;
+    std::vector<std::vector<double>> gaussian = matrix;
     addColumn(gaussian, b);
 
-    std::vector<float> solution(solution_size, 0);
+    std::vector<double> solution(solution_size, 0);
 
     for (int i = 0; i < num_rows; i++) {
         for (int j = 0; j < num_cols; j++) {
             //if we are at a diagonal entry, divide it by itself to make it 1
             if (i == j) {
-                std::vector<float> original_row = gaussian[i];
+                std::vector<double> original_row = gaussian[i];
                 if (original_row[j] == 0) {
                     throw std::invalid_argument("Can't have a zero on diagonal of matrix");
                 }
                 gaussian[i] = scaleVector(original_row, (1 / original_row[j]));
 
                 for (int row = i+1; row < num_rows; row++) {
-                    std::vector<float> this_row = gaussian[row];
-                    std::vector<float> new_row = subtractVectors(this_row, scaleVector(gaussian[i], this_row[j]));
+                    std::vector<double> this_row = gaussian[row];
+                    std::vector<double> new_row = subtractVectors(this_row, scaleVector(gaussian[i], this_row[j]));
 
                     gaussian[row] = new_row;
                 }
@@ -207,10 +207,10 @@ std::vector<float> solveSystem(std::vector<std::vector<float>> matrix, std::vect
         }
     }
 
-    std::vector<std::vector<float>> gaussian_T = takeTranspose(gaussian);
+    std::vector<std::vector<double>> gaussian_T = takeTranspose(gaussian);
 
 
-    std::vector<float> constants = gaussian_T[gaussian_T.size()-1];
+    std::vector<double> constants = gaussian_T[gaussian_T.size()-1];
 
 
     deleteColumn(gaussian, gaussian[0].size()-1);
@@ -227,15 +227,15 @@ std::vector<float> solveSystem(std::vector<std::vector<float>> matrix, std::vect
 }
 
 
-float accumulateVector(std::vector<float> v1) {
-    float cumSum = 0.0;
+double accumulateVector(std::vector<double> v1) {
+    double cumSum = 0.0;
     for (int i = 0; i < v1.size(); i++) {
         cumSum += v1[i];
     }
     return cumSum;
 }
 
-void updateColumn(std::vector<std::vector<float>>& matrix, std::vector<float> v1, int col_index) {
+void updateColumn(std::vector<std::vector<double>>& matrix, std::vector<double> v1, int col_index) {
 
     //for every row
     for (int i = 0; i < matrix.size(); i++) {
@@ -244,7 +244,7 @@ void updateColumn(std::vector<std::vector<float>>& matrix, std::vector<float> v1
     }
 }
 
-std::vector<float> createVector(float num, int length) {
-    std::vector<float> v1(length, num);
+std::vector<double> createVector(double num, int length) {
+    std::vector<double> v1(length, num);
     return v1;
 }

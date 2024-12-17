@@ -10,10 +10,10 @@
 #include <cmath>
 
 
-int main() {
+int main1() {
     //Parse the CSV into a matrix
     std::vector<std::string> headers = getCSVHeaders("/Users/malikkurtz/Coding/TradingSystem/ALL CSV FILES - 2nd Edition/Smarket.csv");
-    std::vector<std::vector<float>> data = parseCSV("/Users/malikkurtz/Coding/TradingSystem/ALL CSV FILES - 2nd Edition/Smarket.csv");
+    std::vector<std::vector<double>> data = parseCSV("/Users/malikkurtz/Coding/TradingSystem/ALL CSV FILES - 2nd Edition/Smarket.csv");
     std::vector<std::string> indices = getCSVIndices("/Users/malikkurtz/Coding/TradingSystem/ALL CSV FILES - 2nd Edition/Smarket.csv", 0);
     
     // std::cout << "Data Matrix Begin: " << std::endl;
@@ -21,7 +21,7 @@ int main() {
     // std::cout << "Data Matrix End: " << std::endl;
 
     // Extract the labels (last column)
-    std::vector<float> labels = getColumn(data, data[0].size() - 1);
+    std::vector<double> labels = getColumn(data, data[0].size() - 1);
 
     for (int i = 0; i < labels.size(); i++) {
         if (labels[i] < 0) {
@@ -34,12 +34,13 @@ int main() {
     // printVector(labels);
     // std::cout << "Labels End: " << std::endl;
 
-
     // Remove the last column from the data matrix (features)
     deleteColumn(data, data[0].size() - 1);
-
-    
-
+    deleteColumn(data, data[0].size() - 1);
+    deleteColumn(data, data[0].size() - 1);
+    deleteColumn(data, data[0].size() - 1);
+    deleteColumn(data, data[0].size() - 1);
+    data = normalizeData(data);
     // Initialize and fit the Linear Regression model
     LogisticRegression LR(0.01);
     LR.fit(data, labels);
@@ -52,7 +53,7 @@ int main() {
     std::cout << "Coefficients End: " << std::endl;
 
     // Generate predictions and compare with labels
-    std::vector<float> predictions = LR.getPredictions(data);
+    std::vector<double> predictions = LR.getPredictions(data);
 
     // std::cout << "Prediction Vs Label Begin: " << std::endl;
     // for (int i = 0; i < predictions.size(); i++) {
@@ -62,16 +63,14 @@ int main() {
 
     std::cout << "Log Loss: " << LR.loss << std::endl;
 
-
-    
     toCSV("results.csv", data, labels, predictions);
     return 0;
 
 }
 
-int main1() {
+int main() {
 
-    std::vector<std::vector<float>> data = {
+    std::vector<std::vector<double>> data = {
         {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19},  // Weight of a mouse in pounds
         {0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1},  // 0 = Not obese, 1 = Obese
     };
@@ -79,7 +78,7 @@ int main1() {
     data = takeTranspose(data);
 
 
-    std::vector<float> labels = getColumn(data, data[0].size()-1);
+    std::vector<double> labels = getColumn(data, data[0].size()-1);
 
 
 
@@ -100,7 +99,7 @@ int main1() {
 
     LR.fit(data, labels);
 
-    std::vector<float> predictions = LR.getPredictions(data);
+    std::vector<double> predictions = LR.getPredictions(data);
     
     std::cout << predictions.size() << std::endl;
 

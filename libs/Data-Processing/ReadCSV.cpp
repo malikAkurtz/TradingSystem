@@ -72,8 +72,8 @@ std::vector<std::string> getCSVIndices(std::string file_name, int index_col) {
 }
 
 
-std::vector<std::vector<float>> parseCSV(std::string file_name) {
-    std::vector<std::vector<float>> dataMatrix;
+std::vector<std::vector<double>> parseCSV(std::string file_name) {
+    std::vector<std::vector<double>> dataMatrix;
 
     std::ifstream file(file_name);
     if (!file.is_open()) {
@@ -89,7 +89,7 @@ std::vector<std::vector<float>> parseCSV(std::string file_name) {
 
         std::stringstream ss(line);
         std::string cell;
-        std::vector<float> rowValues;
+        std::vector<double> rowValues;
 
         int col = 0;
         while (std::getline(ss, cell, ',')) {
@@ -118,9 +118,9 @@ std::vector<std::vector<float>> parseCSV(std::string file_name) {
 
 
 void toCSV(const std::string &file_name,
-           const std::vector<std::vector<float>> &data,
-           const std::vector<float> &labels,
-           const std::vector<float> &predictions) 
+           const std::vector<std::vector<double>> &data,
+           const std::vector<double> &labels,
+           const std::vector<double> &predictions) 
 {
     // Check for consistent sizes
     size_t num_rows = data.size();
