@@ -48,15 +48,15 @@ class HiddenLayer {
     std::vector<double> getLayerOutput(std::vector<double> input_vector) {
         std::vector<double> padded_input = input_vector;
         padded_input.push_back(1); // essentially a constant to multiply with the bias when taking the dot product
-        print("------------------------------------------------------------------");
-        print("Padded Input Vector: ");
-        printVector(padded_input);
-        print("Weights Matrix: ");
-        printMatrix(this->weightsMatrix);
+        // print("------------------------------------------------------------------");
+        // print("Padded Input Vector: ");
+        // printVector(padded_input);
+        // print("Weights Matrix: ");
+        // printMatrix(this->weightsMatrix);
         std::vector<double> pre_activation_output = matrixToVector(matrixMultiply(this->weightsMatrix, vectorToMatrix(padded_input)));
-        print("Matrix Multiply Resulting Layer Output");
-        printVector(pre_activation_output);
-        print("------------------------------------------------------------------");
+        // print("Matrix Multiply Resulting Layer Output");
+        // printVector(pre_activation_output);
+        // print("------------------------------------------------------------------");
         return applyActivation(pre_activation_output);
     }
 
@@ -160,6 +160,12 @@ class NeuralNetwork {
 
     }
 
+    double calculateLoss(std::vector<std::vector<double>> featuresMatrix, std::vector<double> parameters, std::vector<double> labels) {
+        std::vector<double> predictions = getPredictions(featuresMatrix);
+        double MSE = calculateMSE(predictions, labels);
+        return MSE;
+    }
+
     std::vector<double> getPredictions(std::vector<std::vector<double>> featuresMatrix) {
 
         int num_samples = featuresMatrix.size();
@@ -186,8 +192,11 @@ class NeuralNetwork {
             // final pass into output layer
             OutputLayer& outputLayer = this->outputLayer;
             std::vector<double> output_layer_output = outputLayer.getLayerOutput(prev_layer_output);
+            print("Output Layer Output");
+            printVector(output_layer_output);
             // std::cout << "Output Layer Output: " << std::endl;
             // printVector(output_layer_output);
+            predictions[i] = (output_layer_output[0]); // assuming only one output neuron
         }
 
         return predictions;
