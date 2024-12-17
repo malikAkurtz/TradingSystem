@@ -157,6 +157,10 @@ class NeuralNetwork {
 
 
     void fit(std::vector<std::vector<double>> featuresMatrix, std::vector<double> labels) {
+        double initial_MSE = calculateLoss(featuresMatrix, matrixToVector(this->outputLayer.weightsMatrix), labels);
+        std::vector<std::vector<double>> prevLayerWeightsMatrix = this->hiddenLayers[this->hiddenLayers.size()-1].weightsMatrix;
+        std::vector<std::vector<double>> prevLayerWeightsMatrix_T = takeTranspose(prevLayerWeightsMatrix);
+        std::vector<double> dLossRespZ_L;
 
     }
 
