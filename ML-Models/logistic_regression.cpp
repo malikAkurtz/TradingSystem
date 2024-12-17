@@ -9,7 +9,7 @@
 
 class LogisticRegression {
     public:
-    float b = 0;
+    float b = 1;
     float learning_rate;
     float loss;
     std::vector<float> parameters;
@@ -25,7 +25,7 @@ class LogisticRegression {
         for (int i = 0; i < featuresMatrix.size(); i++) {
             float dot_product = innerProduct(featuresMatrix[i], parameters);
             float log_odds = dot_product + b;
-            predictions.push_back(exp(log_odds) / (1 + exp(log_odds)));
+            predictions.push_back(sigmoid(log_odds));
         }
 
         return predictions;
@@ -38,61 +38,54 @@ class LogisticRegression {
     }
 
     void fit(std::vector<std::vector<float>> featuresMatrix, std::vector<float> labels) {
-        for (int i = 0; i < featuresMatrix[0].size(); i++) {
+        int num_columns = featuresMatrix[0].size();
+        // initialize parameters
+        this->parameters.clear();
+        for (int i = 0; i < num_columns; i++) {
             this->parameters.push_back(1);
         }
+        int m = featuresMatrix.size(); // aka number of rows aka number of samples
+        std::vector<std::vector<float>> featuresMatrix_T = takeTranspose(featuresMatrix);
 
-        float h = 1e-4;
         bool optimized = false;
+        while (!optimized) {
 
-        while (optimized != true) {
-            std::vector<float> partialDerivatives(parameters.size());
+            // parameters
+            std::vector<float> gradientParameters;
 
-            for (int i = 0; i < parameters.size(); i++) {
-                std::vector<float> parameter_plus_h = this->parameters;
-                std::vector<float> parameter_minus_h = this->parameters;
-                parameter_plus_h[i] += h;
-                parameter_minus_h[i] -= h;
-                float loss_plus_h = calculateLoss(featuresMatrix, parameter_plus_h, b, labels);
-                float loss_minus_h = calculateLoss(featuresMatrix, parameter_minus_h, b, labels);
-                float partial_derivative =(loss_plus_h - loss_minus_h) / (2*h);
+            std::vector<float> soft_predictions = f(featuresMatrix, this->parameters, this->b);
+            // print("Soft Predictions");
+            // printVector(soft_predictions);
+            std::vector<float> error_vector = subtractVectors(soft_predictions, labels);
+            std::vector<std::vector<float>> error_vector_as_matrix = vectorToMatrix(error_vector);
+            gradientParameters = matrixToVector(matrixMultiply(featuresMatrix_T, error_vector_as_matrix));
+            gradientParameters = divideVector(gradientParameters, m);
 
+            // bias
+            float gradientBias = accumulateVector(subtractVectors(soft_predictions, labels)) / m;
 
-                partialDerivatives[i] = partial_derivative;
-                
-            }
-
-            float loss_b_plus_h = calculateLoss(featuresMatrix, this->parameters, this->b+h, labels);
-            float loss_b_minus_h = calculateLoss(featuresMatrix, this->parameters, this->b-h, labels);
-            float b_partial_derivative = (loss_b_plus_h - loss_b_minus_h) /(2*h);
 
             for (int i = 0; i < this->parameters.size(); i++) {
-                this->parameters[i] -= (learning_rate * partialDerivatives[i]);
+                this->parameters[i] -= (this->learning_rate * gradientParameters[i]);
             }
-            this->b -= (learning_rate * b_partial_derivative);
+            this->b -= (this->learning_rate * gradientBias);
 
-
-            std::vector<float> new_predictions = f(featuresMatrix, this->parameters, b);
-            float new_loss = calculateLoss(featuresMatrix, this->parameters, b, labels);
-            this->loss = new_loss;
-
-
+            this->loss = calculateLoss(featuresMatrix, this->parameters, this->b, labels);
+            // std::cout << "Parameters: ";
             // printVector(this->parameters);
-            std::cout << this->loss << std::endl;
-            // printVector(partialDerivatives);
+            // std::cout << "bias: " << this->b << std::endl;
+            // std::cout << "Gradient for parameters: ";
+            // printVector(gradientParameters);
+            // std::cout << "Gradient for bias: " << gradientBias << std::endl;
+            std::cout << "Loss: " << this->loss << std::endl;
 
-            float gradient_norm = 0.0;
+            float gradientNorm = calculateNorm(gradientParameters);
+            float biasNorm = std::abs(gradientBias);
 
-            for (float grad : partialDerivatives) {
-                gradient_norm += grad * grad;
+            if (gradientNorm < 0.005 && biasNorm < 0.005) {
+                optimized = true;
             }
-            
 
-            gradient_norm = std::sqrt(gradient_norm);
-
-            optimized = (gradient_norm < 1e-2 && std::abs(b_partial_derivative) < 1e-2);
-            std::cout << "Partial Derivatives: " << std::endl;
-            printVector(partialDerivatives);
         }
         
     }

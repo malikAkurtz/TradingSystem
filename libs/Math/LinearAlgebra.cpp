@@ -5,7 +5,7 @@
 
 float innerProduct(std::vector<float> v1, std::vector<float> v2) {
     if (v1.size() != v2.size()) {
-        throw std::invalid_argument("Matrix dimensions do not match");
+        throw std::invalid_argument("Matrix dimensions do not match on call to innerProduct()");
     }
     
     int num_elements = v1.size();
@@ -54,7 +54,7 @@ std::vector<float> matrixToVector(std::vector<std::vector<float>> matrix) {
 
 std::vector<float> addVectors(std::vector<float> v1, std::vector<float> v2) {
     if (v1.size() != v2.size()) {
-        throw std::invalid_argument("Matrix dimensions do not match");
+        throw std::invalid_argument("Matrix dimensions do not match on call to addVectors()");
     }
     int num_elements = v1.size();
 
@@ -98,12 +98,24 @@ std::vector<float> scaleVector(std::vector<float> v1, float scalar) {
     return v1_scaled;
 }
 
+std::vector<float> divideVector(std::vector<float> v1, float scalar) {
+    int num_elements = v1.size();
+
+    std::vector<float> v1_scaled(num_elements);
+
+    for (int i = 0; i < num_elements; i++) {
+        v1_scaled[i] = v1[i] / scalar;
+    }
+
+    return v1_scaled;
+}
+
 
 
 std::vector<std::vector<float>> matrixMultiply(std::vector<std::vector<float>> m1, std::vector<std::vector<float>> m2) {
     // if m1 #cols != m2 #rows
     if (m1[0].size() != m2.size()) {
-        throw std::invalid_argument("Matrix dimensions do not match");
+        throw std::invalid_argument("Matrix dimensions do not match on call to matrixMultiply()");
     }
 
     std::vector<std::vector<float>> resultant(m1.size(), std::vector<float>(m2[0].size()));
@@ -164,7 +176,7 @@ void deleteRow(std::vector<std::vector<float>>& matrix, int row_index) {
 
 std::vector<float> solveSystem(std::vector<std::vector<float>> matrix, std::vector<float> b) {
     if (matrix.size() != matrix[0].size()) {
-        throw std::invalid_argument("Matrix dimensions do not match");
+        throw std::invalid_argument("Matrix dimensions do not match on call to solveSystem()");
     }
     int solution_size = b.size();
     int num_rows = matrix.size();
@@ -214,3 +226,25 @@ std::vector<float> solveSystem(std::vector<std::vector<float>> matrix, std::vect
     return solution;
 }
 
+
+float accumulateVector(std::vector<float> v1) {
+    float cumSum = 0.0;
+    for (int i = 0; i < v1.size(); i++) {
+        cumSum += v1[i];
+    }
+    return cumSum;
+}
+
+void updateColumn(std::vector<std::vector<float>>& matrix, std::vector<float> v1, int col_index) {
+
+    //for every row
+    for (int i = 0; i < matrix.size(); i++) {
+        //update the col index
+        matrix[i][col_index] = v1[i];
+    }
+}
+
+std::vector<float> createVector(float num, int length) {
+    std::vector<float> v1(length, num);
+    return v1;
+}

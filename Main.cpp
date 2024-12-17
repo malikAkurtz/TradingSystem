@@ -10,7 +10,7 @@
 #include <cmath>
 
 
-int main1() {
+int main() {
     //Parse the CSV into a matrix
     std::vector<std::string> headers = getCSVHeaders("/Users/malikkurtz/Coding/TradingSystem/ALL CSV FILES - 2nd Edition/Smarket.csv");
     std::vector<std::vector<float>> data = parseCSV("/Users/malikkurtz/Coding/TradingSystem/ALL CSV FILES - 2nd Edition/Smarket.csv");
@@ -41,11 +41,13 @@ int main1() {
     
 
     // Initialize and fit the Linear Regression model
-    LogisticRegression LR(0.001);
+    LogisticRegression LR(0.01);
     LR.fit(data, labels);
 
 
     std::cout << "Coefficients Begin: " << std::endl;
+    std::cout << "Intercept: " << LR.b << std::endl;
+    std::cout << "Parameters" << std::endl;
     printVector(LR.parameters);
     std::cout << "Coefficients End: " << std::endl;
 
@@ -67,7 +69,7 @@ int main1() {
 
 }
 
-int main() {
+int main1() {
 
     std::vector<std::vector<float>> data = {
         {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19},  // Weight of a mouse in pounds
@@ -83,13 +85,23 @@ int main() {
 
     deleteColumn(data,data[0].size()-1);
 
+    std::cout << "Original Data:" << std::endl;
     printMatrix(data);
-    printVector(labels);
+
+    data = normalizeData(data);
+
+    std::cout << "Normalized Data:" << std::endl;
+    printMatrix(data);
+
+
+    // printMatrix(data);
+    // printVector(labels);
     LogisticRegression LR(0.01);
 
     LR.fit(data, labels);
 
     std::vector<float> predictions = LR.getPredictions(data);
+    
     std::cout << predictions.size() << std::endl;
 
     std::cout << "Prediction Vs Label Begin: " << std::endl;
@@ -100,7 +112,8 @@ int main() {
 
     std::cout << "Log Loss: " << LR.loss << std::endl;
 
-
+    print("Final Parameters");
+    printVector(LR.parameters);
     //toCSV("results.csv", data, labels, predictions);
     return 0;
 

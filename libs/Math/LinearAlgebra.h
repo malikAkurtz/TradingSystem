@@ -21,6 +21,10 @@ std::vector<float> scaleVector(std::vector<float> v1, float scalar);
 void addOnesToFront(std::vector<std::vector<float>>& matrix);
 std::vector<float> getColumn(std::vector<std::vector<float>> matrix, int col_index);
 std::vector<float> getRow(std::vector<std::vector<float>> matrix, int row_index);
+float accumulateVector(std::vector<float> v1);
+void updateColumn(std::vector<std::vector<float>>& matrix, std::vector<float> v1, int col_index);
+std::vector<float> createVector(float num, int length);
+std::vector<float> divideVector(std::vector<float> v1, float scalar);
 
 
 #endif

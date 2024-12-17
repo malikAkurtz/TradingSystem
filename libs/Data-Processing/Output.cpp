@@ -1,14 +1,13 @@
 #include <iostream>
 #include <vector>
+#include <string>
 
 void printVector(const std::vector<float>& vec) {
-    std::cout << "------------------------------------------------------------------------------------------------------" << std::endl;
     std::cout << "[ ";
     for (const auto& elem : vec) {
         std::cout << elem << " ";
     }
     std::cout << "]" << std::endl;
-    std::cout << "------------------------------------------------------------------------------------------------------" << std::endl;
 }
 
 void printMatrix(const std::vector<std::vector<float>>& matrix) {
@@ -17,4 +16,8 @@ void printMatrix(const std::vector<std::vector<float>>& matrix) {
         printVector(vec);
     }
     std::cout << "------------------------------------------------------------------------------------------------------" << std::endl;
+}
+
+void print(std::string toPrint) {
+    std::cout << toPrint << std::endl;
 }
