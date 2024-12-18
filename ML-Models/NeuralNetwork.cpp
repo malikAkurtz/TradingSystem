@@ -14,7 +14,7 @@ class NeuralNetwork {
     std::shared_ptr<InputLayer> inputLayer;                 // Input layer as a smart pointer
     std::shared_ptr<OutputLayer> outputLayer;
     int num_features;
-    double loss;
+    double model_loss;
 
 
     NeuralNetwork(float learningrate, int num_epochs) : inputLayer(nullptr), outputLayer(nullptr){
@@ -27,70 +27,70 @@ class NeuralNetwork {
     void fit(std::vector<std::vector<double>> featuresMatrix, std::vector<double> labels) {
         int num_samples = featuresMatrix.size();
         
-
         for (int e = 0; e < this->num_epochs; e++) {
             double epoch_average_loss = 0;
             // for every sample
             for (int i = 0; i < num_samples; i++) {
                 // forward propogate it
                 std::vector<double> sample = featuresMatrix[i];
-                // print("Sample being processed");
-                // printVector(sample);
-                // print("Sample Prediction");
+                print("Sample being processed");
+                printVector(sample);
+                print("Sample Prediction");
                 std::vector<double> prediction = getPredictions({sample});
-                // printVector(prediction);
+                printVector(prediction);
                 double label = labels[i];
-                // print("Sample Label");
-                //std::cout << label << std::endl;
+                print("Sample Label");
+                std::cout << label << std::endl;
+                print("Loss");
+                std::cout << calculateMSE_Simple({prediction}, {label}) << std::endl;
                 epoch_average_loss += calculateMSE_Simple({prediction}, {label});
                 int last_layer_index = num_layers - 3;
 
                 // calculate partial derivative of loss with respect to output layer weights
                 std::vector<double> dL_rsp_W_output;
-                // std::cout << last_layer_index << std::endl;
-                // std::cout << this->hiddenLayers[last_layer_index]->neurons.size() << std::endl;
                 std::vector<double> dL_resp_z_output = createVector(calculateMSE_Simple({prediction}, {label}), this->hiddenLayers[last_layer_index]->neurons.size());
-                // print("dL_resp_z_output");
-                // printVector(dL_resp_z_output);
+                print("dL_resp_z_output");
+                printVector(dL_resp_z_output);
                 std::vector<double> dz_output_rsp_W_output = this->hiddenLayers[last_layer_index]->getActivationOutputs();
-                // print("dz_output_rsp_W_output");
-                // printVector(dz_output_rsp_W_output);
+                print("dz_output_rsp_W_output");
+                printVector(dz_output_rsp_W_output);
                 dL_rsp_W_output = hadamardProduct(dz_output_rsp_W_output, dL_resp_z_output);
-                // print("dL_rsp_W_output");
-                // printVector(dL_rsp_W_output);
+                print("dL_rsp_W_output");
+                printVector(dL_rsp_W_output);
                 
 
                 // calculate partial derivative of loss with respect to previous layer weights
-                for (int i = last_layer_index; i >= 0; i-- ) {
+                for (int j = last_layer_index; j >= 0; j-- ) {
                     // print("this->hiddenLayers[last_layer_index]->neurons.size()");
                     // std::cout << this->hiddenLayers[i]->neurons.size() << std::endl;
                     // print("std::vector<double>(sample.size()");
                     // std::cout << sample.size() << std::endl;
-                    std::vector<std::vector<double>> dL_rsp_W_hidden(this->hiddenLayers[i]->neurons.size(), std::vector<double>(sample.size()));
+                    std::vector<std::vector<double>> dL_rsp_W_hidden(this->hiddenLayers[j]->neurons.size(), std::vector<double>(sample.size()));
                     std::vector<double> dL_rsp_z_hidden = matrixToVector(
                         matrixMultiply(takeTranspose(this->outputLayer->getWeightsMatrix()), takeTranspose(vectorToMatrix(dL_resp_z_output))));
-                    // print("dL_rsp_z_hidden");
-                    // printVector(dL_rsp_z_hidden);
+                    print("dL_rsp_z_hidden");
+                    printVector(dL_rsp_z_hidden);
                     std::vector<double> dz_hidden_rsp_W_hidden = sample;
-                    // print("dz_hidden_rsp_W_hidden");
-                    // printVector(dz_hidden_rsp_W_hidden);
+                    print("dz_hidden_rsp_W_hidden");
+                    printVector(dz_hidden_rsp_W_hidden);
                     dL_rsp_W_hidden = matrixMultiply(vectorToMatrix(dL_rsp_z_hidden), takeTranspose(vectorToMatrix(dz_hidden_rsp_W_hidden))); // tranpose ????
-                    // print("dL_rsp_W_hidden");
-                    // printMatrix(dL_rsp_W_hidden);
+                    print("dL_rsp_W_hidden");
+                    printMatrix(dL_rsp_W_hidden);
 
 
                     // update hidden layer weights
-                    for (int i = 0; i < this->hiddenLayers[last_layer_index]->weightsMatrix.size(); ++i) {
-                        for (int j = 0; j < this->hiddenLayers[last_layer_index]->weightsMatrix[0].size(); ++j) {
-                            this->hiddenLayers[last_layer_index]->weightsMatrix[i][j] -= (learning_rate * dL_rsp_W_hidden[i][j]);
+                    for (int k = 0; k < this->hiddenLayers[last_layer_index]->weightsMatrix.size(); ++k) {
+                        for (int l = 0; l < this->hiddenLayers[last_layer_index]->weightsMatrix[0].size(); ++l) {
+                            this->hiddenLayers[last_layer_index]->weightsMatrix[k][l] -= (learning_rate * dL_rsp_W_hidden[k][l]);
                         }
                     }
                 }
             }
             epoch_average_loss = epoch_average_loss / num_samples;
             std::cout << "Epoch: " << e << " Loss: " << epoch_average_loss << std::endl;
-
         }
+        std::vector<double> best_predictions = getPredictions(featuresMatrix);
+        this->model_loss = calculateMSE_Simple(best_predictions, labels);
     }
 
     
