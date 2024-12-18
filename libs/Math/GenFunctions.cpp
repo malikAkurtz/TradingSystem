@@ -11,6 +11,11 @@ double calculateMSE(std::vector<double> predictions, std::vector<double> labels)
     return innerProduct(resultant, resultant) / num_elements;
 }
 
+double calculateMSE_Simple(std::vector<double> predictions, std::vector<double> labels) {
+    std::vector<double> resultant = subtractVectors(labels, predictions);
+    return innerProduct(resultant, resultant) / 2;
+}
+
 
 double calculateLogLoss(std::vector<double> predictions, std::vector<double> labels) {
     double cumSum = 0;

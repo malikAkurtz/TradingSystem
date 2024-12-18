@@ -104,11 +104,11 @@ OutputLayer::OutputLayer(int num_neurons, int num_neurons_in_prev_layer, Activat
 // OutputLayer::calculateLayerOutputs
 void OutputLayer::calculateLayerOutputs(std::vector<double> input_vector) {
     input_vector.push_back(1); // Add bias
-    printVector(input_vector);
-    printMatrix(getWeightsMatrix());
+    // printVector(input_vector);
+    // printMatrix(getWeightsMatrix());
     pre_activation_outputs = matrixToVector(
         matrixMultiply(weightsMatrix, vectorToMatrix(input_vector)));
-    printVector(pre_activation_outputs);
+    // printVector(pre_activation_outputs);
     applyActivation();
 }
 

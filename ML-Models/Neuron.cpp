@@ -20,7 +20,7 @@ void InputNeuron::setInput(double new_input) {
 
 // Neuron Definitions
 Neuron::Neuron(int num_weights) {
-    weights.resize(num_weights, 2.0);
+    weights.resize(num_weights, 1);
 }
 
 std::vector<double> Neuron::getWeights() const {

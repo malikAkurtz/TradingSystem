@@ -16,50 +16,48 @@
 int main() {
 
     std::vector<std::vector<double>> features = {
-    {1.0, 2.5},
-    // {2.0, 3.7},
-    // {3.1, 4.2},
-    // {4.0, 5.1},
-    // {5.2, 6.8},
-    // {6.3, 7.5},
-    // {7.4, 8.0},
-    // {8.5, 9.1},
-    // {9.0, 10.2},
-    // {10.1, 11.5}
-};
-    std::vector<double> labels = {
-    5.0,
-    // 7.1,
-    // 9.3,
-    // 10.5,
-    // 13.2,
-    // 15.0,
-    // 16.5,
-    // 18.3,
-    // 19.7,
-    // 21.9
-};
+        {1.0, 2.5}, {1.5, 3.1}, {2.0, 3.7}, {2.5, 4.0},
+        {3.1, 4.2}, {3.5, 4.6}, {4.0, 5.1}, {4.5, 5.6},
+        {5.2, 6.8}, {5.8, 7.1}, {6.3, 7.5}, {6.9, 7.7},
+        {7.4, 8.0}, {7.9, 8.6}, {8.5, 9.1}, {8.8, 9.6},
+        {9.0, 10.2}, {9.5, 10.8}, {10.1, 11.5}, {10.6, 12.1},
+        {11.0, 12.8}, {11.5, 13.3}, {12.0, 14.0}, {12.5, 14.6},
+        {13.0, 15.2}, {13.5, 15.7}, {14.0, 16.3}, {14.5, 16.8},
+        {15.0, 17.4}, {15.5, 18.0}
+    };
 
+    std::vector<double> labels = {
+        5.0, 6.0, 7.1, 8.0,
+        9.3, 9.8, 10.5, 11.0,
+        13.2, 14.1, 15.0, 15.6,
+        16.5, 17.1, 18.3, 18.7,
+        19.7, 20.3, 21.9, 22.5,
+        23.1, 23.9, 24.6, 25.2,
+        26.0, 26.5, 27.1, 27.7,
+        28.4, 29.0
+    };
+
+
+    features = normalizeData(features);
     std::vector<std::vector<double>> features_T = takeTranspose(features);
     int num_features = features_T.size();
     
-    NeuralNetwork Network;
-
-    std::shared_ptr<InputLayer> inputLayer = std::make_shared<InputLayer>(num_features);
-    std::shared_ptr<HiddenLayer> hiddenLayer1 = std::make_shared<HiddenLayer>(3, num_features, RELU);
-    std::shared_ptr<OutputLayer> outputLayer = std::make_shared<OutputLayer>(1, 3, NONE);
+    NeuralNetwork Network(0.0001, 100);
 
 
     
-    Network.addInputLayer(inputLayer);
-    Network.addHiddenLayer(hiddenLayer1);
-    Network.addOutputLayer(outputLayer);
+    Network.addInputLayer(std::make_shared<InputLayer>(num_features));
+    Network.addHiddenLayer(std::make_shared<HiddenLayer>(3, num_features, RELU));
+    Network.addOutputLayer(std::make_shared<OutputLayer>(1, 3, NONE));
 
     std::vector<double> predictions = Network.getPredictions(features);
-
+    Network.fit(features, labels);
     
 
-    //Network.fit(features, labels);
+    printPredictionsVSLabels(predictions, labels);
+
+
+
     return 0;
 }
 

@@ -21,3 +21,9 @@ void printMatrix(const std::vector<std::vector<double>>& matrix) {
 void print(std::string toPrint) {
     std::cout << toPrint << std::endl;
 }
+
+void printPredictionsVSLabels(std::vector<double> predictions, std::vector<double> labels) {
+    for (int i = 0; i < predictions.size(); i++) {
+        std::cout << "<" << predictions[i] << ", " << labels[i] << ">" << std::endl;
+    }
+}
