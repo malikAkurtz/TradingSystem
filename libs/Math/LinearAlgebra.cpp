@@ -54,7 +54,7 @@ std::vector<double> matrixToVector(std::vector<std::vector<double>> matrix) {
 
 std::vector<double> addVectors(std::vector<double> v1, std::vector<double> v2) {
     if (v1.size() != v2.size()) {
-        throw std::invalid_argument("Matrix dimensions do not match on call to addVectors()");
+        throw std::invalid_argument("Vector dimensions do not match on call to addVectors()");
     }
     int num_elements = v1.size();
 
@@ -251,4 +251,21 @@ std::vector<double> createVector(double num, int length) {
 
 void addElement(std::vector<double>& v1, double value, int col_index) {
     v1.insert(v1.begin() + col_index, value);
+}
+
+
+std::vector<double> hadamardProduct(std::vector<double> v1, std::vector<double> v2) {
+    int num_elements = v1.size();
+    if (num_elements != v2.size()) {
+        throw std::invalid_argument("Vector dimensions do not match on call to hadamardProduct()");
+    }
+
+    std::vector<double> resultant(num_elements);
+
+    for (int i = 0; i < num_elements; i++) {
+        resultant[i] = v1[i] * v2[i];
+    }
+
+    return resultant;
+
 }

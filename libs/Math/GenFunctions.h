@@ -12,5 +12,6 @@ double calculateMean(std::vector<double> v1);
 double calculateSTD(std::vector<double> v1);
 std::vector<std::vector<double>> normalizeData(std::vector<std::vector<double>> featuresMatrix);
 double ReLU(double value);
+double d_ReLU(double x);
 
 #endif

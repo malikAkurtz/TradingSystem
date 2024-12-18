@@ -92,3 +92,7 @@ double ReLU(double value) {
         return value;
     }
 }
+
+double d_ReLU(double x) {
+    return x > 0 ? 1 : 0;
+}
