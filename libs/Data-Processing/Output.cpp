@@ -27,3 +27,11 @@ void printPredictionsVSLabels(std::vector<double> predictions, std::vector<doubl
         std::cout << "<" << predictions[i] << ", " << labels[i] << ">" << std::endl;
     }
 }
+
+void printMatrixShape(std::vector<std::vector<double>> matrix) {
+    std::cout << "(" << matrix.size() << "," << matrix[0].size() << ")" << std::endl;
+}
+
+void printVectorShape(std::vector<double> vector) {
+    std::cout << "(" << vector.size() << ", " << ")" << std::endl;
+}

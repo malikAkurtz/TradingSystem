@@ -7,5 +7,7 @@ void printVector(const std::vector<double>& vec);
 void printMatrix(const std::vector<std::vector<double>>& matrix);
 void print(std::string toPrint);
 void printPredictionsVSLabels(std::vector<double> predictions, std::vector<double> labels);
+void printMatrixShape(std::vector<std::vector<double>> matrix);
+void printVectorShape(std::vector<double> vector);
 
 #endif

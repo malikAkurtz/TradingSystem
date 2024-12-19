@@ -33,7 +33,7 @@ std::vector<std::vector<double>> takeTranspose(std::vector<std::vector<double>> 
     return transposed;
 }
 
-std::vector<std::vector<double>> vectorToMatrix(std::vector<double> vector) {
+std::vector<std::vector<double>> vector1Dto2D(std::vector<double> vector) {
     std::vector<std::vector<double>> asMatrix(vector.size(), std::vector<double>(1));
 
     for (int i = 0; i < vector.size(); i++) {
@@ -43,7 +43,7 @@ std::vector<std::vector<double>> vectorToMatrix(std::vector<double> vector) {
     return asMatrix;
 }
 
-std::vector<double> matrixToVector(std::vector<std::vector<double>> matrix) {
+std::vector<double> vector2Dto1D(std::vector<std::vector<double>> matrix) {
     std::vector<double> asVector(matrix.size());
     for (int i = 0; i < matrix.size(); i++) {
         asVector[i] = matrix[i][0];

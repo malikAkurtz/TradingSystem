@@ -35,7 +35,7 @@ class LinearRegression {
         std::vector<std::vector<double>> featuresMatrix_T = takeTranspose(matrix_with_ones);
 
         std::vector<std::vector<double>> A_T_A = matrixMultiply(featuresMatrix_T, matrix_with_ones);
-        std::vector<double> A_T_b = matrixToVector(matrixMultiply(featuresMatrix_T, vectorToMatrix(labels)));
+        std::vector<double> A_T_b = vector2Dto1D(matrixMultiply(featuresMatrix_T, vector1Dto2D(labels)));
 
         this->parameters = solveSystem(A_T_A, A_T_b);
 

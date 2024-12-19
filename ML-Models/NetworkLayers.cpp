@@ -1,6 +1,7 @@
 #include "NetworkLayers.h"
 #include "Neuron.h"
 #include "Output.h"
+#include <iostream>
 
 // InputLayer Constructor
 InputLayer::InputLayer(int num_features) {
@@ -44,9 +45,25 @@ HiddenLayer::HiddenLayer(int num_neurons, int num_neurons_in_prev_layer, Activat
 void HiddenLayer::calculateLayerOutputs(std::vector<double> input_vector) {
     input_vector.push_back(1); // Add bias
 
-    pre_activation_outputs = matrixToVector(
-        matrixMultiply(getWeightsMatrix(), vectorToMatrix(input_vector)));
-    applyActivation();
+    // print("input vector");
+    // printVector(input_vector);
+    // print("weights matrix");
+    // printMatrix(getWeightsMatrix());
+    pre_activation_outputs = vector2Dto1D(
+        matrixMultiply(getWeightsMatrix(), vector1Dto2D(input_vector)));
+
+    // std::cout << "pre_activation_outputs" << std::endl;
+    // printVector(pre_activation_outputs);
+    if (AFtype == RELU) {
+        this->activation_outputs = ReLU(this->pre_activation_outputs);
+        this->derivative_activation_outputs = d_ReLU(this->pre_activation_outputs);
+    } else if(AFtype == SIGMOID) {
+        throw std::invalid_argument("Derivative for SIGMOID not implemented");
+        this->activation_outputs = sigmoid(this->pre_activation_outputs);
+    } else {
+        this->activation_outputs = this->pre_activation_outputs;
+        this->derivative_activation_outputs = this->pre_activation_outputs;
+    }
 }
 
 std::vector<double> HiddenLayer::getActivationOutputs() {
@@ -57,18 +74,8 @@ std::vector<double> HiddenLayer::getPreActivationOutputs() {
     return pre_activation_outputs;
 }
 
-// HiddenLayer::applyActivation
-void HiddenLayer::applyActivation() {
-    activation_outputs.resize(pre_activation_outputs.size());
-    if (AFtype == RELU) {
-        for (size_t i = 0; i < pre_activation_outputs.size(); ++i) {
-            activation_outputs[i] = ReLU(pre_activation_outputs[i]);
-        }
-    } else if (AFtype == SIGMOID) {
-        for (size_t i = 0; i < pre_activation_outputs.size(); ++i) {
-            activation_outputs[i] = sigmoid(pre_activation_outputs[i]);
-        }
-    }
+std::vector<double> HiddenLayer::getDerivativeActivationOutputs() {
+    return derivative_activation_outputs;
 }
 
 std::vector<std::vector<double>> HiddenLayer::getWeightsMatrix() {
@@ -81,6 +88,16 @@ void HiddenLayer::addNeuron(Neuron neuron) {
 
 void HiddenLayer::addNeuronWeights(Neuron neuron) {
         weightsMatrix.push_back(neuron.getWeights());
+    }
+
+void HiddenLayer::updateNeuronWeights(std::vector<std::vector<double>> gradient_matrix, float LR) {
+        // for every gradient in the gradient matrix
+        for (int i = 0; i < gradient_matrix.size(); i++) {
+            for (int j = 0; j < gradient_matrix[0].size(); j++) {
+                this->weightsMatrix[i][j] -= (LR * gradient_matrix[i][j]);
+                this->neurons[i].weights[j] -=(LR * gradient_matrix[i][j]);
+            }
+        }
     }
 
 
@@ -104,12 +121,19 @@ OutputLayer::OutputLayer(int num_neurons, int num_neurons_in_prev_layer, Activat
 // OutputLayer::calculateLayerOutputs
 void OutputLayer::calculateLayerOutputs(std::vector<double> input_vector) {
     input_vector.push_back(1); // Add bias
-    // printVector(input_vector);
-    // printMatrix(getWeightsMatrix());
-    pre_activation_outputs = matrixToVector(
-        matrixMultiply(weightsMatrix, vectorToMatrix(input_vector)));
-    // printVector(pre_activation_outputs);
-    applyActivation();
+
+    this->pre_activation_outputs = vector2Dto1D(
+        matrixMultiply(getWeightsMatrix(), vector1Dto2D(input_vector)));
+    if (AFtype == RELU) {
+        this->activation_outputs = ReLU(this->pre_activation_outputs);
+        this->derivative_activation_outputs = d_ReLU(this->pre_activation_outputs);
+    } else if(AFtype == SIGMOID) {
+        throw std::invalid_argument("Derivative for SIGMOID not implemented");
+        this->activation_outputs = sigmoid(this->pre_activation_outputs);
+    } else {
+        this->activation_outputs = this->pre_activation_outputs;
+        this->derivative_activation_outputs = this->pre_activation_outputs;
+    }
 }
 
 std::vector<double> OutputLayer::getActivationOutputs() {
@@ -120,20 +144,8 @@ std::vector<double> OutputLayer::getPreActivationOutputs() {
     return pre_activation_outputs;
 }
 
-// OutputLayer::applyActivation
-void OutputLayer::applyActivation() {
-    activation_outputs.resize(pre_activation_outputs.size());
-    if (AFtype == RELU) {
-        for (size_t i = 0; i < pre_activation_outputs.size(); ++i) {
-            activation_outputs[i] = ReLU(pre_activation_outputs[i]);
-        }
-    } else if (AFtype == SIGMOID) {
-        for (size_t i = 0; i < pre_activation_outputs.size(); ++i) {
-            activation_outputs[i] = sigmoid(pre_activation_outputs[i]);
-        }
-    } else {
-        activation_outputs = pre_activation_outputs;
-    }
+std::vector<double> OutputLayer::getDerivativeActivationOutputs() {
+    return derivative_activation_outputs;
 }
 
 std::vector<std::vector<double>> OutputLayer::getWeightsMatrix() const{
@@ -146,4 +158,14 @@ void OutputLayer::addNeuron(Neuron neuron) {
 
 void OutputLayer::addNeuronWeights(Neuron neuron) {
         weightsMatrix.push_back(neuron.getWeights());
+    }
+
+void OutputLayer::updateNeuronWeights(std::vector<std::vector<double>> gradient_matrix, float LR) {
+        // for every gradient in the gradient matrix
+        for (int i = 0; i < gradient_matrix.size(); i++) {
+            for (int j = 0; j < gradient_matrix[0].size(); j++) {
+                this->weightsMatrix[i][j] -= (LR * gradient_matrix[i][j]);
+                this->neurons[i].weights[j] -=(LR * gradient_matrix[i][j]);
+            }
+        }
     }

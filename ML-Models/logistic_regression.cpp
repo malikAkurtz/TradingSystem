@@ -27,7 +27,7 @@ class LogisticRegression {
         for (int i = 0; i < matrix_with_ones.size(); i++) {
             double dot_product = innerProduct(matrix_with_ones[i], parameters);
             double log_odds = dot_product;
-            predictions.push_back(sigmoid(log_odds));
+            predictions.push_back(sigmoid_single(log_odds)); // can vectorize this but not now
         }
 
         return predictions;
@@ -67,8 +67,8 @@ class LogisticRegression {
             // print("Soft Predictions");
             // printVector(soft_predictions);
             std::vector<double> error_vector = subtractVectors(soft_predictions, labels);
-            std::vector<std::vector<double>> error_vector_as_matrix = vectorToMatrix(error_vector);
-            gradientParameters = matrixToVector(matrixMultiply(featuresMatrix_T, error_vector_as_matrix));
+            std::vector<std::vector<double>> error_vector_as_matrix = vector1Dto2D(error_vector);
+            gradientParameters = vector2Dto1D(matrixMultiply(featuresMatrix_T, error_vector_as_matrix));
             gradientParameters = divideVector(gradientParameters, m);
 
             for (int i = 0; i < this->parameters.size(); i++) {

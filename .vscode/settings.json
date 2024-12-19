@@ -67,6 +67,7 @@
         "map": "cpp",
         "numeric": "cpp",
         "stack": "cpp",
-        "random": "cpp"
+        "random": "cpp",
+        "filesystem": "cpp"
     }
 }

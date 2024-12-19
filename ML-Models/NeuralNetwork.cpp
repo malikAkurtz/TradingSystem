@@ -25,72 +25,137 @@ class NeuralNetwork {
 
 
     void fit(std::vector<std::vector<double>> featuresMatrix, std::vector<double> labels) {
+        std::vector<std::vector<std::vector<double>>> pd_J_rsp_all_layers_weights;
         int num_samples = featuresMatrix.size();
         
         for (int e = 0; e < this->num_epochs; e++) {
             double epoch_average_loss = 0;
             // for every sample
             for (int i = 0; i < num_samples; i++) {
-                // forward propogate it
-                std::vector<double> sample = featuresMatrix[i];
+                std::cout << "Processing sample: " << i << std::endl;
+                print("----------------------------------------------------------------------------------------------------------------------------------");
+                pd_J_rsp_all_layers_weights.clear();
+                refreshLayers();
+                // FORWARD PASS
+                std::vector<double> X = featuresMatrix[i];
                 print("Sample being processed");
-                printVector(sample);
-                print("Sample Prediction");
-                std::vector<double> prediction = getPredictions({sample});
-                printVector(prediction);
-                double label = labels[i];
-                print("Sample Label");
-                std::cout << label << std::endl;
-                print("Loss");
-                std::cout << calculateMSE_Simple({prediction}, {label}) << std::endl;
-                epoch_average_loss += calculateMSE_Simple({prediction}, {label});
-                int last_layer_index = num_layers - 3;
+                printVector(X);
 
-                // calculate partial derivative of loss with respect to output layer weights
-                std::vector<double> dL_rsp_W_output;
-                std::vector<double> dL_resp_z_output = createVector(calculateMSE_Simple({prediction}, {label}), this->hiddenLayers[last_layer_index]->neurons.size());
-                print("dL_resp_z_output");
-                printVector(dL_resp_z_output);
-                std::vector<double> dz_output_rsp_W_output = this->hiddenLayers[last_layer_index]->getActivationOutputs();
-                print("dz_output_rsp_W_output");
-                printVector(dz_output_rsp_W_output);
-                dL_rsp_W_output = hadamardProduct(dz_output_rsp_W_output, dL_resp_z_output);
-                print("dL_rsp_W_output");
-                printVector(dL_rsp_W_output);
+                double y = labels[i];
+                print("Sample Label");
+                std::cout << y << std::endl;
+
+                std::vector<double> A = getPredictions({X});
+                print("Sample Predictions");
+                printVector(A); // will just be a vector with one prediction in it since this is just for one output neuron at the moment
+
+                // BACKWARD PASS
+
+                // compute error + gradient at output layer, because were processing one sample at a time, m = 1, so loss = cost = squarred error
+                print("Sample Squarred Error i.e Loss");
+                double loss = modifiedSquarredError(A, {y}); // gradient is just A - y since the ^2 and 1/2 cancel
+                std::cout << loss << std::endl;
+                epoch_average_loss += loss;
+
+                // begin back propogation starting at the output layer
+                // Begin by finding partial derivative of J with respect to Z_L i.e error term at L
+                std::vector<double> pd_J_rsp_Z_L = hadamardProduct(subtractVectors(A, {y}), d_ReLU(this->outputLayer->pre_activation_outputs));
+                print("pd_J_rsp_Z_L");
+                printVector(pd_J_rsp_Z_L);
+                printVectorShape(pd_J_rsp_Z_L);
+
+                // Compute gradients for weights
+                int last_hidden_layer_index = this->hiddenLayers.size()-1;
+
+                std::vector<double> A_hidden_with_bias = this->hiddenLayers[last_hidden_layer_index]->activation_outputs;
+                A_hidden_with_bias.push_back(1);
+
+                std::vector<std::vector<double>> pd_J_rsp_W_L = matrixMultiply(vector1Dto2D(pd_J_rsp_Z_L), 
+                takeTranspose(vector1Dto2D(A_hidden_with_bias)));
+
+                print("pd_J_rsp_W_L");
+                printMatrix(pd_J_rsp_W_L);
+                printMatrixShape(pd_J_rsp_W_L);
+                pd_J_rsp_all_layers_weights.push_back(pd_J_rsp_W_L);
                 
 
-                // calculate partial derivative of loss with respect to previous layer weights
-                for (int j = last_layer_index; j >= 0; j-- ) {
-                    // print("this->hiddenLayers[last_layer_index]->neurons.size()");
-                    // std::cout << this->hiddenLayers[i]->neurons.size() << std::endl;
-                    // print("std::vector<double>(sample.size()");
-                    // std::cout << sample.size() << std::endl;
-                    std::vector<std::vector<double>> dL_rsp_W_hidden(this->hiddenLayers[j]->neurons.size(), std::vector<double>(sample.size()));
-                    std::vector<double> dL_rsp_z_hidden = matrixToVector(
-                        matrixMultiply(takeTranspose(this->outputLayer->getWeightsMatrix()), takeTranspose(vectorToMatrix(dL_resp_z_output))));
-                    print("dL_rsp_z_hidden");
-                    printVector(dL_rsp_z_hidden);
-                    std::vector<double> dz_hidden_rsp_W_hidden = sample;
-                    print("dz_hidden_rsp_W_hidden");
-                    printVector(dz_hidden_rsp_W_hidden);
-                    dL_rsp_W_hidden = matrixMultiply(vectorToMatrix(dL_rsp_z_hidden), takeTranspose(vectorToMatrix(dz_hidden_rsp_W_hidden))); // tranpose ????
-                    print("dL_rsp_W_hidden");
-                    printMatrix(dL_rsp_W_hidden);
+                // Propogate gradients to previous layers starting with last hidden layer and stopping at input layer
+                std::vector<double> prev_error_term = pd_J_rsp_Z_L;
 
+                for (int j = last_hidden_layer_index; j >= 0; j--) {
+                    std::vector<double> pd_J_rsp_Z_l;
+                    std::vector<std::vector<double>> pd_J_rsp_W_l;
 
-                    // update hidden layer weights
-                    for (int k = 0; k < this->hiddenLayers[last_layer_index]->weightsMatrix.size(); ++k) {
-                        for (int l = 0; l < this->hiddenLayers[last_layer_index]->weightsMatrix[0].size(); ++l) {
-                            this->hiddenLayers[last_layer_index]->weightsMatrix[k][l] -= (learning_rate * dL_rsp_W_hidden[k][l]);
-                        }
+                    std::vector<double> A_hidden_with_bias = this->hiddenLayers[last_hidden_layer_index]->activation_outputs;
+                    A_hidden_with_bias.push_back(1); // Use locally, don't modify the layer's state
+
+                    std::vector<double> DA_hidden_with_no_bias = this->hiddenLayers[j]->getDerivativeActivationOutputs();
+                    
+                    if (j == last_hidden_layer_index) {
+                        print("prev_error_term shape");
+                        printVectorShape(prev_error_term);
+
+                        print("DA_hidden_no_bias shape");
+                        printVectorShape(DA_hidden_with_no_bias);
+
+                        print("Weight matrix shape");
+                        printMatrixShape(this->outputLayer->getWeightsMatrix());
+
+                        auto weighted_error_term = vector2Dto1D(
+                            matrixMultiply(
+                                takeTranspose(this->outputLayer->getWeightsMatrix()), 
+                                vector1Dto2D(prev_error_term)));
+
+                        // Remove the bias contribution (last element).
+                        weighted_error_term.pop_back();
+
+                        print("weighted_error_term");
+                        printVector(weighted_error_term);
+
+                        pd_J_rsp_Z_l = hadamardProduct(
+                            weighted_error_term,
+                                DA_hidden_with_no_bias);
+
+                        prev_error_term = pd_J_rsp_Z_l;
+                    } else {
+                        std::cout<<"Here"<<std::endl;
+                        pd_J_rsp_Z_l = hadamardProduct(vector2Dto1D(matrixMultiply(takeTranspose(this->hiddenLayers[j+1]->getWeightsMatrix()), vector1Dto2D(prev_error_term))),
+                        DA_hidden_with_no_bias);
+                        prev_error_term = pd_J_rsp_Z_l;
                     }
+                    print("pd_J_rsp_Z_l");
+                    printVector(pd_J_rsp_Z_l);
+                    printVectorShape(pd_J_rsp_Z_l);
+
+
+                    // calculate gradients
+                    std::vector<double> A_less_1_hidden_with_bias = this->hiddenLayers[j-1]->activation_outputs;
+                    A_less_1_hidden_with_bias.push_back(1);
+
+                    pd_J_rsp_W_l = matrixMultiply(vector1Dto2D(pd_J_rsp_Z_l), 
+                        takeTranspose(vector1Dto2D(A_less_1_hidden_with_bias)));
+
+                    print("pd_J_rsp_W_l");
+                    printMatrix(pd_J_rsp_W_l);
+                    printMatrixShape(pd_J_rsp_W_l);
+                    pd_J_rsp_all_layers_weights.push_back(pd_J_rsp_W_l);
                 }
+
+
+                // update weights for output layer
+                this->outputLayer->updateNeuronWeights(pd_J_rsp_all_layers_weights[0], this->learning_rate);
+                // update weights for every hidden layer
+                for (int m = 0; m < this->hiddenLayers.size(); m++) {
+                    this->hiddenLayers[m]->updateNeuronWeights(pd_J_rsp_all_layers_weights[m+1], this->learning_rate); //+1 since we already processed output layer
+                }
+                print("----------------------------------------------------------------------------------------------------------------------------------");
+                
             }
             epoch_average_loss = epoch_average_loss / num_samples;
             std::cout << "Epoch: " << e << " Loss: " << epoch_average_loss << std::endl;
         }
         std::vector<double> best_predictions = getPredictions(featuresMatrix);
-        this->model_loss = calculateMSE_Simple(best_predictions, labels);
+        this->model_loss = calculateMSE(best_predictions, labels);
     }
 
     
@@ -112,6 +177,8 @@ class NeuralNetwork {
             std::vector<double> prev_layer_output = input_layer_output;
             for (int j = 0; j < this->hiddenLayers.size(); j++) {
                 this->hiddenLayers[j]->calculateLayerOutputs(prev_layer_output);
+                print("Hidden layer activation outputs");
+                printVector(this->hiddenLayers[j]->activation_outputs);
                 std::vector<double> this_layer_output = this->hiddenLayers[j]->getActivationOutputs();
                 // print("--------------");
                 // std::cout << "This Layer Output: " << std::endl;
@@ -122,12 +189,14 @@ class NeuralNetwork {
 
             // final pass into output layer
             this->outputLayer->calculateLayerOutputs(prev_layer_output);
+            print("Output layer activation outputs");
+            printVector(this->outputLayer->activation_outputs);
             std::vector<double> output_layer_output = this->outputLayer->getActivationOutputs();
             // print("--------------");
             // print("Output Layer Output");
             // printVector(output_layer_output);
             // print("--------------");
-            predictions[i] = (output_layer_output[0]); // assuming only one output neuron
+            predictions[i] = output_layer_output[0]; // assuming only one output neuron
         }
 
         return predictions;
@@ -146,5 +215,17 @@ class NeuralNetwork {
     void addOutputLayer(std::shared_ptr<OutputLayer> outputLayer) {
         this->outputLayer = outputLayer;
         this->num_layers += 1;
+    }
+
+    void refreshLayers(){
+        this->outputLayer->activation_outputs.clear();
+        this->outputLayer->pre_activation_outputs.clear();
+        this->outputLayer->derivative_activation_outputs.clear();
+        for (int i = 0; i < this->hiddenLayers.size();i++) {
+            this->hiddenLayers[i]->activation_outputs.clear();
+            this->hiddenLayers[i]->pre_activation_outputs.clear();
+            this->hiddenLayers[i]->derivative_activation_outputs.clear();
+        }
+        this->inputLayer->pre_activation_outputs.clear();
     }
 };

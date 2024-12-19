@@ -7,12 +7,12 @@
 double calculateMSE(std::vector<double> predictions, std::vector<double> labels) {
     int num_elements = predictions.size();
 
-    std::vector<double> resultant = subtractVectors(labels, predictions);
+    std::vector<double> resultant = subtractVectors(predictions, labels);
     return innerProduct(resultant, resultant) / num_elements;
 }
 
 double calculateMSE_Simple(std::vector<double> predictions, std::vector<double> labels) {
-    std::vector<double> resultant = subtractVectors(labels, predictions);
+    std::vector<double> resultant = subtractVectors(predictions, labels);
     return innerProduct(resultant, resultant) / 2;
 }
 
@@ -25,6 +25,14 @@ double calculateLogLoss(std::vector<double> predictions, std::vector<double> lab
         cumSum += (labels[i] * std::log(clipped_prediction)) + ((1-labels[i]) * std::log((1-clipped_prediction)));
     }
     return (-1 * (cumSum / predictions.size()));
+}
+
+double modifiedSquarredError(std::vector<double> predictions, std::vector<double> labels) {
+    if (predictions.size() != labels.size()) {
+        throw std::invalid_argument("Size mismatch between predictions and labels");
+    }
+    std::vector<double> error = subtractVectors(predictions, labels);
+    return (innerProduct(error, error) / 2);
 }
 
 
@@ -43,13 +51,17 @@ std::vector<double> thresholdFunction(std::vector<double> softPredictions, doubl
     return hardPredictions;
 }
 
-double sigmoid(double value) {
-    if (value >= 0) {
-        return 1.0 / (1.0 + std::exp(-value));
-    } else {
-        double exp_val = std::exp(value);
-        return exp_val / (1.0 + exp_val);
+std::vector<double> sigmoid(std::vector<double> v1) {
+    std::vector<double> resultant = v1;
+    for (int i = 0; i < resultant.size(); i++) {
+        if (resultant[i] >= 0) {
+            resultant[i] = 1.0 / (1.0 + std::exp(-resultant[i]));
+        } else {
+            double exp_val = std::exp(resultant[i]);
+            resultant[i] = exp_val / (1.0 + exp_val);
+        }
     }
+    return resultant;
 }
 
 double calculateMean(std::vector<double> v1) {
@@ -90,14 +102,34 @@ std::vector<std::vector<double>> normalizeData(std::vector<std::vector<double>> 
     return normalized_matrix;
 }
 
-double ReLU(double value) {
-    if (value < 0) {
-        return 0;
-    } else {
-        return value;
+std::vector<double> ReLU(std::vector<double> v1) {
+    std::vector<double> resultant = v1;
+    for (int i = 0; i < v1.size(); i++) {
+        if (v1[i] < 0) {
+            resultant[i] = 0;
+        } else {
+        }
     }
+    return resultant;
 }
 
-double d_ReLU(double x) {
-    return x > 0 ? 1 : 0;
+std::vector<double> d_ReLU(std::vector<double> v1) {
+    std::vector<double> resultant(v1.size());
+    for (int i = 0; i < v1.size(); i++) {
+        if (v1[i] >= 0) {
+            resultant[i] = 1;
+        } else {
+            resultant[i] = 0;
+        }
+    }
+    return resultant;
+}
+
+double sigmoid_single(double value) {
+    if (value >= 0) {
+        return 1.0 / (1.0 + std::exp(-value));
+    } else {
+        double exp_val = std::exp(value);
+        return exp_val / (1.0 + exp_val);
+    }
 }

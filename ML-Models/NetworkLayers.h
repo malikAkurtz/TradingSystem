@@ -63,6 +63,7 @@ class HiddenLayer : public Layer {
 public:
     ActivationFunction AFtype;
     std::vector<double> activation_outputs;
+    std::vector<double> derivative_activation_outputs;
     std::vector<std::vector<double>> weightsMatrix;
 
     // Constructor
@@ -77,8 +78,7 @@ public:
     // Getter for pre-activation outputs
     std::vector<double> getPreActivationOutputs();
 
-    // Apply activation function to the layer's outputs
-    void applyActivation();
+    std::vector<double> getDerivativeActivationOutputs();
 
     // Getter for weights matrix
     std::vector<std::vector<double>> getWeightsMatrix();
@@ -86,6 +86,8 @@ public:
     void addNeuron(Neuron neuron);
 
     void addNeuronWeights(Neuron neuron);
+
+    void updateNeuronWeights(std::vector<std::vector<double>> gradient_matrix, float LR);
 };
 
 
@@ -100,6 +102,7 @@ class OutputLayer : public Layer {
 public:
     ActivationFunction AFtype;
     std::vector<double> activation_outputs;
+    std::vector<double> derivative_activation_outputs;
     std::vector<std::vector<double>> weightsMatrix;
 
     // Constructor
@@ -114,6 +117,8 @@ public:
     // Getter for pre-activation outputs
     std::vector<double> getPreActivationOutputs();
 
+    std::vector<double> getDerivativeActivationOutputs();
+
     // Apply activation function to the layer's outputs
     void applyActivation();
 
@@ -123,6 +128,8 @@ public:
     void addNeuron(Neuron neuron);
 
     void addNeuronWeights(Neuron neuron);
+
+    void updateNeuronWeights(std::vector<std::vector<double>> gradient_matrix, float LR);
 };
 
 #endif // NETWORKLAYERS_H

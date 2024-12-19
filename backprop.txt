@@ -1,0 +1,23 @@
+Initialize weights W and biases b randomly
+
+For epoch in range(1, num_epochs):
+    For each training sample (X, Y):
+        1. Forward Pass:
+           For each layer l = 1 to L:
+               z[l] = W[l] * a[l-1] + b[l]
+               a[l] = activation_function(z[l])
+
+        2. Backward Pass:
+           Compute error at output layer δ[L]:
+               δ[L] = ∂C/∂a[L] * activation_derivative(z[L])
+           
+           For each layer l = L-1 to 1:
+               δ[l] = (W[l+1]^T * δ[l+1]) ⊙ activation_derivative(z[l])
+
+        3. Gradient Calculation:
+           ∂C/∂W[l] = δ[l] * a[l-1]^T
+           ∂C/∂b[l] = δ[l]
+
+        4. Update Weights and Biases:
+           W[l] = W[l] - η * ∂C/∂W[l]
+           b[l] = b[l] - η * ∂C/∂b[l]
