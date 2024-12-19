@@ -97,7 +97,6 @@ void HiddenLayer::updateNeuronWeights(std::vector<std::vector<double>> gradient_
                 // std::cout << "For i, j: " << i << ", " << j << std::endl;
                 // std::cout << "gradient_matrix[i][j] -> " << gradient_matrix[i][j] << std::endl;
                 this->weightsMatrix[i][j] -= (LR * gradient_matrix[i][j]);
-                // std::cout << "New Parameter: " << this->weightsMatrix[i][j] << std::endl;
                 this->neurons[i].weights[j] -=(LR * gradient_matrix[i][j]);
             }
         }

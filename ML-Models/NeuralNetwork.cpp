@@ -29,14 +29,15 @@ class NeuralNetwork {
         int num_samples = featuresMatrix.size();
         
         for (int e = 0; e < this->num_epochs; e++) {
+            print("-----------------------------------------------------NEW EPOCH-----------------------------------------------------------------");
             double epoch_average_loss = 0;
             // for every sample
             for (int i = 0; i < num_samples; i++) {
                 pd_Ci_rsp_all_layers_weights.clear();
-                std::cout << "Processing sample: " << i << std::endl;
-                print("----------------------------------------------------------------------------------------------------------------------------------");
+                // std::cout << "Processing sample: " << i << std::endl;
+                // print("----------------------------------------------------------------------------------------------------------------------------------");
                 // FORWARD PASS
-                print("-----------------------------------------------------Forward Pass-----------------------------------------------------------------");
+                // print("-----------------------------------------------------Forward Pass-----------------------------------------------------------------");
                 std::vector<double> X = featuresMatrix[i];
                 // print("Sample being processed");
                 // printVector(X);
@@ -51,7 +52,7 @@ class NeuralNetwork {
                 // printVectorShape(A_L);
 
                 // BACKWARD PASS
-                print("-----------------------------------------------------Backward Pass-----------------------------------------------------------------");
+                // print("-----------------------------------------------------Backward Pass-----------------------------------------------------------------");
                 // compute error + gradient at output layer, because were processing one sample at a time, m = 1, so loss = cost = squarred error
                 double loss = modifiedSquarredError(A_L, {y}); // gradient is just A - y since the ^2 and 1/2 cancel
                 // print("Sample Squarred Error i.e Loss i.e Cost of ith sample");
