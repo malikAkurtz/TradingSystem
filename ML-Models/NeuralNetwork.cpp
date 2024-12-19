@@ -29,7 +29,7 @@ class NeuralNetwork {
         int num_samples = featuresMatrix.size();
         
         for (int e = 0; e < this->num_epochs; e++) {
-            print("-----------------------------------------------------NEW EPOCH-----------------------------------------------------------------");
+            // print("-----------------------------------------------------NEW EPOCH-----------------------------------------------------------------");
             double epoch_average_loss = 0;
             // for every sample
             for (int i = 0; i < num_samples; i++) {
@@ -157,13 +157,13 @@ class NeuralNetwork {
                     this->hiddenLayers[m]->updateNeuronWeights(pd_Ci_rsp_all_layers_weights[gradient_index], this->learning_rate); //+1 since we already processed output layer
                 }
 
-                print("New Hidden Layer Parameters Starting from First Hidden Layer After Processing This Sample");
-                for (int i = 0; i < this->hiddenLayers.size();i++) {
-                    printMatrix(this->hiddenLayers[0]->getWeightsMatrix());
-                }
-                print("New Output Layer Parameters After Processing This Sample");
-                printMatrix(this->outputLayer->getWeightsMatrix());
-                print("----------------------------------------------------------------------------------------------------------------------------------");
+                // print("New Hidden Layer Parameters Starting from First Hidden Layer After Processing This Sample");
+                // for (int i = 0; i < this->hiddenLayers.size();i++) {
+                //     printMatrix(this->hiddenLayers[0]->getWeightsMatrix());
+                // }
+                // print("New Output Layer Parameters After Processing This Sample");
+                // printMatrix(this->outputLayer->getWeightsMatrix());
+                // print("----------------------------------------------------------------------------------------------------------------------------------");
                 
             }
             epoch_average_loss = epoch_average_loss / num_samples;

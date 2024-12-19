@@ -48,7 +48,7 @@ int main() {
         {8},
         {9},
         {10},
-        // {11},
+        {11},
         // {12},
         // {13},
         // {14},
@@ -67,7 +67,7 @@ int main() {
         19, // y = 2(8) + 3
         21, // y = 2(9) + 3
         23, // y = 2(10) + 3
-        // 25, // y = 2(11) + 3
+        25, // y = 2(11) + 3
         // 27, // y = 2(12) + 3
         // 29, // y = 2(13) + 3
         // 31, // y = 2(14) + 3
@@ -93,6 +93,7 @@ int main() {
     Network.fit(features, labels);
     
     std::vector<double> predictions = Network.getPredictions(features);
+    print("Predictions vs Labels");
     printPredictionsVSLabels(predictions, labels);
     print("Trained Model Loss");
     std::cout << Network.model_loss << std::endl;

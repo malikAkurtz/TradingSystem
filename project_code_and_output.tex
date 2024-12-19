@@ -1,0 +1,56 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{geometry}
+\usepackage{fancyvrb}
+\geometry{margin=1in}
+
+\lstset{
+  basicstyle=\ttfamily\small, % Style of code
+  numbers=left,              % Line numbers
+  numberstyle=\tiny\color{gray}, 
+  stepnumber=1, 
+  numbersep=5pt, 
+  backgroundcolor=\color{lightgray!10}, % Light background for code
+  keywordstyle=\color{blue}\bfseries,
+  stringstyle=\color{red!70!black},
+  commentstyle=\color{green!50!black},
+  breaklines=true,
+  showstringspaces=false
+}
+
+\title{Code and Output Documentation}
+\author{Your Name}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\tableofcontents
+
+\section{Introduction}
+This document contains the source code for selected files in the project as well as the program output.
+
+% Include each section for the files
+
+\section{GenFunctions.cpp}
+\lstinputlisting[language=C++]{libs/Math/GenFunctions.cpp}
+
+\section{LinearAlgebra.cpp}
+\lstinputlisting[language=C++]{libs/Math/LinearAlgebra.cpp}
+
+\section{NeuralNetwork.cpp}
+\lstinputlisting[language=C++]{ML-Models/NeuralNetwork.cpp}
+
+\section{NetworkLayers.cpp}
+\lstinputlisting[language=C++]{ML-Models/NetworkLayers.cpp}
+
+\section{Neuron.cpp}
+\lstinputlisting[language=C++]{ML-Models/Neuron.cpp}
+
+\section{Program Output}
+\VerbatimInput{output.txt}
+
+\end{document}
