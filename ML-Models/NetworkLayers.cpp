@@ -124,8 +124,20 @@ OutputLayer::OutputLayer(int num_neurons, int num_neurons_in_prev_layer, Activat
 void OutputLayer::calculateLayerOutputs(std::vector<double> input_vector) {
     input_vector.push_back(1); // Add bias
 
+    // print("Input Vector");
+    // printVector(input_vector);
+    // printVectorShape(input_vector);
+    
+    // print("getWeightsMatrix()");
+    // printMatrix(this->getWeightsMatrix());
+    // printMatrixShape(this->getWeightsMatrix());
+
+    // print("vector1Dto2D(input_vector)");
+    // printMatrix(vector1Dto2D(input_vector));
+    // printMatrixShape(vector1Dto2D(input_vector));
+
     this->pre_activation_outputs = vector2Dto1D(
-        matrixMultiply(getWeightsMatrix(), vector1Dto2D(input_vector)));
+        matrixMultiply(this->getWeightsMatrix(), vector1Dto2D(input_vector)));
     if (AFtype == RELU) {
         this->activation_outputs = ReLU(this->pre_activation_outputs);
         this->derivative_activation_outputs = d_ReLU(this->pre_activation_outputs);

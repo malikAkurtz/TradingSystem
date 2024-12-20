@@ -29,7 +29,7 @@ class NeuralNetwork {
         int num_samples = featuresMatrix.size();
         
         for (int e = 0; e < this->num_epochs; e++) {
-            // print("-----------------------------------------------------NEW EPOCH-----------------------------------------------------------------");
+            print("-----------------------------------------------------NEW EPOCH-----------------------------------------------------------------");
             double epoch_average_loss = 0;
             // for every sample
             for (int i = 0; i < num_samples; i++) {
@@ -37,14 +37,14 @@ class NeuralNetwork {
                 // std::cout << "Processing sample: " << i << std::endl;
                 // print("----------------------------------------------------------------------------------------------------------------------------------");
                 // FORWARD PASS
-                // print("-----------------------------------------------------Forward Pass-----------------------------------------------------------------");
+                print("-----------------------------------------------------Forward Pass-----------------------------------------------------------------");
                 std::vector<double> X = featuresMatrix[i];
-                // print("Sample being processed");
-                // printVector(X);
+                print("Sample being processed");
+                printVector(X);
 
                 double y = labels[i];
-                // print("Sample Label");
-                // std::cout << y << std::endl;
+                print("Sample Label");
+                std::cout << y << std::endl;
 
                 std::vector<double> A_L = getPredictions({X});
                 // print("Sample Predictions");
@@ -52,36 +52,44 @@ class NeuralNetwork {
                 // printVectorShape(A_L);
 
                 // BACKWARD PASS
-                // print("-----------------------------------------------------Backward Pass-----------------------------------------------------------------");
+                print("-----------------------------------------------------Backward Pass-----------------------------------------------------------------");
                 // compute error + gradient at output layer, because were processing one sample at a time, m = 1, so loss = cost = squarred error
                 double loss = modifiedSquarredError(A_L, {y}); // gradient is just A - y since the ^2 and 1/2 cancel
-                // print("Sample Squarred Error i.e Loss i.e Cost of ith sample");
-                // std::cout << loss << std::endl;
+                print("Sample Squarred Error i.e Loss i.e Cost of ith sample");
+                std::cout << loss << std::endl;
                 epoch_average_loss += loss;
 
                 // begin back propogation starting at the output layer
                 std::vector<std::vector<double>> pd_Ci_W_L;
                 std::vector<double> error_term_L = subtractVectors(A_L, createVector(y, 1));
-                // print("error term for output layer");
-                // printVector(error_term_L);
-                // printVectorShape(error_term_L);
+
+                print("error term for output layer");
+                printVector(error_term_L);
+                printVectorShape(error_term_L);
 
                 int last_hidden_layer_index = this->hiddenLayers.size()-1;
-                std::vector<double> A_hidden_with_bias = this->hiddenLayers[last_hidden_layer_index]->activation_outputs;
+                std::vector<double> A_hidden_with_bias;
+
+                if (last_hidden_layer_index >= 0) {
+                    A_hidden_with_bias = this->hiddenLayers[last_hidden_layer_index]->activation_outputs;
+                } else{
+                    A_hidden_with_bias = this->inputLayer->getPreActivationOutputs();
+                }
                 A_hidden_with_bias.push_back(1);
 
-                // print("vector1Dto2D(A_hidden_with_bias)");
-                // printMatrix(vector1Dto2D(A_hidden_with_bias));
-                // printMatrixShape(vector1Dto2D(A_hidden_with_bias));
+                print("vector1Dto2D(A_hidden_with_bias)");
+                printMatrix(vector1Dto2D(A_hidden_with_bias));
+                printMatrixShape(vector1Dto2D(A_hidden_with_bias));
 
-                // print("vector1Dto2D(error_term_L)");
-                // printMatrix(vector1Dto2D(error_term_L));
-                // printMatrixShape(vector1Dto2D(error_term_L));
+                print("vector1Dto2D(error_term_L)");
+                printMatrix(vector1Dto2D(error_term_L));
+                printMatrixShape(vector1Dto2D(error_term_L));
+
                 pd_Ci_W_L = takeTranspose(matrixMultiply(vector1Dto2D(A_hidden_with_bias), vector1Dto2D(error_term_L))); // LOL check notes for why taking transpose
 
-                // print("pd_Ci_W_L");
-                // printMatrix(pd_Ci_W_L);
-                // printMatrixShape(pd_Ci_W_L);
+                print("pd_Ci_W_L");
+                printMatrix(pd_Ci_W_L);
+                printMatrixShape(pd_Ci_W_L);
 
                 pd_Ci_rsp_all_layers_weights.push_back(pd_Ci_W_L);
                 
@@ -103,23 +111,24 @@ class NeuralNetwork {
                         W_l_plus_1_T = takeTranspose(this->hiddenLayers[j+1]->getWeightsMatrix());
                     }
 
-                    // print("W_l_plus_1_T");
-                    // printMatrix(W_l_plus_1_T);
-                    // printMatrixShape(W_l_plus_1_T);
+                    print("W_l_plus_1_T");
+                    printMatrix(W_l_plus_1_T);
+                    printMatrixShape(W_l_plus_1_T);
                     
                     
                     std::vector<double> error_term_lhs = vector2Dto1D(matrixMultiply(W_l_plus_1_T, vector1Dto2D(prev_error_term)));
                     error_term_lhs.pop_back(); // remove the bias contribution
-                    // print("error_term_lhs post bias removal");
-                    // printVector(error_term_lhs);
-                    // printVectorShape(error_term_lhs);
+
+                    print("error_term_lhs post bias removal");
+                    printVector(error_term_lhs);
+                    printVectorShape(error_term_lhs);
 
 
                     std::vector<double> DA_hidden_with_no_bias = this->hiddenLayers[j]->getDerivativeActivationOutputs();
                     
-                    // print("DA_hidden_with_no_bias");
-                    // printVector(DA_hidden_with_no_bias);
-                    // printVectorShape(DA_hidden_with_no_bias);
+                    print("DA_hidden_with_no_bias");
+                    printVector(DA_hidden_with_no_bias);
+                    printVectorShape(DA_hidden_with_no_bias);
 
                     
                     error_term = hadamardProduct(error_term_lhs, DA_hidden_with_no_bias);
@@ -146,6 +155,7 @@ class NeuralNetwork {
                     // printMatrixShape(pd_Ci_W_l);
 
                     pd_Ci_rsp_all_layers_weights.push_back(pd_Ci_W_l);
+                    prev_error_term = error_term;
                 }
 
 
