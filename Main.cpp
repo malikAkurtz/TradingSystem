@@ -80,15 +80,15 @@ int main() {
 
     //features = normalizeData(features);
     int num_features = features[0].size();
-    NeuralNetwork Network(0.01, 1000);
+    NeuralNetwork Network(0.001, 10000);
 
 
     
     Network.addInputLayer(std::make_shared<InputLayer>(num_features));
     Network.addHiddenLayer(std::make_shared<HiddenLayer>(2, num_features, RELU));
-    // Network.addHiddenLayer(std::make_shared<HiddenLayer>(2, 2, RELU));
+    Network.addHiddenLayer(std::make_shared<HiddenLayer>(3, 2, RELU));
     // Network.addHiddenLayer(std::make_shared<HiddenLayer>(3, 4, RELU));
-    Network.addOutputLayer(std::make_shared<OutputLayer>(1, 2, NONE));
+    Network.addOutputLayer(std::make_shared<OutputLayer>(1, 3, NONE));
 
     Network.fit(features, labels);
     
@@ -99,7 +99,7 @@ int main() {
     std::cout << Network.model_loss << std::endl;
     print("Hidden Layer Parameters Starting from First Hidden Layer");
     for (int i = 0; i < Network.hiddenLayers.size();i++) {
-        printMatrix(Network.hiddenLayers[0]->getWeightsMatrix());
+        printMatrix(Network.hiddenLayers[i]->getWeightsMatrix());
     }
     print("Trained Model Output Layer Parameters");
     printMatrix(Network.outputLayer->getWeightsMatrix());
