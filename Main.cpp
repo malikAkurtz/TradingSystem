@@ -54,14 +54,16 @@ int main() {
 
 
     std::vector<std::vector<double>> features3 = {
-    {1.0, 2.5}, {1.5, 3.0}, {2.0, 3.5}, {2.5, 4.0}, {3.0, 4.5},
-    {3.5, 5.0}, {4.0, 5.5}, {4.5, 6.0}, {5.0, 6.5}, {5.5, 7.0},
-    {6.0, 7.5}, {6.5, 8.0}, {7.0, 8.5}, {7.5, 9.0}, {8.0, 9.5},
-    {8.5, 10.0}, {9.0, 10.5}, {9.5, 11.0}, {10.0, 11.5}, {10.5, 12.0}
+        {1.0, 2.5}, 
+        {1.5, 3.0}, {2.0, 3.5}, {2.5, 4.0}, {3.0, 4.5},
+        {3.5, 5.0}, {4.0, 5.5}, {4.5, 6.0}, {5.0, 6.5}, {5.5, 7.0},
+        {6.0, 7.5}, {6.5, 8.0}, {7.0, 8.5}, {7.5, 9.0}, {8.0, 9.5},
+        {8.5, 10.0}, {9.0, 10.5}, {9.5, 11.0}, {10.0, 11.5}, {10.5, 12.0}
     };
 
     std::vector<std::vector<double>> labels3 = {
-        {5.0, 10.0}, {6.0, 12.0}, {7.0, 14.0}, {8.0, 16.0}, {9.0, 18.0},
+        {5.0, 10.0}, 
+        {6.0, 12.0}, {7.0, 14.0}, {8.0, 16.0}, {9.0, 18.0},
         {10.0, 20.0}, {11.0, 22.0}, {12.0, 24.0}, {13.0, 26.0}, {14.0, 28.0},
         {15.0, 30.0}, {16.0, 32.0}, {17.0, 34.0}, {18.0, 36.0}, {19.0, 38.0},
         {20.0, 40.0}, {21.0, 42.0}, {22.0, 44.0}, {23.0, 46.0}, {24.0, 48.0}
@@ -84,10 +86,11 @@ int main() {
     // Neural Network initialization
     int num_features = features[0].size();
     int num_labels = labels[0].size();  // Ensure compatibility with multiple outputs
-    NeuralNetwork Network(0.01, 1000);  // Learning rate = 0.01, epochs = 1000
+    NeuralNetwork Network(0.001, 1000);  // Learning rate = 0.01, epochs = 1000
     Network.addInputLayer(std::make_shared<InputLayer>(num_features));
     // Network.addHiddenLayer(std::make_shared<HiddenLayer>(2, num_features, RELU)); // Hidden layer with 2 neurons
     Network.addOutputLayer(std::make_shared<OutputLayer>(num_labels, num_features, NONE));  // Output layer with num_labels neurons
+    
 
     // Train the model
     Network.fit(features, labels);

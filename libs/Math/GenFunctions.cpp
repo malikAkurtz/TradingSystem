@@ -55,14 +55,14 @@ std::vector<double> thresholdFunction(std::vector<double> softPredictions, doubl
     return hardPredictions;
 }
 
-std::vector<double> sigmoid(std::vector<double> v1) {
-    std::vector<double> resultant = v1;
+std::vector<std::vector<double>> sigmoid(std::vector<std::vector<double>> v1) {
+    std::vector<std::vector<double>> resultant = v1;
     for (int i = 0; i < resultant.size(); i++) {
-        if (resultant[i] >= 0) {
-            resultant[i] = 1.0 / (1.0 + std::exp(-resultant[i]));
+        if (resultant[i][0] >= 0) {
+            resultant[i][0] = 1.0 / (1.0 + std::exp(-resultant[i][0]));
         } else {
-            double exp_val = std::exp(resultant[i]);
-            resultant[i] = exp_val / (1.0 + exp_val);
+            double exp_val = std::exp(resultant[i][0]);
+            resultant[i][0] = exp_val / (1.0 + exp_val);
         }
     }
     return resultant;
@@ -106,24 +106,27 @@ std::vector<std::vector<double>> normalizeData(std::vector<std::vector<double>> 
     return normalized_matrix;
 }
 
-std::vector<double> ReLU(std::vector<double> v1) {
-    std::vector<double> resultant = v1;
+
+// takes in a column vector
+std::vector<std::vector<double>> ReLU(std::vector<std::vector<double>> v1) {
+    std::vector<std::vector<double>> resultant = v1;
+
     for (int i = 0; i < v1.size(); i++) {
-        if (v1[i] < 0) {
-            resultant[i] = 0;
+        if (v1[i][0] < 0) {
+            resultant[i][0] = 0;
         } else {
         }
     }
     return resultant;
 }
 
-std::vector<double> d_ReLU(std::vector<double> v1) {
-    std::vector<double> resultant(v1.size());
+std::vector<std::vector<double>> d_ReLU(std::vector<std::vector<double>> v1) {
+    std::vector<std::vector<double>> resultant(v1.size(), std::vector<double>(1));
     for (int i = 0; i < v1.size(); i++) {
-        if (v1[i] >= 0) {
-            resultant[i] = 1;
+        if (v1[i][0] >= 0) {
+            resultant[i][0] = 1;
         } else {
-            resultant[i] = 0;
+            resultant[i][0] = 0;
         }
     }
     return resultant;
