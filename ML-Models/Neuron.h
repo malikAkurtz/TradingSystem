@@ -27,17 +27,10 @@ public:
 // InputNeuron Class
 class InputNeuron {
 public:
-    // Member variable
-    double input;
 
     // Default constructor
     InputNeuron();
 
-    // Getter for input
-    double getInput() const;
-
-    // Setter for input
-    void setInput(double new_input);
 };
 
 #endif // NEURON_H

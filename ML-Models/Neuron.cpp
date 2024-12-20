@@ -1,15 +1,7 @@
 #include "Neuron.h"
 
 // InputNeuron Definitions
-InputNeuron::InputNeuron() : input(0.0) {}
-
-double InputNeuron::getInput() const {
-    return input;
-}
-
-void InputNeuron::setInput(double new_input) {
-    input = new_input;
-}
+InputNeuron::InputNeuron() {}
 
 
 
