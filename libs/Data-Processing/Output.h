@@ -3,6 +3,8 @@
 
 #include <vector>
 
+extern bool DEBUG;
+
 void printVector(const std::vector<double>& vec);
 void printMatrix(const std::vector<std::vector<double>>& matrix);
 void print(std::string toPrint);

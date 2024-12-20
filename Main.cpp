@@ -12,6 +12,7 @@
 #include "Neuron.h"
 #include "NetworkLayers.h"
 
+bool DEBUG = true;
 
 int main() {
 
@@ -38,41 +39,41 @@ int main() {
     // };
 
     std::vector<std::vector<double>> features = {
-        // {1},
+        {1},
         {2},
-        // {3},
-        // {4},
-        // {5},
-        // {6},
-        // {7},
-        // {8},
-        // {9},
-        // {10},
-        // {11},
-        // {12},
-        // {13},
-        // {14},
-        // {15},
-        // {16},
+        {3},
+        {4},
+        {5},
+        {6},
+        {7},
+        {8},
+        {9},
+        {10},
+        {11},
+        {12},
+        {13},
+        {14},
+        {15},
+        {16},
     };
 
     std::vector<double> labels = {
-        // 5,  // y = 2(1) + 3
+        5,  // y = 2(1) + 3
         7,  // y = 2(2) + 3
-        // 9,  // y = 2(3) + 3
-        // 11, // y = 2(4) + 3
-        // 13, // y = 2(5) + 3
-        // 15, // y = 2(6) + 3
-        // 17, // y = 2(7) + 3
-        // 19, // y = 2(8) + 3
-        // 21, // y = 2(9) + 3
-        // 23, // y = 2(10) + 3
-        // 25, // y = 2(11) + 3
-        // 27, // y = 2(12) + 3
-        // 29, // y = 2(13) + 3
-        // 31, // y = 2(14) + 3
-        // 33, // y = 2(15) + 3
-        // 35  // y = 2(16) + 3
+        9,  // y = 2(3) + 3
+        11, // y = 2(4) + 3
+        13, // y = 2(5) + 3
+        15, // y = 2(6) + 3
+        17, // y = 2(7) + 3
+        19, // y = 2(8) + 3
+        21, // y = 2(9) + 3
+        23, // y = 2(10) + 3
+        25, // y = 2(11) + 3
+        27, // y = 2(12) + 3
+        29, // y = 2(13) + 3
+        31, // y = 2(14) + 3
+        33, // y = 2(15) + 3
+        35  // y = 2(16) + 3
     };
 
 
@@ -80,13 +81,18 @@ int main() {
 
     //features = normalizeData(features);
     int num_features = features[0].size();
-    NeuralNetwork Network(0.001, 10000);
+    NeuralNetwork Network(0.01, 1000);
 
 
     
     Network.addInputLayer(std::make_shared<InputLayer>(num_features));
     Network.addHiddenLayer(std::make_shared<HiddenLayer>(2, num_features, RELU));
     Network.addHiddenLayer(std::make_shared<HiddenLayer>(3, 2, RELU));
+    Network.addHiddenLayer(std::make_shared<HiddenLayer>(3, 3, RELU));
+    Network.addHiddenLayer(std::make_shared<HiddenLayer>(2, 3, RELU));
+    Network.addHiddenLayer(std::make_shared<HiddenLayer>(3, 2, RELU));
+    Network.addHiddenLayer(std::make_shared<HiddenLayer>(3, 3, RELU));
+    Network.addHiddenLayer(std::make_shared<HiddenLayer>(3, 3, RELU));
     // Network.addHiddenLayer(std::make_shared<HiddenLayer>(3, 4, RELU));
     Network.addOutputLayer(std::make_shared<OutputLayer>(1, 3, NONE));
 
@@ -95,7 +101,7 @@ int main() {
     std::vector<double> predictions = Network.getPredictions(features);
     print("Predictions vs Labels");
     printPredictionsVSLabels(predictions, labels);
-    print("Trained Model Loss");
+    print("Trained Model MSE");
     std::cout << Network.model_loss << std::endl;
     print("Hidden Layer Parameters Starting from First Hidden Layer");
     for (int i = 0; i < Network.hiddenLayers.size();i++) {

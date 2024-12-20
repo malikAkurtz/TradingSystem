@@ -30,7 +30,7 @@ class NeuralNetwork {
         
         for (int e = 0; e < this->num_epochs; e++) {
             print("-----------------------------------------------------NEW EPOCH-----------------------------------------------------------------");
-            double epoch_average_loss = 0;
+            double epoch_accumulated_loss = 0;
             // for every sample
             for (int i = 0; i < num_samples; i++) {
                 pd_Ci_rsp_all_layers_weights.clear();
@@ -57,7 +57,7 @@ class NeuralNetwork {
                 double loss = modifiedSquarredError(A_L, {y}); // gradient is just A - y since the ^2 and 1/2 cancel
                 print("Sample Squarred Error i.e Loss i.e Cost of ith sample");
                 std::cout << loss << std::endl;
-                epoch_average_loss += loss;
+                epoch_accumulated_loss += loss;
 
                 // begin back propogation starting at the output layer
                 std::vector<std::vector<double>> pd_Ci_W_L;
@@ -97,8 +97,7 @@ class NeuralNetwork {
                 // Propogate gradients to previous layers starting with last hidden layer and stopping at input layer
                 std::vector<double> prev_error_term = error_term_L;
 
-                // print("Last Hidden Layer Index");
-                // std::cout << last_hidden_layer_index << std::endl;
+
                 // for every hidden layer
                 for (int j = last_hidden_layer_index; j >= 0; j--) {
                     std::vector<std::vector<double>> pd_Ci_W_l;
@@ -144,15 +143,15 @@ class NeuralNetwork {
                         A_hidden_with_bias.push_back(1); 
                     }
 
-                    // print("A_hidden_with_bias");
-                    // printVector(A_hidden_with_bias);
-                    // printVectorShape(A_hidden_with_bias);
+                    print("A_hidden_with_bias");
+                    printVector(A_hidden_with_bias);
+                    printVectorShape(A_hidden_with_bias);
                     
                     pd_Ci_W_l = matrixMultiply(vector1Dto2D(error_term), {A_hidden_with_bias});
                     
-                    // print("pd_Ci_W_l");
-                    // printMatrix(pd_Ci_W_l);
-                    // printMatrixShape(pd_Ci_W_l);
+                    print("pd_Ci_W_l");
+                    printMatrix(pd_Ci_W_l);
+                    printMatrixShape(pd_Ci_W_l);
 
                     pd_Ci_rsp_all_layers_weights.push_back(pd_Ci_W_l);
                     prev_error_term = error_term;
@@ -169,18 +168,18 @@ class NeuralNetwork {
 
                 print("New Hidden Layer Parameters Starting from First Hidden Layer After Processing This Sample");
                 for (int i = 0; i < this->hiddenLayers.size();i++) {
-                    printMatrix(this->hiddenLayers[0]->getWeightsMatrix());
+                    printMatrix(this->hiddenLayers[i]->getWeightsMatrix());
                 }
                 print("New Output Layer Parameters After Processing This Sample");
                 printMatrix(this->outputLayer->getWeightsMatrix());
                 print("----------------------------------------------------------------------------------------------------------------------------------");
                 
             }
-            epoch_average_loss = epoch_average_loss / num_samples;
-            std::cout << "Epoch: " << e << " Loss: " << epoch_average_loss << std::endl;
+            double epoch_MSE = epoch_accumulated_loss / num_samples; // mean squarred error for this epoch
+            std::cout << "Epoch: " << e << " MSE: " << epoch_MSE << std::endl;
         }
         std::vector<double> best_predictions = getPredictions(featuresMatrix);
-        this->model_loss = modifiedSquarredError(best_predictions, labels);
+        this->model_loss = modifiedSquarredError(best_predictions, labels) / labels.size(); // mean squarred error
     }
 
     
