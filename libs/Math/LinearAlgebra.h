@@ -26,7 +26,10 @@ void updateColumn(std::vector<std::vector<double>>& matrix, std::vector<double> 
 std::vector<double> createVector(double num, int length);
 std::vector<double> divideVector(std::vector<double> v1, double scalar);
 void addElement(std::vector<double>& v1, double value, int col_index);
-std::vector<double> hadamardProduct(std::vector<double> v1, std::vector<double> v2);
-
+std::vector<std::vector<double>> hadamardProduct(std::vector<std::vector<double>> col_v1, std::vector<std::vector<double>> col_v2);
+std::vector<std::vector<double>> outerProduct(
+    const std::vector<std::vector<double>>& col_vec,
+    const std::vector<std::vector<double>>& row_vec);
+std::vector<std::vector<double>> subtractColumnVectors(std::vector<std::vector<double>> v1, std::vector<std::vector<double>> v2);
 
 #endif

@@ -254,19 +254,55 @@ void addElement(std::vector<double>& v1, double value, int col_index) {
 }
 
 
-std::vector<double> hadamardProduct(std::vector<double> v1, std::vector<double> v2) {
-    int num_elements = v1.size();
-    if (num_elements != v2.size()) {
+
+// takes two column vector, returns column vector
+std::vector<std::vector<double>> hadamardProduct(std::vector<std::vector<double>> col_v1, std::vector<std::vector<double>> col_v2) {
+    int num_elements = col_v1.size();
+    if (num_elements != col_v2.size()) {
         throw std::invalid_argument("Vector dimensions do not match on call to hadamardProduct()");
     }
 
-    std::vector<double> resultant(num_elements);
+    std::vector<std::vector<double>> resultant(num_elements, std::vector<double>(1));
 
     for (int i = 0; i < num_elements; i++) {
-        resultant[i] = v1[i] * v2[i];
+        resultant[i][0] = col_v1[i][0] * col_v2[i][0];
     }
 
     return resultant;
 
 }
 
+std::vector<std::vector<double>> subtractColumnVectors(std::vector<std::vector<double>> v1, std::vector<std::vector<double>> v2) {
+    if (v1.size() != v2.size()) {
+        throw std::invalid_argument("Vector dimensions do not match for subtraction.");
+    }
+    std::vector<std::vector<double>> resultant(v1.size(), std::vector<double>(1));
+
+    for (int i = 0; i < resultant.size(); i++) {
+        resultant[i][0] = v1[i][0] - v2[i][0];
+    }
+
+    return resultant;
+}
+
+std::vector<std::vector<double>> outerProduct(
+    const std::vector<std::vector<double>>& col_vec,
+    const std::vector<std::vector<double>>& row_vec) {
+    // Validate input: col_vec must be (n, 1), row_vec must be (1, m)
+    if (col_vec[0].size() != 1 || row_vec.size() != 1) {
+        throw std::invalid_argument("Invalid dimensions for outer product");
+    }
+
+    int n = col_vec.size();     // Rows in col_vec
+    int m = row_vec[0].size();  // Columns in row_vec
+    std::vector<std::vector<double>> result(n, std::vector<double>(m, 0.0));
+
+    // Compute outer product
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < m; j++) {
+            result[i][j] = col_vec[i][0] * row_vec[0][j];
+        }
+    }
+
+    return result;
+}

@@ -16,5 +16,6 @@ std::vector<double> ReLU(std::vector<double> v1);
 std::vector<double> d_ReLU(std::vector<double> v1);
 double calculateMSE_Simple(std::vector<double> predictions, std::vector<double> labels);
 double modifiedSquarredError(std::vector<double> predictions, std::vector<double> labels);
+double modifiedSquarredError(std::vector<std::vector<double>> predictions, std::vector<std::vector<double>>  labels);
 
 #endif

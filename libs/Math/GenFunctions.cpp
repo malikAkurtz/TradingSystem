@@ -27,11 +27,15 @@ double calculateLogLoss(std::vector<double> predictions, std::vector<double> lab
     return (-1 * (cumSum / predictions.size()));
 }
 
-double modifiedSquarredError(std::vector<double> predictions, std::vector<double> labels) {
+// takes two column vectors
+double modifiedSquarredError(std::vector<std::vector<double>> predictions, std::vector<std::vector<double>>  labels) {
+    std::vector<double> preds1D = columnVectortoVector1D(predictions);
+    std::vector<double> actual1D = columnVectortoVector1D(labels);
+
     if (predictions.size() != labels.size()) {
         throw std::invalid_argument("Size mismatch between predictions and labels");
     }
-    std::vector<double> error = subtractVectors(predictions, labels);
+    std::vector<double> error = subtractVectors(preds1D, actual1D);
     return (innerProduct(error, error) / 2);
 }
 
@@ -133,3 +137,4 @@ double sigmoid_single(double value) {
         return exp_val / (1.0 + exp_val);
     }
 }
+

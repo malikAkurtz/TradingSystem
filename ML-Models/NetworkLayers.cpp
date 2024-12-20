@@ -175,6 +175,10 @@ void OutputLayer::addNeuronWeights(Neuron neuron) {
     }
 
 void OutputLayer::updateNeuronWeights(std::vector<std::vector<double>> gradient_matrix, float LR) {
+    std::cout << "inside update neuron weights" << std::endl;
+    print("gradient_matrix");
+    printMatrix(gradient_matrix);
+    printMatrixShape(gradient_matrix);
         // for every gradient in the gradient matrix
         for (int i = 0; i < gradient_matrix.size(); i++) {
             for (int j = 0; j < gradient_matrix[0].size(); j++) {
