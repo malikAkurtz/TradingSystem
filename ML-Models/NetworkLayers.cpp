@@ -50,7 +50,7 @@ void HiddenLayer::calculateLayerOutputs(std::vector<double> input_vector) {
     // print("weights matrix");
     // printMatrix(getWeightsMatrix());
     pre_activation_outputs = vector2Dto1D(
-        matrixMultiply(getWeightsMatrix(), vector1Dto2D(input_vector)));
+        matrixMultiply(getWeightsMatrix(), vector1DtoColumnVector(input_vector)));
 
     // std::cout << "pre_activation_outputs" << std::endl;
     // printVector(pre_activation_outputs);
@@ -137,7 +137,7 @@ void OutputLayer::calculateLayerOutputs(std::vector<double> input_vector) {
     // printMatrixShape(vector1Dto2D(input_vector));
 
     this->pre_activation_outputs = vector2Dto1D(
-        matrixMultiply(this->getWeightsMatrix(), vector1Dto2D(input_vector)));
+        matrixMultiply(this->getWeightsMatrix(), vector1DtoColumnVector(input_vector)));
     if (AFtype == RELU) {
         this->activation_outputs = ReLU(this->pre_activation_outputs);
         this->derivative_activation_outputs = d_ReLU(this->pre_activation_outputs);

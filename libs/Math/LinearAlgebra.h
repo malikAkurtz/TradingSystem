@@ -15,8 +15,7 @@ void addColumn(std::vector<std::vector<double>>& matrix, std::vector<double> col
 std::vector<double> solveSystem(std::vector<std::vector<double>> matrix, std::vector<double> b);
 void deleteColumn(std::vector<std::vector<double>>& matrix, int column_index);
 void deleteRow(std::vector<std::vector<double>>& matrix, int row_index);
-//preserves shape
-std::vector<std::vector<double>> vector1Dto2D(std::vector<double> vector);
+std::vector<std::vector<double>> vector1DtoColumnVector(std::vector<double> vector);
 std::vector<double> vector2Dto1D(std::vector<std::vector<double>> matrix);
 std::vector<double> scaleVector(std::vector<double> v1, double scalar);
 void addOnesToFront(std::vector<std::vector<double>>& matrix);

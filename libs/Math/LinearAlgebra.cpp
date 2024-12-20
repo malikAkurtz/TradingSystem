@@ -33,14 +33,14 @@ std::vector<std::vector<double>> takeTranspose(std::vector<std::vector<double>> 
     return transposed;
 }
 
-std::vector<std::vector<double>> vector1Dto2D(std::vector<double> vector) {
-    std::vector<std::vector<double>> asMatrix(vector.size(), std::vector<double>(1));
+std::vector<std::vector<double>> vector1DtoColumnVector(std::vector<double> vector) {
+    std::vector<std::vector<double>> col_vector(vector.size(), std::vector<double>(1));
 
     for (int i = 0; i < vector.size(); i++) {
-        asMatrix[i][0] = vector[i];
+        col_vector[i][0] = vector[i];
     }
 
-    return asMatrix;
+    return col_vector;
 }
 
 std::vector<double> vector2Dto1D(std::vector<std::vector<double>> matrix) {
@@ -269,3 +269,4 @@ std::vector<double> hadamardProduct(std::vector<double> v1, std::vector<double> 
     return resultant;
 
 }
+

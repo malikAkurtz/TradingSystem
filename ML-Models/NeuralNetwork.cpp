@@ -78,14 +78,14 @@ class NeuralNetwork {
                 A_hidden_with_bias.push_back(1);
 
                 print("vector1Dto2D(A_hidden_with_bias)");
-                printMatrix(vector1Dto2D(A_hidden_with_bias));
-                printMatrixShape(vector1Dto2D(A_hidden_with_bias));
+                printMatrix(vector1DtoColumnVector(A_hidden_with_bias));
+                printMatrixShape(vector1DtoColumnVector(A_hidden_with_bias));
 
                 print("vector1Dto2D(error_term_L)");
-                printMatrix(vector1Dto2D(error_term_L));
-                printMatrixShape(vector1Dto2D(error_term_L));
+                printMatrix(vector1DtoColumnVector(error_term_L));
+                printMatrixShape(vector1DtoColumnVector(error_term_L));
 
-                pd_Ci_W_L = takeTranspose(matrixMultiply(vector1Dto2D(A_hidden_with_bias), vector1Dto2D(error_term_L))); // LOL check notes for why taking transpose
+                pd_Ci_W_L = takeTranspose(matrixMultiply(vector1DtoColumnVector(A_hidden_with_bias), vector1DtoColumnVector(error_term_L))); // LOL check notes for why taking transpose
 
                 print("pd_Ci_W_L");
                 printMatrix(pd_Ci_W_L);
@@ -115,7 +115,7 @@ class NeuralNetwork {
                     printMatrixShape(W_l_plus_1_T);
                     
                     
-                    std::vector<double> error_term_lhs = vector2Dto1D(matrixMultiply(W_l_plus_1_T, vector1Dto2D(prev_error_term)));
+                    std::vector<double> error_term_lhs = vector2Dto1D(matrixMultiply(W_l_plus_1_T, vector1DtoColumnVector(prev_error_term)));
                     error_term_lhs.pop_back(); // remove the bias contribution
 
                     print("error_term_lhs post bias removal");
@@ -147,7 +147,7 @@ class NeuralNetwork {
                     printVector(A_hidden_with_bias);
                     printVectorShape(A_hidden_with_bias);
                     
-                    pd_Ci_W_l = matrixMultiply(vector1Dto2D(error_term), {A_hidden_with_bias});
+                    pd_Ci_W_l = matrixMultiply(vector1DtoColumnVector(error_term), {A_hidden_with_bias});
                     
                     print("pd_Ci_W_l");
                     printMatrix(pd_Ci_W_l);

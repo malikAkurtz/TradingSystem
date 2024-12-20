@@ -83,11 +83,11 @@ std::vector<std::vector<double>> labels3 = {
 
     // Neural Network initialization
     int num_features = features[0].size();
-    int num_labels = labels.size();
-    NeuralNetwork Network(0.01, 1);
+    //int num_labels = labels.size();
+    NeuralNetwork Network(0.01, 1000);
     Network.addInputLayer(std::make_shared<InputLayer>(num_features));
-    Network.addHiddenLayer(std::make_shared<HiddenLayer>(4, num_features, RELU));
-    Network.addOutputLayer(std::make_shared<OutputLayer>(num_labels, 4, NONE));
+    // Network.addHiddenLayer(std::make_shared<HiddenLayer>(4, num_features, RELU));
+    Network.addOutputLayer(std::make_shared<OutputLayer>(1, num_features, NONE)); // 1 or labels[0].size() depending on dataset
 
     // Train the model
     Network.fit(features, labels);
@@ -106,6 +106,9 @@ std::vector<std::vector<double>> labels3 = {
     }
     print("Trained Model Output Layer Parameters");
     printMatrix_(Network.outputLayer->getWeightsMatrix());
+
+    std::vector<double> vector = {1,2,3};
+    printMatrix(vector1DtoColumnVector(vector));
 
     return 0;
 }

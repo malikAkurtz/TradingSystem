@@ -67,7 +67,7 @@ class LogisticRegression {
             // print("Soft Predictions");
             // printVector(soft_predictions);
             std::vector<double> error_vector = subtractVectors(soft_predictions, labels);
-            std::vector<std::vector<double>> error_vector_as_matrix = vector1Dto2D(error_vector);
+            std::vector<std::vector<double>> error_vector_as_matrix = vector1DtoColumnVector(error_vector);
             gradientParameters = vector2Dto1D(matrixMultiply(featuresMatrix_T, error_vector_as_matrix));
             gradientParameters = divideVector(gradientParameters, m);
 
