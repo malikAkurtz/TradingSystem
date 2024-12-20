@@ -68,6 +68,15 @@ std::vector<std::vector<double>> sigmoid(std::vector<std::vector<double>> v1) {
     return resultant;
 }
 
+std::vector<std::vector<double>> d_sigmoid(std::vector<std::vector<double>> v1) {
+    std::vector<std::vector<double>> resultant(v1.size(), std::vector<double>(1));
+    for (int i = 0; i < resultant.size(); i++) {
+        double sig = sigmoid_single(v1[i][0]);
+        resultant[i][0] = sig * (1-sig);
+    }
+    return resultant;
+}
+
 double calculateMean(std::vector<double> v1) {
     return (accumulateVector(v1) / v1.size());
 }

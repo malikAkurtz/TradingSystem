@@ -62,8 +62,8 @@ void HiddenLayer::calculateLayerOutputs(std::vector<std::vector<double>> input_v
         this->derivative_activation_outputs = d_ReLU(this->pre_activation_outputs);
         
     } else if(AFtype == SIGMOID) {
-        throw std::invalid_argument("Derivative for SIGMOID not implemented");
         this->activation_outputs = sigmoid(this->pre_activation_outputs);
+        this->activation_outputs = d_sigmoid(this->pre_activation_outputs);
     } else {
         this->activation_outputs = this->pre_activation_outputs;
         this->derivative_activation_outputs = this->pre_activation_outputs;

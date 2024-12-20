@@ -16,5 +16,6 @@ std::vector<std::vector<double>> ReLU(std::vector<std::vector<double>> v1);
 std::vector<std::vector<double>> d_ReLU(std::vector<std::vector<double>> v1);
 double calculateMSE_Simple(std::vector<double> predictions, std::vector<double> labels);
 double modifiedSquarredError(std::vector<std::vector<double>> predictions, std::vector<std::vector<double>>  labels);
+std::vector<std::vector<double>> d_sigmoid(std::vector<std::vector<double>> v1);
 
 #endif
