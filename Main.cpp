@@ -12,7 +12,7 @@
 #include "Neuron.h"
 #include "NetworkLayers.h"
 
-bool DEBUG = true;
+bool DEBUG = false;
 
 int main() {
     // Define datasets
@@ -76,19 +76,19 @@ int main() {
     std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>> data3 = {features3, labels3};
 
     // Select dataset (change this to switch datasets)
-    auto& selected_data = data2; // Use data1, data2, or data3
+    auto& selected_data = data1; // Use data1, data2, or data3
     auto& features = selected_data.first;
     auto& labels = selected_data.second;
 
     // Normalize features if required
-    // features = normalizeData(features); // Uncomment if normalization is required
+    features = normalizeData(features); // Uncomment if normalization is required
 
     // Neural Network initialization
     int num_features = features[0].size();
     int num_labels = labels[0].size();  // Ensure compatibility with multiple outputs
     NeuralNetwork Network(0.001, 1000);  // Learning rate = 0.01, epochs = 1000
     Network.addInputLayer(std::make_shared<InputLayer>(num_features));
-    // Network.addHiddenLayer(std::make_shared<HiddenLayer>(2, num_features, RELU)); // Hidden layer with 2 neurons
+    Network.addHiddenLayer(std::make_shared<HiddenLayer>(2, num_features, RELU)); // Hidden layer with 2 neurons
     Network.addOutputLayer(std::make_shared<OutputLayer>(num_labels, num_features, NONE));  // Output layer with num_labels neurons
     
 
