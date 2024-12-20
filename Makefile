@@ -8,7 +8,7 @@ CXXFLAGS = -std=c++11 -Wall -Ilibs -Ilibs/Data-Processing -Ilibs/Math -IML-Model
 TARGET = out
 
 # Automatically detect all .cpp files in the project (including ML-Models)
-SOURCES = $(wildcard *.cpp libs/*/*.cpp ML-Models/*.cpp)
+SOURCES = $(wildcard Main.cpp libs/*/*.cpp ML-Models/NeuralNetwork.cpp ML-Models/NetworkLayers.cpp ML-Models/Neuron.cpp )
 
 # Generate object files from sources
 OBJECTS = $(SOURCES:.cpp=.o)

@@ -14,8 +14,9 @@
 
 bool DEBUG = false;
 
-int main() {
 
+int main() {
+    // Define datasets
     std::vector<std::vector<double>> features1 = {
         {1.0, 2.5}, {1.5, 3.1}, {2.0, 3.7}, {2.5, 4.0},
         {3.1, 4.2}, {3.5, 4.6}, {4.0, 5.1}, {4.5, 5.6},
@@ -26,7 +27,6 @@ int main() {
         {13.0, 15.2}, {13.5, 15.7}, {14.0, 16.3}, {14.5, 16.8},
         {15.0, 17.4}, {15.5, 18.0}
     };
-
     std::vector<double> labels1 = {
         5.0, 6.0, 7.1, 8.0,
         9.3, 9.8, 10.5, 11.0,
@@ -39,79 +39,49 @@ int main() {
     };
 
     std::vector<std::vector<double>> features2 = {
-        {1},
-        {2},
-        {3},
-        {4},
-        {5},
-        {6},
-        {7},
-        {8},
-        {9},
-        {10},
-        {11},
-        {12},
-        {13},
-        {14},
-        {15},
-        {16},
+        {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8}, {9}, {10},
+        {11}, {12}, {13}, {14}, {15}, {16}
     };
-
     std::vector<double> labels2 = {
-        5,  // y = 2(1) + 3
-        7,  // y = 2(2) + 3
-        9,  // y = 2(3) + 3
-        11, // y = 2(4) + 3
-        13, // y = 2(5) + 3
-        15, // y = 2(6) + 3
-        17, // y = 2(7) + 3
-        19, // y = 2(8) + 3
-        21, // y = 2(9) + 3
-        23, // y = 2(10) + 3
-        25, // y = 2(11) + 3
-        27, // y = 2(12) + 3
-        29, // y = 2(13) + 3
-        31, // y = 2(14) + 3
-        33, // y = 2(15) + 3
-        35  // y = 2(16) + 3
+        5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 25, 27, 29, 31, 33, 35
     };
 
+    // Wrap datasets in pairs for easy management
+    std::pair<std::vector<std::vector<double>>, std::vector<double>> data1 = {features1, labels1};
+    std::pair<std::vector<std::vector<double>>, std::vector<double>> data2 = {features2, labels2};
 
-    // change change neuron initializations, can change epochs, can change 
+    // Select dataset (change this to switch datasets)
+    auto& selected_data = data1; // Use data1 or data2
+    auto& features = selected_data.first;
+    auto& labels = selected_data.second;
 
+    // Normalize features if required
+    features = normalizeData(features);
 
-
-    int num_features = features1[0].size();
-    NeuralNetwork Network(0.01, 1000);
-
-
-    
+    // Neural Network initialization
+    int num_features = features[0].size();
+    NeuralNetwork Network(0.01, 10000);
     Network.addInputLayer(std::make_shared<InputLayer>(num_features));
-    Network.addHiddenLayer(std::make_shared<HiddenLayer>(2, num_features, RELU));
-    Network.addHiddenLayer(std::make_shared<HiddenLayer>(3, 2, RELU));
-    Network.addHiddenLayer(std::make_shared<HiddenLayer>(3, 3, RELU));
-    Network.addHiddenLayer(std::make_shared<HiddenLayer>(2, 3, RELU));
-    Network.addHiddenLayer(std::make_shared<HiddenLayer>(3, 2, RELU));
-    Network.addHiddenLayer(std::make_shared<HiddenLayer>(3, 3, RELU));
-    Network.addHiddenLayer(std::make_shared<HiddenLayer>(3, 3, RELU));
-    Network.addOutputLayer(std::make_shared<OutputLayer>(1, 3, NONE));
+    Network.addHiddenLayer(std::make_shared<HiddenLayer>(4, num_features, RELU));
+    Network.addOutputLayer(std::make_shared<OutputLayer>(1, 4, NONE));
 
+    // Train the model
+    Network.fit(features, labels);
 
+    // Evaluate the model
+    std::vector<double> predictions = Network.getPredictions(features);
+    std::cout << "Predictions vs Labels" << std::endl;
+    printPredictionsVSLabels(predictions, labels);
 
-    features1 = normalizeData(features1);
-    Network.fit(features1, labels1);
-    
-    std::vector<double> predictions = Network.getPredictions(features1);
-    print("Predictions vs Labels");
-    printPredictionsVSLabels(predictions, labels1);
-    print("Trained Model MSE");
+    std::cout << "Trained Model MSE" << std::endl;
     std::cout << Network.model_loss << std::endl;
+
     print("Hidden Layer Parameters Starting from First Hidden Layer");
-    for (int i = 0; i < Network.hiddenLayers.size();i++) {
-        printMatrix(Network.hiddenLayers[i]->getWeightsMatrix());
+    for (int i = 0; i < Network.hiddenLayers.size(); i++) {
+        printMatrix_(Network.hiddenLayers[i]->getWeightsMatrix());
     }
     print("Trained Model Output Layer Parameters");
-    printMatrix(Network.outputLayer->getWeightsMatrix());
-    
+    printMatrix_(Network.outputLayer->getWeightsMatrix());
+
     return 0;
 }

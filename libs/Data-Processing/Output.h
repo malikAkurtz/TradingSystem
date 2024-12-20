@@ -11,5 +11,6 @@ void print(std::string toPrint);
 void printPredictionsVSLabels(std::vector<double> predictions, std::vector<double> labels);
 void printMatrixShape(std::vector<std::vector<double>> matrix);
 void printVectorShape(std::vector<double> vector);
+void printMatrix_(const std::vector<std::vector<double>>& matrix);
 
 #endif

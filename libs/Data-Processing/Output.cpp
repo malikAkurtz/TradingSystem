@@ -46,3 +46,15 @@ void printMatrixShape(std::vector<std::vector<double>> matrix) {
 void printVectorShape(std::vector<double> vector) {
     if (DEBUG) {std::cout << "(" << vector.size() << ", " << ")" << std::endl;}
 }
+
+void printMatrix_(const std::vector<std::vector<double>>& matrix) {
+    std::cout << "[" << std::endl;
+    for (const auto& row : matrix) {
+        std::cout << "  < ";
+        for (const auto& elem : row) {
+            std::cout << elem << " ";
+        }
+        std::cout << ">" << std::endl;
+    }
+    std::cout << "]" << std::endl;
+}
