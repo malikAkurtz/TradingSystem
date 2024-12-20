@@ -86,7 +86,7 @@ int main() {
     
     Network.addInputLayer(std::make_shared<InputLayer>(num_features));
     Network.addHiddenLayer(std::make_shared<HiddenLayer>(2, num_features, RELU));
-    // Network.addHiddenLayer(std::make_shared<HiddenLayer>(4, 3, RELU));
+    // Network.addHiddenLayer(std::make_shared<HiddenLayer>(2, 2, RELU));
     // Network.addHiddenLayer(std::make_shared<HiddenLayer>(3, 4, RELU));
     Network.addOutputLayer(std::make_shared<OutputLayer>(1, 2, NONE));
 

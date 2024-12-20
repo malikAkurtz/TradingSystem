@@ -157,13 +157,13 @@ class NeuralNetwork {
                     this->hiddenLayers[m]->updateNeuronWeights(pd_Ci_rsp_all_layers_weights[gradient_index], this->learning_rate); //+1 since we already processed output layer
                 }
 
-                // print("New Hidden Layer Parameters Starting from First Hidden Layer After Processing This Sample");
-                // for (int i = 0; i < this->hiddenLayers.size();i++) {
-                //     printMatrix(this->hiddenLayers[0]->getWeightsMatrix());
-                // }
-                // print("New Output Layer Parameters After Processing This Sample");
-                // printMatrix(this->outputLayer->getWeightsMatrix());
-                // print("----------------------------------------------------------------------------------------------------------------------------------");
+                print("New Hidden Layer Parameters Starting from First Hidden Layer After Processing This Sample");
+                for (int i = 0; i < this->hiddenLayers.size();i++) {
+                    printMatrix(this->hiddenLayers[0]->getWeightsMatrix());
+                }
+                print("New Output Layer Parameters After Processing This Sample");
+                printMatrix(this->outputLayer->getWeightsMatrix());
+                print("----------------------------------------------------------------------------------------------------------------------------------");
                 
             }
             epoch_average_loss = epoch_average_loss / num_samples;
@@ -184,10 +184,10 @@ class NeuralNetwork {
             // pass the sample into the input layer and get output
             this->inputLayer->calculateLayerOutputs(featuresMatrix[i]);
             std::vector<double> input_layer_output = this->inputLayer->getPreActivationOutputs();
-            // print("--------------");
-            // std::cout << "Input Layer Output: " << std::endl;
-            // printVector(input_layer_output);
-            // print("--------------");
+            print("--------------");
+            std::cout << "Input Layer Output: " << std::endl;
+            printVector(input_layer_output);
+            print("--------------");
             // for every hidden layer in the network
             std::vector<double> prev_layer_output = input_layer_output;
             for (int j = 0; j < this->hiddenLayers.size(); j++) {
@@ -195,10 +195,10 @@ class NeuralNetwork {
                 // print("Hidden layer activation outputs");
                 // printVector(this->hiddenLayers[j]->activation_outputs);
                 std::vector<double> this_layer_output = this->hiddenLayers[j]->getActivationOutputs();
-                // print("--------------");
-                // std::cout << "This Layer Output: " << std::endl;
-                // printVector(this_layer_output);
-                // print("--------------");
+                print("--------------");
+                std::cout << "This Layer Output: " << std::endl;
+                printVector(this_layer_output);
+                print("--------------");
                 prev_layer_output = this_layer_output;
             }
 
@@ -207,10 +207,10 @@ class NeuralNetwork {
             // print("Output layer activation outputs");
             // printVector(this->outputLayer->activation_outputs);
             std::vector<double> output_layer_output = this->outputLayer->getActivationOutputs();
-            // print("--------------");
-            // print("Output Layer Output");
-            // printVector(output_layer_output);
-            // print("--------------");
+            print("--------------");
+            print("Output Layer Output");
+            printVector(output_layer_output);
+            print("--------------");
             predictions[i] = output_layer_output[0]; // assuming only one output neuron
         }
 
