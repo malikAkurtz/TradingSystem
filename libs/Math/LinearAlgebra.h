@@ -16,7 +16,7 @@ std::vector<double> solveSystem(std::vector<std::vector<double>> matrix, std::ve
 void deleteColumn(std::vector<std::vector<double>>& matrix, int column_index);
 void deleteRow(std::vector<std::vector<double>>& matrix, int row_index);
 std::vector<std::vector<double>> vector1DtoColumnVector(std::vector<double> vector);
-std::vector<double> vector2Dto1D(std::vector<std::vector<double>> matrix);
+std::vector<double> columnVectortoVector1D(std::vector<std::vector<double>> col_vector);
 std::vector<double> scaleVector(std::vector<double> v1, double scalar);
 void addOnesToFront(std::vector<std::vector<double>>& matrix);
 std::vector<double> getColumn(std::vector<std::vector<double>> matrix, int col_index);

@@ -43,12 +43,12 @@ std::vector<std::vector<double>> vector1DtoColumnVector(std::vector<double> vect
     return col_vector;
 }
 
-std::vector<double> vector2Dto1D(std::vector<std::vector<double>> matrix) {
-    std::vector<double> asVector(matrix.size());
-    for (int i = 0; i < matrix.size(); i++) {
-        asVector[i] = matrix[i][0];
+std::vector<double> columnVectortoVector1D(std::vector<std::vector<double>> col_vector) {
+    std::vector<double> vector1D(col_vector.size());
+    for (int i = 0; i < col_vector.size(); i++) {
+        vector1D[i] = col_vector[i][0];
     }
-    return asVector;
+    return vector1D;
 }
 
 

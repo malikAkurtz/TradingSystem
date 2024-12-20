@@ -24,203 +24,205 @@ class NeuralNetwork {
     }
 
 
-    void fit(std::vector<std::vector<double>> featuresMatrix, std::vector<double> labels) {
-        std::vector<std::vector<std::vector<double>>> pd_Ci_rsp_all_layers_weights;
-        int num_samples = featuresMatrix.size();
+    // void fit(std::vector<std::vector<double>> featuresMatrix, std::vector<double> labels) {
+    //     std::vector<std::vector<std::vector<double>>> pd_Ci_rsp_all_layers_weights;
+    //     int num_samples = featuresMatrix.size();
         
-        for (int e = 0; e < this->num_epochs; e++) {
-            print("-----------------------------------------------------NEW EPOCH-----------------------------------------------------------------");
-            double epoch_accumulated_loss = 0;
-            // for every sample
-            for (int i = 0; i < num_samples; i++) {
-                pd_Ci_rsp_all_layers_weights.clear();
-                // std::cout << "Processing sample: " << i << std::endl;
-                // print("----------------------------------------------------------------------------------------------------------------------------------");
-                // FORWARD PASS
-                print("-----------------------------------------------------Forward Pass-----------------------------------------------------------------");
-                std::vector<double> X = featuresMatrix[i];
-                print("Sample being processed");
-                printVector(X);
+    //     for (int e = 0; e < this->num_epochs; e++) {
+    //         print("-----------------------------------------------------NEW EPOCH-----------------------------------------------------------------");
+    //         double epoch_accumulated_loss = 0;
+    //         // for every sample
+    //         for (int i = 0; i < num_samples; i++) {
+    //             pd_Ci_rsp_all_layers_weights.clear();
+    //             // std::cout << "Processing sample: " << i << std::endl;
+    //             // print("----------------------------------------------------------------------------------------------------------------------------------");
+    //             // FORWARD PASS
+    //             print("-----------------------------------------------------Forward Pass-----------------------------------------------------------------");
+    //             std::vector<double> X = featuresMatrix[i];
+    //             print("Sample being processed");
+    //             printVector(X);
 
-                double y = labels[i];
-                print("Sample Label");
-                printVector({y});
+    //             double y = labels[i];
+    //             print("Sample Label");
+    //             printVector({y});
 
-                std::vector<double> A_L = getPredictions({X});
-                // print("Sample Predictions");
-                // printVector(A_L); // will just be a vector with one prediction in it since this is just for one output neuron at the moment
-                // printVectorShape(A_L);
+    //             std::vector<double> A_L = getPredictions({X});
+    //             // print("Sample Predictions");
+    //             // printVector(A_L); // will just be a vector with one prediction in it since this is just for one output neuron at the moment
+    //             // printVectorShape(A_L);
 
-                // BACKWARD PASS
-                print("-----------------------------------------------------Backward Pass-----------------------------------------------------------------");
-                // compute error + gradient at output layer, because were processing one sample at a time, m = 1, so loss = cost = squarred error
-                double loss = modifiedSquarredError(A_L, {y}); // gradient is just A - y since the ^2 and 1/2 cancel
-                print("Sample Squarred Error i.e Loss i.e Cost of ith sample");
-                //std::cout << loss << std::endl;
-                epoch_accumulated_loss += loss;
+    //             // BACKWARD PASS
+    //             print("-----------------------------------------------------Backward Pass-----------------------------------------------------------------");
+    //             // compute error + gradient at output layer, because were processing one sample at a time, m = 1, so loss = cost = squarred error
+    //             double loss = modifiedSquarredError(A_L, {y}); // gradient is just A - y since the ^2 and 1/2 cancel
+    //             print("Sample Squarred Error i.e Loss i.e Cost of ith sample");
+    //             //std::cout << loss << std::endl;
+    //             epoch_accumulated_loss += loss;
 
-                // begin back propogation starting at the output layer
-                std::vector<std::vector<double>> pd_Ci_W_L;
-                std::vector<double> error_term_L = subtractVectors(A_L, createVector(y, 1));
+    //             // begin back propogation starting at the output layer
+    //             std::vector<std::vector<double>> pd_Ci_W_L;
+    //             std::vector<double> error_term_L = subtractVectors(A_L, createVector(y, 1));
 
-                print("error term for output layer");
-                printVector(error_term_L);
-                printVectorShape(error_term_L);
+    //             print("error term for output layer");
+    //             printVector(error_term_L);
+    //             printVectorShape(error_term_L);
 
-                int last_hidden_layer_index = this->hiddenLayers.size()-1;
-                std::vector<double> A_hidden_with_bias;
+    //             int last_hidden_layer_index = this->hiddenLayers.size()-1;
+    //             std::vector<double> A_hidden_with_bias;
 
-                if (last_hidden_layer_index >= 0) {
-                    A_hidden_with_bias = this->hiddenLayers[last_hidden_layer_index]->activation_outputs;
-                } else{
-                    A_hidden_with_bias = this->inputLayer->getPreActivationOutputs();
-                }
-                A_hidden_with_bias.push_back(1);
+    //             if (last_hidden_layer_index >= 0) {
+    //                 A_hidden_with_bias = this->hiddenLayers[last_hidden_layer_index]->activation_outputs;
+    //             } else{
+    //                 A_hidden_with_bias = this->inputLayer->getPreActivationOutputs();
+    //             }
+    //             A_hidden_with_bias.push_back(1);
 
-                print("vector1Dto2D(A_hidden_with_bias)");
-                printMatrix(vector1DtoColumnVector(A_hidden_with_bias));
-                printMatrixShape(vector1DtoColumnVector(A_hidden_with_bias));
+    //             print("vector1Dto2D(A_hidden_with_bias)");
+    //             printMatrix(vector1DtoColumnVector(A_hidden_with_bias));
+    //             printMatrixShape(vector1DtoColumnVector(A_hidden_with_bias));
 
-                print("vector1Dto2D(error_term_L)");
-                printMatrix(vector1DtoColumnVector(error_term_L));
-                printMatrixShape(vector1DtoColumnVector(error_term_L));
+    //             print("vector1Dto2D(error_term_L)");
+    //             printMatrix(vector1DtoColumnVector(error_term_L));
+    //             printMatrixShape(vector1DtoColumnVector(error_term_L));
 
-                pd_Ci_W_L = takeTranspose(matrixMultiply(vector1DtoColumnVector(A_hidden_with_bias), vector1DtoColumnVector(error_term_L))); // LOL check notes for why taking transpose
+    //             pd_Ci_W_L = takeTranspose(matrixMultiply(vector1DtoColumnVector(A_hidden_with_bias), vector1DtoColumnVector(error_term_L))); // LOL check notes for why taking transpose
 
-                print("pd_Ci_W_L");
-                printMatrix(pd_Ci_W_L);
-                printMatrixShape(pd_Ci_W_L);
+    //             print("pd_Ci_W_L");
+    //             printMatrix(pd_Ci_W_L);
+    //             printMatrixShape(pd_Ci_W_L);
 
-                pd_Ci_rsp_all_layers_weights.push_back(pd_Ci_W_L);
+    //             pd_Ci_rsp_all_layers_weights.push_back(pd_Ci_W_L);
                 
 
-                // Propogate gradients to previous layers starting with last hidden layer and stopping at input layer
-                std::vector<double> prev_error_term = error_term_L;
+    //             // Propogate gradients to previous layers starting with last hidden layer and stopping at input layer
+    //             std::vector<double> prev_error_term = error_term_L;
 
 
-                // for every hidden layer
-                for (int j = last_hidden_layer_index; j >= 0; j--) {
-                    std::vector<std::vector<double>> pd_Ci_W_l;
-                    std::vector<double> error_term;
-                    std::vector<std::vector<double>> W_l_plus_1_T;
+    //             // for every hidden layer
+    //             for (int j = last_hidden_layer_index; j >= 0; j--) {
+    //                 std::vector<std::vector<double>> pd_Ci_W_l;
+    //                 std::vector<double> error_term;
+    //                 std::vector<std::vector<double>> W_l_plus_1_T;
 
-                    if (j == last_hidden_layer_index) {
-                        W_l_plus_1_T = takeTranspose(this->outputLayer->getWeightsMatrix());
-                    } else {
-                        W_l_plus_1_T = takeTranspose(this->hiddenLayers[j+1]->getWeightsMatrix());
-                    }
+    //                 if (j == last_hidden_layer_index) {
+    //                     W_l_plus_1_T = takeTranspose(this->outputLayer->getWeightsMatrix());
+    //                 } else {
+    //                     W_l_plus_1_T = takeTranspose(this->hiddenLayers[j+1]->getWeightsMatrix());
+    //                 }
 
-                    print("W_l_plus_1_T");
-                    printMatrix(W_l_plus_1_T);
-                    printMatrixShape(W_l_plus_1_T);
+    //                 print("W_l_plus_1_T");
+    //                 printMatrix(W_l_plus_1_T);
+    //                 printMatrixShape(W_l_plus_1_T);
                     
                     
-                    std::vector<double> error_term_lhs = vector2Dto1D(matrixMultiply(W_l_plus_1_T, vector1DtoColumnVector(prev_error_term)));
-                    error_term_lhs.pop_back(); // remove the bias contribution
+    //                 std::vector<double> error_term_lhs = columnVectortoVector1D(matrixMultiply(W_l_plus_1_T, vector1DtoColumnVector(prev_error_term)));
+    //                 error_term_lhs.pop_back(); // remove the bias contribution
 
-                    print("error_term_lhs post bias removal");
-                    printVector(error_term_lhs);
-                    printVectorShape(error_term_lhs);
+    //                 print("error_term_lhs post bias removal");
+    //                 printVector(error_term_lhs);
+    //                 printVectorShape(error_term_lhs);
 
 
-                    std::vector<double> DA_hidden_with_no_bias = this->hiddenLayers[j]->getDerivativeActivationOutputs();
+    //                 std::vector<double> DA_hidden_with_no_bias = this->hiddenLayers[j]->getDerivativeActivationOutputs();
                     
-                    print("DA_hidden_with_no_bias");
-                    printVector(DA_hidden_with_no_bias);
-                    printVectorShape(DA_hidden_with_no_bias);
+    //                 print("DA_hidden_with_no_bias");
+    //                 printVector(DA_hidden_with_no_bias);
+    //                 printVectorShape(DA_hidden_with_no_bias);
 
                     
-                    error_term = hadamardProduct(error_term_lhs, DA_hidden_with_no_bias);
-                    // print("This Error Term");
-                    // printVector(error_term);
-                    // printVectorShape(error_term);
+    //                 error_term = hadamardProduct(error_term_lhs, DA_hidden_with_no_bias);
+    //                 // print("This Error Term");
+    //                 // printVector(error_term);
+    //                 // printVectorShape(error_term);
 
-                    if (j == 0) { // need to get input layer outputs
-                        A_hidden_with_bias = this->inputLayer->getPreActivationOutputs();
-                        A_hidden_with_bias.push_back(1); 
-                    } else {
-                        A_hidden_with_bias = this->hiddenLayers[j-1]->activation_outputs;
-                        A_hidden_with_bias.push_back(1); 
-                    }
+    //                 if (j == 0) { // need to get input layer outputs
+    //                     A_hidden_with_bias = this->inputLayer->getPreActivationOutputs();
+    //                     A_hidden_with_bias.push_back(1); 
+    //                 } else {
+    //                     A_hidden_with_bias = this->hiddenLayers[j-1]->activation_outputs;
+    //                     A_hidden_with_bias.push_back(1); 
+    //                 }
 
-                    print("A_hidden_with_bias");
-                    printVector(A_hidden_with_bias);
-                    printVectorShape(A_hidden_with_bias);
+    //                 print("A_hidden_with_bias");
+    //                 printVector(A_hidden_with_bias);
+    //                 printVectorShape(A_hidden_with_bias);
                     
-                    pd_Ci_W_l = matrixMultiply(vector1DtoColumnVector(error_term), {A_hidden_with_bias});
+    //                 pd_Ci_W_l = matrixMultiply(vector1DtoColumnVector(error_term), {A_hidden_with_bias});
                     
-                    print("pd_Ci_W_l");
-                    printMatrix(pd_Ci_W_l);
-                    printMatrixShape(pd_Ci_W_l);
+    //                 print("pd_Ci_W_l");
+    //                 printMatrix(pd_Ci_W_l);
+    //                 printMatrixShape(pd_Ci_W_l);
 
-                    pd_Ci_rsp_all_layers_weights.push_back(pd_Ci_W_l);
-                    prev_error_term = error_term;
-                }
+    //                 pd_Ci_rsp_all_layers_weights.push_back(pd_Ci_W_l);
+    //                 prev_error_term = error_term;
+    //             }
 
 
-                // update weights for output layer
-                this->outputLayer->updateNeuronWeights(pd_Ci_rsp_all_layers_weights[0], this->learning_rate);
-                // update weights for every hidden layer
-                for (int m = 0; m < this->hiddenLayers.size(); m++) {
-                    int gradient_index = pd_Ci_rsp_all_layers_weights.size() - 1 - m;
-                    this->hiddenLayers[m]->updateNeuronWeights(pd_Ci_rsp_all_layers_weights[gradient_index], this->learning_rate); //+1 since we already processed output layer
-                }
+    //             // update weights for output layer
+    //             this->outputLayer->updateNeuronWeights(pd_Ci_rsp_all_layers_weights[0], this->learning_rate);
+    //             // update weights for every hidden layer
+    //             for (int m = 0; m < this->hiddenLayers.size(); m++) {
+    //                 int gradient_index = pd_Ci_rsp_all_layers_weights.size() - 1 - m;
+    //                 this->hiddenLayers[m]->updateNeuronWeights(pd_Ci_rsp_all_layers_weights[gradient_index], this->learning_rate); //+1 since we already processed output layer
+    //             }
 
-                print("New Hidden Layer Parameters Starting from First Hidden Layer After Processing This Sample");
-                for (int i = 0; i < this->hiddenLayers.size();i++) {
-                    printMatrix(this->hiddenLayers[i]->getWeightsMatrix());
-                }
-                print("New Output Layer Parameters After Processing This Sample");
-                printMatrix(this->outputLayer->getWeightsMatrix());
-                print("----------------------------------------------------------------------------------------------------------------------------------");
+    //             print("New Hidden Layer Parameters Starting from First Hidden Layer After Processing This Sample");
+    //             for (int i = 0; i < this->hiddenLayers.size();i++) {
+    //                 printMatrix(this->hiddenLayers[i]->getWeightsMatrix());
+    //             }
+    //             print("New Output Layer Parameters After Processing This Sample");
+    //             printMatrix(this->outputLayer->getWeightsMatrix());
+    //             print("----------------------------------------------------------------------------------------------------------------------------------");
                 
-            }
-            double epoch_MSE = epoch_accumulated_loss / num_samples; // mean squarred error for this epoch
-            std::cout << "Epoch: " << e << " MSE: " << epoch_MSE << std::endl;
-        }
-        std::vector<double> best_predictions = getPredictions(featuresMatrix);
-        this->model_loss = modifiedSquarredError(best_predictions, labels) / labels.size(); // mean squarred error
-    }
+    //         }
+    //         double epoch_MSE = epoch_accumulated_loss / num_samples; // mean squarred error for this epoch
+    //         std::cout << "Epoch: " << e << " MSE: " << epoch_MSE << std::endl;
+    //     }
+    //     std::vector<double> best_predictions = getPredictions(featuresMatrix);
+    //     this->model_loss = modifiedSquarredError(best_predictions, labels) / labels.size(); // mean squarred error
+    // }
 
     
-
-    std::vector<double> getPredictions(std::vector<std::vector<double>> featuresMatrix) {
+    // this is going to have to be a tensor eventually if im considering everything a matrix
+    std::vector<std::vector<std::vector<double>>> getPredictions(std::vector<std::vector<double>> featuresMatrix) {
         int num_samples = featuresMatrix.size();
-        std::vector<double> predictions(num_samples);
+        int num_features = featuresMatrix[0].size();
+        std::vector<std::vector<std::vector<double>>> predictions;
 
         // for every sample
         for (int i = 0; i < num_samples; i++) {
             // pass the sample into the input layer and get output
             this->inputLayer->calculateLayerOutputs(featuresMatrix[i]);
-            std::vector<double> input_layer_output = this->inputLayer->getPreActivationOutputs();
+            std::vector<std::vector<double>> input_layer_output = vector1DtoColumnVector(this->inputLayer->getPreActivationOutputs());
             print("--------------");
             print("Input Layer Output");
-            printVector(input_layer_output);
+            printMatrix(input_layer_output);
+            printMatrixShape(input_layer_output);
             print("--------------");
             // for every hidden layer in the network
-            std::vector<double> prev_layer_output = input_layer_output;
+            std::vector<std::vector<double>> prev_layer_output = input_layer_output;
             for (int j = 0; j < this->hiddenLayers.size(); j++) {
-                this->hiddenLayers[j]->calculateLayerOutputs(prev_layer_output);
+                this->hiddenLayers[j]->calculateLayerOutputs(columnVectortoVector1D(prev_layer_output));
                 // print("Hidden layer activation outputs");
                 // printVector(this->hiddenLayers[j]->activation_outputs);
-                std::vector<double> this_layer_output = this->hiddenLayers[j]->getActivationOutputs();
+                std::vector<std::vector<double>> this_layer_output = vector1DtoColumnVector(this->hiddenLayers[j]->getActivationOutputs());
                 print("--------------");
                 print("This Layer Output");
-                printVector(this_layer_output);
+                printMatrix(this_layer_output);
                 print("--------------");
                 prev_layer_output = this_layer_output;
             }
 
             // final pass into output layer
-            this->outputLayer->calculateLayerOutputs(prev_layer_output);
+            this->outputLayer->calculateLayerOutputs(columnVectortoVector1D(prev_layer_output));
             // print("Output layer activation outputs");
             // printVector(this->outputLayer->activation_outputs);
-            std::vector<double> output_layer_output = this->outputLayer->getActivationOutputs();
+            std::vector<std::vector<double>> output_layer_output = vector1DtoColumnVector(this->outputLayer->getActivationOutputs());
             print("--------------");
             print("Output Layer Output");
-            printVector(output_layer_output);
+            printMatrix(output_layer_output);
             print("--------------");
-            predictions[i] = output_layer_output[0]; // assuming only one output neuron
+            predictions.push_back(output_layer_output);
         }
 
         return predictions;
@@ -241,15 +243,5 @@ class NeuralNetwork {
         this->num_layers += 1;
     }
 
-    void refreshLayers(){
-        this->outputLayer->activation_outputs.clear();
-        this->outputLayer->pre_activation_outputs.clear();
-        this->outputLayer->derivative_activation_outputs.clear();
-        for (int i = 0; i < this->hiddenLayers.size();i++) {
-            this->hiddenLayers[i]->activation_outputs.clear();
-            this->hiddenLayers[i]->pre_activation_outputs.clear();
-            this->hiddenLayers[i]->derivative_activation_outputs.clear();
-        }
-        this->inputLayer->pre_activation_outputs.clear();
-    }
+
 };
