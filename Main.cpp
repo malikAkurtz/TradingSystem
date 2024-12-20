@@ -12,33 +12,33 @@
 #include "Neuron.h"
 #include "NetworkLayers.h"
 
-bool DEBUG = true;
+bool DEBUG = false;
 
 int main() {
 
-    // std::vector<std::vector<double>> features = {
-    //     {1.0, 2.5}, {1.5, 3.1}, {2.0, 3.7}, {2.5, 4.0},
-    //     {3.1, 4.2}, {3.5, 4.6}, {4.0, 5.1}, {4.5, 5.6},
-    //     {5.2, 6.8}, {5.8, 7.1}, {6.3, 7.5}, {6.9, 7.7},
-    //     {7.4, 8.0}, {7.9, 8.6}, {8.5, 9.1}, {8.8, 9.6},
-    //     {9.0, 10.2}, {9.5, 10.8}, {10.1, 11.5}, {10.6, 12.1},
-    //     {11.0, 12.8}, {11.5, 13.3}, {12.0, 14.0}, {12.5, 14.6},
-    //     {13.0, 15.2}, {13.5, 15.7}, {14.0, 16.3}, {14.5, 16.8},
-    //     {15.0, 17.4}, {15.5, 18.0}
-    // };
+    std::vector<std::vector<double>> features1 = {
+        {1.0, 2.5}, {1.5, 3.1}, {2.0, 3.7}, {2.5, 4.0},
+        {3.1, 4.2}, {3.5, 4.6}, {4.0, 5.1}, {4.5, 5.6},
+        {5.2, 6.8}, {5.8, 7.1}, {6.3, 7.5}, {6.9, 7.7},
+        {7.4, 8.0}, {7.9, 8.6}, {8.5, 9.1}, {8.8, 9.6},
+        {9.0, 10.2}, {9.5, 10.8}, {10.1, 11.5}, {10.6, 12.1},
+        {11.0, 12.8}, {11.5, 13.3}, {12.0, 14.0}, {12.5, 14.6},
+        {13.0, 15.2}, {13.5, 15.7}, {14.0, 16.3}, {14.5, 16.8},
+        {15.0, 17.4}, {15.5, 18.0}
+    };
 
-    // std::vector<double> labels = {
-    //     5.0, //6.0, 7.1, 8.0,
-    //     9.3, 9.8, 10.5, 11.0,
-    //     13.2, 14.1, 15.0, 15.6,
-    //     16.5, 17.1, 18.3, 18.7,
-    //     19.7, 20.3, 21.9, 22.5,
-    //     23.1, 23.9, 24.6, 25.2,
-    //     26.0, 26.5, 27.1, 27.7,
-    //     28.4, 29.0
-    // };
+    std::vector<double> labels1 = {
+        5.0, 6.0, 7.1, 8.0,
+        9.3, 9.8, 10.5, 11.0,
+        13.2, 14.1, 15.0, 15.6,
+        16.5, 17.1, 18.3, 18.7,
+        19.7, 20.3, 21.9, 22.5,
+        23.1, 23.9, 24.6, 25.2,
+        26.0, 26.5, 27.1, 27.7,
+        28.4, 29.0
+    };
 
-    std::vector<std::vector<double>> features = {
+    std::vector<std::vector<double>> features2 = {
         {1},
         {2},
         {3},
@@ -57,7 +57,7 @@ int main() {
         {16},
     };
 
-    std::vector<double> labels = {
+    std::vector<double> labels2 = {
         5,  // y = 2(1) + 3
         7,  // y = 2(2) + 3
         9,  // y = 2(3) + 3
@@ -79,8 +79,9 @@ int main() {
 
     // change change neuron initializations, can change epochs, can change 
 
-    //features = normalizeData(features);
-    int num_features = features[0].size();
+
+
+    int num_features = features1[0].size();
     NeuralNetwork Network(0.01, 1000);
 
 
@@ -93,14 +94,16 @@ int main() {
     Network.addHiddenLayer(std::make_shared<HiddenLayer>(3, 2, RELU));
     Network.addHiddenLayer(std::make_shared<HiddenLayer>(3, 3, RELU));
     Network.addHiddenLayer(std::make_shared<HiddenLayer>(3, 3, RELU));
-    // Network.addHiddenLayer(std::make_shared<HiddenLayer>(3, 4, RELU));
     Network.addOutputLayer(std::make_shared<OutputLayer>(1, 3, NONE));
 
-    Network.fit(features, labels);
+
+
+    features1 = normalizeData(features1);
+    Network.fit(features1, labels1);
     
-    std::vector<double> predictions = Network.getPredictions(features);
+    std::vector<double> predictions = Network.getPredictions(features1);
     print("Predictions vs Labels");
-    printPredictionsVSLabels(predictions, labels);
+    printPredictionsVSLabels(predictions, labels1);
     print("Trained Model MSE");
     std::cout << Network.model_loss << std::endl;
     print("Hidden Layer Parameters Starting from First Hidden Layer");
@@ -110,8 +113,5 @@ int main() {
     print("Trained Model Output Layer Parameters");
     printMatrix(Network.outputLayer->getWeightsMatrix());
     
-
-
-
     return 0;
 }

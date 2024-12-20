@@ -44,7 +44,7 @@ class NeuralNetwork {
 
                 double y = labels[i];
                 print("Sample Label");
-                std::cout << y << std::endl;
+                printVector({y});
 
                 std::vector<double> A_L = getPredictions({X});
                 // print("Sample Predictions");
@@ -56,7 +56,7 @@ class NeuralNetwork {
                 // compute error + gradient at output layer, because were processing one sample at a time, m = 1, so loss = cost = squarred error
                 double loss = modifiedSquarredError(A_L, {y}); // gradient is just A - y since the ^2 and 1/2 cancel
                 print("Sample Squarred Error i.e Loss i.e Cost of ith sample");
-                std::cout << loss << std::endl;
+                //std::cout << loss << std::endl;
                 epoch_accumulated_loss += loss;
 
                 // begin back propogation starting at the output layer
@@ -194,7 +194,7 @@ class NeuralNetwork {
             this->inputLayer->calculateLayerOutputs(featuresMatrix[i]);
             std::vector<double> input_layer_output = this->inputLayer->getPreActivationOutputs();
             print("--------------");
-            std::cout << "Input Layer Output: " << std::endl;
+            print("Input Layer Output");
             printVector(input_layer_output);
             print("--------------");
             // for every hidden layer in the network
@@ -205,7 +205,7 @@ class NeuralNetwork {
                 // printVector(this->hiddenLayers[j]->activation_outputs);
                 std::vector<double> this_layer_output = this->hiddenLayers[j]->getActivationOutputs();
                 print("--------------");
-                std::cout << "This Layer Output: " << std::endl;
+                print("This Layer Output");
                 printVector(this_layer_output);
                 print("--------------");
                 prev_layer_output = this_layer_output;
