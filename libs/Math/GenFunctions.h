@@ -4,18 +4,18 @@
 #include <vector>
 #include <cmath>
 
-double calculateMSE(std::vector<double> predictions, std::vector<double> labels);
-double calculateLogLoss(std::vector<double> predictions, std::vector<double> labels);
-std::vector<double> thresholdFunction(std::vector<double> softPredictions, double threshhold);
-std::vector<std::vector<double>> sigmoid(std::vector<std::vector<double>> v1); // derivative not yet implemented
-double sigmoid_single(double value);
-double calculateMean(std::vector<double> v1);
-double calculateSTD(std::vector<double> v1);
-std::vector<std::vector<double>> normalizeData(std::vector<std::vector<double>> featuresMatrix);
-std::vector<std::vector<double>> ReLU(std::vector<std::vector<double>> v1);
-std::vector<std::vector<double>> d_ReLU(std::vector<std::vector<double>> v1);
-double calculateMSE_Simple(std::vector<double> predictions, std::vector<double> labels);
-double modifiedSquarredError(std::vector<std::vector<double>> predictions, std::vector<std::vector<double>>  labels);
-std::vector<std::vector<double>> d_sigmoid(std::vector<std::vector<double>> v1);
+double calculateMSE(const std::vector<double>& predictions, const std::vector<double>& labels);
+double calculateLogLoss(const std::vector<double>& predictions, const std::vector<double>& labels);
+std::vector<double> thresholdFunction(const std::vector<double>& softPredictions, const double& threshhold);
+std::vector<std::vector<double>> sigmoid(const std::vector<std::vector<double>>& v1); // derivative not yet implemented
+double sigmoid_single(const double& value);
+double calculateMean(const std::vector<double>& v1);
+double calculateSTD(const std::vector<double>& v1);
+std::vector<std::vector<double>> normalizeData(const std::vector<std::vector<double>>& dataMatrix);
+std::vector<std::vector<double>> ReLU(const std::vector<std::vector<double>>& v1);
+std::vector<std::vector<double>> d_ReLU(const std::vector<std::vector<double>>& v1);
+double calculateMSE_Simple(const std::vector<double>& predictions, const std::vector<double>& labels);
+double modifiedSquarredError(const std::vector<std::vector<double>>& predictions, const std::vector<std::vector<double>>& labels);
+std::vector<std::vector<double>> d_sigmoid(const std::vector<std::vector<double>>& v1);
 
 #endif

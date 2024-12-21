@@ -35,7 +35,7 @@ int main() {
     {23.1}, {23.9}, {24.6}, {25.2},
     {26.0}, {26.5}, {27.1}, {27.7},
     {28.4}, {29.0}
-};
+    };
 
 
     std::vector<std::vector<double>> features2 = {
@@ -69,16 +69,48 @@ int main() {
         {20.0, 40.0}, {21.0, 42.0}, {22.0, 44.0}, {23.0, 46.0}, {24.0, 48.0}
     };
 
+    std::vector<std::vector<double>> features4 = {
+        {0.0, 0.0}, // Class 0
+        {0.0, 1.0}, // Class 1
+        {1.0, 0.0}, // Class 1
+        {1.0, 1.0}, // Class 0
+        {0.5, 0.5}, // Class 0
+        {0.2, 0.8}, // Class 1
+        {0.8, 0.2}, // Class 1
+        {0.9, 0.9}, // Class 0
+        {0.3, 0.7}, // Class 1
+        {0.7, 0.3}  // Class 1
+    };
+
+    std::vector<std::vector<double>> labels4 = {
+        {0.0}, // Class 0
+        {1.0}, // Class 1
+        {1.0}, // Class 1
+        {0.0}, // Class 0
+        {0.0}, // Class 0
+        {1.0}, // Class 1
+        {1.0}, // Class 1
+        {0.0}, // Class 0
+        {1.0}, // Class 1
+        {1.0}  // Class 1
+    };
+
+
+
 
     // Wrap datasets in pairs for easy management
     std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>> data1 = {features1, labels1};
     std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>> data2 = {features2, labels2};
     std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>> data3 = {features3, labels3};
+    std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>> data4 = {features4, labels4};
+
+
 
     // Select dataset (change this to switch datasets)
-    auto& selected_data = data1; // Use data1, data2, or data3
+    auto& selected_data = data4; // Use data1, data2, or data3
     auto& features = selected_data.first;
     auto& labels = selected_data.second;
+
 
     // Normalize features if required
     features = normalizeData(features); // Uncomment if normalization is required
@@ -86,10 +118,10 @@ int main() {
     // Neural Network initialization
     int num_features = features[0].size();
     int num_labels = labels[0].size();  // Ensure compatibility with multiple outputs
-    NeuralNetwork Network(0.001, 1000);  // Learning rate = 0.01, epochs = 1000
+    NeuralNetwork Network(0.01, 10000);  // Learning rate = 0.01, epochs = 1000
     Network.addInputLayer(std::make_shared<InputLayer>(num_features));
-    Network.addHiddenLayer(std::make_shared<HiddenLayer>(2, num_features, RELU)); // Hidden layer with 2 neurons
-    Network.addOutputLayer(std::make_shared<OutputLayer>(num_labels, num_features, NONE));  // Output layer with num_labels neurons
+    Network.addHiddenLayer(std::make_shared<HiddenLayer>(4, num_features, SIGMOID)); // Hidden layer with 2 neurons
+    Network.addOutputLayer(std::make_shared<OutputLayer>(num_labels, 4, SIGMOID));  // Output layer with num_labels neurons
     
 
     // Train the model
@@ -117,11 +149,5 @@ int main() {
     return 0;
 }
 
-int main1() {
-    std::vector<std::vector<double>> u = vector1DtoColumnVector({19});
-    std::vector<std::vector<double>> v = vector1DtoColumnVector({6,6,1});
-    
-    printMatrix(outerProduct(u, v));
 
-    return 0;
-}
+

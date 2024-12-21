@@ -3,7 +3,7 @@
 #include <stdexcept>
 
 
-double innerProduct(std::vector<double> v1, std::vector<double> v2) {
+double innerProduct(const std::vector<double>& v1, const std::vector<double>& v2) {
     if (v1.size() != v2.size()) {
         throw std::invalid_argument("Matrix dimensions do not match on call to innerProduct()");
     }
@@ -18,7 +18,7 @@ double innerProduct(std::vector<double> v1, std::vector<double> v2) {
     return innerProduct;
 }
 
-std::vector<std::vector<double>> takeTranspose(std::vector<std::vector<double>> inputMatrix) {
+std::vector<std::vector<double>> takeTranspose(const std::vector<std::vector<double>>& inputMatrix) {
     int numRows = inputMatrix.size();
     int numCols = inputMatrix[0].size();
 
@@ -33,7 +33,7 @@ std::vector<std::vector<double>> takeTranspose(std::vector<std::vector<double>> 
     return transposed;
 }
 
-std::vector<std::vector<double>> vector1DtoColumnVector(std::vector<double> vector) {
+std::vector<std::vector<double>> vector1DtoColumnVector(const std::vector<double>& vector) {
     std::vector<std::vector<double>> col_vector(vector.size(), std::vector<double>(1));
 
     for (int i = 0; i < vector.size(); i++) {
@@ -43,7 +43,7 @@ std::vector<std::vector<double>> vector1DtoColumnVector(std::vector<double> vect
     return col_vector;
 }
 
-std::vector<double> columnVectortoVector1D(std::vector<std::vector<double>> col_vector) {
+std::vector<double> columnVectortoVector1D(const std::vector<std::vector<double>>& col_vector) {
     std::vector<double> vector1D(col_vector.size());
     for (int i = 0; i < col_vector.size(); i++) {
         vector1D[i] = col_vector[i][0];
@@ -52,7 +52,7 @@ std::vector<double> columnVectortoVector1D(std::vector<std::vector<double>> col_
 }
 
 
-std::vector<double> addVectors(std::vector<double> v1, std::vector<double> v2) {
+std::vector<double> addVectors(const std::vector<double>& v1, const std::vector<double>& v2) {
     if (v1.size() != v2.size()) {
         throw std::invalid_argument("Vector dimensions do not match on call to addVectors()");
     }
@@ -67,7 +67,7 @@ std::vector<double> addVectors(std::vector<double> v1, std::vector<double> v2) {
     return resultant;
 }
 
-std::vector<double> subtractVectors(std::vector<double> v1, std::vector<double> v2) {
+std::vector<double> subtractVectors(const std::vector<double>& v1, const std::vector<double>& v2) {
     if (v1.size() != v2.size()) {
         throw std::invalid_argument("Vector dimensions do not match");
     }
@@ -82,11 +82,11 @@ std::vector<double> subtractVectors(std::vector<double> v1, std::vector<double> 
     return resultant;
 }
 
-double calculateNorm(std::vector<double> v1) {
+double calculateNorm(const std::vector<double>& v1) {
     return sqrt(innerProduct(v1, v1));
 }
 
-std::vector<double> scaleVector(std::vector<double> v1, double scalar) {
+std::vector<double> scaleVector(const std::vector<double>& v1, const double& scalar) {
     int num_elements = v1.size();
 
     std::vector<double> v1_scaled(num_elements);
@@ -98,7 +98,7 @@ std::vector<double> scaleVector(std::vector<double> v1, double scalar) {
     return v1_scaled;
 }
 
-std::vector<double> divideVector(std::vector<double> v1, double scalar) {
+std::vector<double> divideVector(const std::vector<double>& v1, const double& scalar) {
     int num_elements = v1.size();
 
     std::vector<double> v1_scaled(num_elements);
@@ -112,7 +112,7 @@ std::vector<double> divideVector(std::vector<double> v1, double scalar) {
 
 
 
-std::vector<std::vector<double>> matrixMultiply(std::vector<std::vector<double>> m1, std::vector<std::vector<double>> m2) {
+std::vector<std::vector<double>> matrixMultiply(const std::vector<std::vector<double>>& m1, const std::vector<std::vector<double>>& m2) {
     // if m1 #cols != m2 #rows
     if (m1[0].size() != m2.size()) {
         throw std::invalid_argument("Matrix dimensions do not match on call to matrixMultiply()");
@@ -132,11 +132,11 @@ std::vector<std::vector<double>> matrixMultiply(std::vector<std::vector<double>>
     return resultant;
 }
 
-std::vector<double> getRow(std::vector<std::vector<double>> matrix, int row_index) {
+std::vector<double> getRow(const std::vector<std::vector<double>>& matrix, const int& row_index) {
     return matrix[row_index];
 }
 
-std::vector<double> getColumn(std::vector<std::vector<double>> matrix, int col_index) {
+std::vector<double> getColumn(const std::vector<std::vector<double>>& matrix, const int& col_index) {
     int num_rows = matrix.size();
 
     std::vector<double> column_vector(num_rows);
@@ -227,7 +227,7 @@ std::vector<double> solveSystem(std::vector<std::vector<double>> matrix, std::ve
 }
 
 
-double accumulateVector(std::vector<double> v1) {
+double accumulateVector(const std::vector<double>& v1) {
     double cumSum = 0.0;
     for (int i = 0; i < v1.size(); i++) {
         cumSum += v1[i];
@@ -244,7 +244,7 @@ void updateColumn(std::vector<std::vector<double>>& matrix, std::vector<double> 
     }
 }
 
-std::vector<double> createVector(double num, int length) {
+std::vector<double> createVector(const double& num, const int& length) {
     std::vector<double> v1(length, num);
     return v1;
 }
@@ -256,7 +256,7 @@ void addElement(std::vector<double>& v1, double value, int col_index) {
 
 
 // takes two column vector, returns column vector
-std::vector<std::vector<double>> hadamardProduct(std::vector<std::vector<double>> col_v1, std::vector<std::vector<double>> col_v2) {
+std::vector<std::vector<double>> hadamardProduct(const std::vector<std::vector<double>>& col_v1, const std::vector<std::vector<double>>& col_v2) {
     int num_elements = col_v1.size();
     if (num_elements != col_v2.size()) {
         throw std::invalid_argument("Vector dimensions do not match on call to hadamardProduct()");
@@ -272,7 +272,7 @@ std::vector<std::vector<double>> hadamardProduct(std::vector<std::vector<double>
 
 }
 
-std::vector<std::vector<double>> subtractColumnVectors(std::vector<std::vector<double>> v1, std::vector<std::vector<double>> v2) {
+std::vector<std::vector<double>> subtractColumnVectors(const std::vector<std::vector<double>>& v1, const std::vector<std::vector<double>>& v2) {
     if (v1.size() != v2.size()) {
         throw std::invalid_argument("Vector dimensions do not match for subtraction.");
     }

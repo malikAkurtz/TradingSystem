@@ -12,7 +12,7 @@ InputNeuron::InputNeuron() {}
 
 // Neuron Definitions
 Neuron::Neuron(int num_weights) {
-    weights.resize(num_weights, static_cast<double>(rand()) / RAND_MAX - 0.5); 
+    weights.resize(num_weights, static_cast<double>(rand()) / RAND_MAX - 0.5); //
 }
 
 std::vector<double> Neuron::getWeights() const {

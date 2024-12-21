@@ -1,8 +1,5 @@
-1.) Create DataBase system to begin collecting price data (and other forms of data down the line) using SQLite
-2.) Figure out a way to retrieve price data and save it to the database (web scraping?), preferably running 24/7 on a virtual machine 
-3.) Create a backtesting library
-3.) Determine a trading strategy
-4.) Use AlpacaAPI to execute trades (in python)
+1.) need to change the loss function used for binary classification
+
 
 Neural network, 1 input layer 1 neuron, 1 hidden layer 2 neurons, 1 output layer 1 neuron,
 
