@@ -118,21 +118,12 @@ std::vector<std::vector<double>> parseCSV(std::string file_name) {
 
 
 void toCSV(const std::string &file_name,
-           const std::vector<std::vector<double>> &data,
-           const std::vector<double> &labels,
-           const std::vector<double> &predictions) 
+           const std::vector<int> &epochs,
+           const std::vector<double> &losses) 
 {
     // Check for consistent sizes
-    size_t num_rows = data.size();
-    if (num_rows == 0) {
-        std::cerr << "Data is empty, nothing to write." << std::endl;
-        return;
-    }
-
-    size_t num_cols = data[0].size();
-
-    if (labels.size() != num_rows || predictions.size() != num_rows) {
-        std::cerr << "Labels or predictions size does not match data rows." << std::endl;
+    if (epochs.size() != losses.size()) {
+        std::cerr << "Epochs and losses sizes do not match." << std::endl;
         return;
     }
 
@@ -142,18 +133,12 @@ void toCSV(const std::string &file_name,
         return;
     }
 
-    // Write header row (adjust as needed)
-    for (size_t c = 0; c < num_cols; ++c) {
-        file << "F" << c << ",";
-    }
-    file << "Label,Prediction\n";
+    // Write header row
+    file << "Epoch,Loss\n";
 
-    // Write each row of data, then label, then prediction
-    for (size_t r = 0; r < num_rows; ++r) {
-        for (size_t c = 0; c < num_cols; ++c) {
-            file << data[r][c] << ((c == num_cols - 1) ? ',' : ',');
-        }
-        file << labels[r] << "," << predictions[r] << "\n";
+    // Write each epoch and its corresponding loss
+    for (size_t i = 0; i < epochs.size(); ++i) {
+        file << epochs[i] << "," << losses[i] << "\n";
     }
 
     file.close();

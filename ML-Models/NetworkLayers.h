@@ -7,6 +7,8 @@
 #include "LinearAlgebra.h"
 #include "GenFunctions.h"
 
+extern std::vector<double> NUM_NEURONS_PER_LAYER;
+
 // Activation Function Enum
 enum ActivationFunction {
     RELU,
@@ -53,7 +55,7 @@ class Layer {
     
 
     // Constructor
-    Layer(int num_neurons, int num_neurons_in_prev_layer, ActivationFunction type);
+    Layer(int num_neurons, ActivationFunction type);
 
     // Calculate outputs for the hidden layer
     void calculateLayerOutputs(std::vector<std::vector<double>> input_vector);

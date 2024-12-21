@@ -15,6 +15,7 @@ class NeuralNetwork {
     std::vector<std::shared_ptr<Layer>> layers; // Use shared_ptr for polymorphism
     int num_features;
     double model_loss = INFINITY;
+    std::vector<double> epoch_losses;
 
 
     NeuralNetwork(float learningrate, int num_epochs) : inputLayer(nullptr){
@@ -180,7 +181,6 @@ class NeuralNetwork {
                 int gradient_index = pd_Ci_rsp_all_layers_weights.size() - 1 - m;
                 this->layers[m]->updateNeuronWeights(pd_Ci_rsp_all_layers_weights[gradient_index], this->learning_rate); //+1 since we already processed output layer
                 }
-
                 printDebug("New Layer Parameters Starting from OutputLayer After Processing This Sample");
                 for (int i = 0; i < num_layers;i++) {
                     printMatrixDebug(this->layers[i]->getWeightsMatrix());
@@ -189,6 +189,7 @@ class NeuralNetwork {
                 
             }
             double epoch_MSE = epoch_accumulated_loss / num_samples; // mean squarred error for this epoch
+            this->epoch_losses.push_back(epoch_MSE);
             std::cout << "Epoch: " << e << " MSE: " << epoch_MSE << std::endl;
         }
         // now getting predictions of the entire feature matrix, i.e all samples
@@ -227,8 +228,7 @@ class NeuralNetwork {
             // for every hidden layer in the network
             std::vector<std::vector<double>> prev_layer_output = input_layer_output;
             for (int j = 0; j < num_layers; j++) {
-                printDebug("Here");
-                printDebug(j);
+
                 this->layers[j]->calculateLayerOutputs(prev_layer_output);
                 
                 // print("Hidden layer activation outputs");

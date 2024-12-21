@@ -14,9 +14,9 @@ InputNeuron::InputNeuron() {}
 // Neuron Definitions
 Neuron::Neuron(int num_weights) {
     if (DEBUG) {
-        weights.resize(num_weights, static_cast<double>(rand()) / RAND_MAX - 0.5);
-    } else {
         weights.resize(num_weights, 2);
+    } else {
+        weights.resize(num_weights, static_cast<double>(rand()) / RAND_MAX - 0.5);
     }
 }
 

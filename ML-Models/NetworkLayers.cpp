@@ -3,12 +3,15 @@
 #include "Output.h"
 #include <iostream>
 
+std::vector<double> NUM_NEURONS_PER_LAYER = {};
+
 // InputLayer Constructor
 InputLayer::InputLayer(int num_features) {
     for (int i = 0; i < num_features; ++i) {
         InputNeuron neuron;
         this->inputNeurons.push_back(neuron);
     }
+    NUM_NEURONS_PER_LAYER.push_back(num_features);
 }
 
 // InputLayer::calculateLayerOutputs
@@ -31,20 +34,24 @@ void InputLayer::addNeuron(InputNeuron inputNeuron) {
 
 
 // Layer Constructor
-Layer::Layer(int num_neurons, int num_neurons_in_prev_layer, ActivationFunction type)
+Layer::Layer(int num_neurons, ActivationFunction type)
     : AFtype(type) {
     for (int i = 0; i < num_neurons; ++i) {
-        Neuron neuron(num_neurons_in_prev_layer + 1); // Including bias
+        printDebug("Number of neuron in previous layer");
+        print(NUM_NEURONS_PER_LAYER.back());
+        Neuron neuron(NUM_NEURONS_PER_LAYER.back() + 1); // Including bias
         this->addNeuron(neuron);
         this->addNeuronWeights(neuron);
     }
+    NUM_NEURONS_PER_LAYER.push_back(num_neurons);
 }
 
 void Layer::calculateLayerOutputs(std::vector<std::vector<double>> input_vector) {
     input_vector.push_back({1}); // Add bias
 
+    printDebug("Weights Matrix for this layer");
+    printMatrixDebug(this->getWeightsMatrix());
     this->pre_activation_outputs = (matrixMultiply(this->getWeightsMatrix(), input_vector));
-
     if (AFtype == RELU) {
         this->activation_outputs = ReLU(this->pre_activation_outputs);
         this->derivative_activation_outputs = d_ReLU(this->pre_activation_outputs);

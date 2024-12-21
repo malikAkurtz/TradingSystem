@@ -12,7 +12,7 @@
 #include "Neuron.h"
 #include "NetworkLayers.h"
 
-bool DEBUG = true;
+bool DEBUG = false;
 
 int main() {
     // Define datasets
@@ -51,6 +51,11 @@ int main() {
         {9},  {11}, {13}, {15}, {17}, {19}, {21}, {23},
         {25}, {27}, {29}, {31}, {33}, {35}, {37}, {39}, {41}, {43}
     };
+
+    if (DEBUG) {
+        features2 = {{2}};
+        labels2 = {{7}};
+    }
 
 
     std::vector<std::vector<double>> features3 = {
@@ -107,21 +112,33 @@ int main() {
 
 
     // Select dataset (change this to switch datasets)
-    auto& selected_data = data2; // Use data1, data2, or data3
+    auto& selected_data = data3; // Use data1, data2, or data3
     auto& features = selected_data.first;
     auto& labels = selected_data.second;
 
 
-    // Normalize features if required
-    //features = normalizeData(features); // Uncomment if normalization is required
+    if (!DEBUG) {
+        features = normalizeData(features);
+    }
 
     // Neural Network initialization
     int num_features = features[0].size();
     int num_labels = labels[0].size();  // Ensure compatibility with multiple outputs
-    NeuralNetwork Network(0.01, 1000);  // Learning rate = 0.01, epochs = 1000
+    int num_epochs = 1000;
+
+    if (DEBUG) {
+        num_epochs = 1;
+    }
+    
+    NeuralNetwork Network(0.001, num_epochs);  // Learning rate = 0.01, epochs = 1000
     Network.addInputLayer(std::make_shared<InputLayer>(num_features));
-    //Network.addLayer(std::make_shared<Layer>(1, num_features, RELU)); // Hidden layer with 2 neurons
-    Network.addLayer(std::make_shared<Layer>(num_labels, num_features, NONE));  // Output layer with num_labels neurons
+    Network.addLayer(std::make_shared<Layer>(10, RELU));
+    Network.addLayer(std::make_shared<Layer>(3, RELU));
+    Network.addLayer(std::make_shared<Layer>(10, RELU));
+    // Network.addLayer(std::make_shared<Layer>(3, RELU));
+    // Network.addLayer(std::make_shared<Layer>(10, RELU));
+    // Network.addLayer(std::make_shared<Layer>(3, RELU));
+    Network.addLayer(std::make_shared<Layer>(num_labels, NONE));  // Output layer with num_labels neurons
     
 
     // Train the model
@@ -131,6 +148,10 @@ int main() {
     std::vector<std::vector<std::vector<double>>> predictions = Network.getPredictions(features);
     std::cout << "Predictions vs Labels" << std::endl;
     printPredictionsVSLabels(predictions, labels);
+    std::vector<int> epochs(num_epochs);
+    std::vector<double> losses = Network.epoch_losses;
+    std::iota(epochs.begin(), epochs.end(), 1); // Fills with 1 to 1000
+    toCSV("training_loss.txt", epochs, Network.epoch_losses);
 
     std::cout << "Trained Model MSE" << std::endl;
     std::cout << Network.model_loss << std::endl;
