@@ -253,6 +253,15 @@ std::vector<double> createVector(const double& num, const int& length) {
     return v1;
 }
 
+std::vector<std::vector<double>> createColumnVector(const double& num, const int& length) {
+    std::vector<std::vector<double>> col_vec(length, std::vector<double>(1));
+    for (int i = 0; i < length; i++) {
+        col_vec[i][0] = num;
+    }
+
+    return col_vec;
+}
+
 void addElement(std::vector<double>& v1, double value, int col_index) {
     v1.insert(v1.begin() + col_index, value);
 }
@@ -309,4 +318,14 @@ std::vector<std::vector<double>> outerProduct(
     }
 
     return result;
+}
+
+double calculateMatrixEuclideanNorm(const std::vector<std::vector<double>>& matrix) {
+    double cumSum = 0;
+    for (int i = 0; i < matrix.size(); i++) {
+        for (int j = 0; j < matrix[0].size(); j++) {
+            cumSum += (matrix[i][j] * matrix[i][j]);
+        }
+    }
+    return sqrt(cumSum);
 }

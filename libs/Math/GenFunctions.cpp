@@ -39,6 +39,21 @@ double modifiedSquarredError(const std::vector<std::vector<double>>& predictions
     return (innerProduct(error, error) / 2);
 }
 
+double vectorizedLogLoss(const std::vector<std::vector<double>>& predictions, const std::vector<std::vector<double>>& labels) {
+    double cumSum = 0;
+    const double epsilon = 1e-10;
+
+    std::vector<double> preds1D = columnVectortoVector1D(predictions);
+    std::vector<double> labels1D = columnVectortoVector1D(labels);
+
+    for (int i = 0; i < predictions.size(); i++) {
+        double clipped_prediction = std::max(epsilon, std::min(1-epsilon, preds1D[i]));
+        cumSum += (labels1D[i] * std::log(clipped_prediction)) + ((1-labels1D[i]) * std::log((1-clipped_prediction)));
+    }
+    
+    return (-1 * (cumSum / predictions.size()));
+}
+
 
 
 std::vector<double> thresholdFunction(const std::vector<double>& softPredictions, const double& threshhold) {

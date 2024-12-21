@@ -3,15 +3,16 @@
 #include <string>
 #include "Output.h"
 
-
-void printVectorDebug(const std::vector<double>& vec) {
-    if (DEBUG) {
-        std::cout << "< ";
-        for (const auto& elem : vec) {
+void printMatrix(const std::vector<std::vector<double>>& matrix) {
+    std::cout << "[" << std::endl;
+    for (const auto& row : matrix) {
+        std::cout << "  < ";
+        for (const auto& elem : row) {
             std::cout << elem << " ";
         }
         std::cout << ">" << std::endl;
     }
+    std::cout << "]" << std::endl;
 }
 
 void printMatrixDebug(const std::vector<std::vector<double>>& matrix) {
@@ -25,53 +26,15 @@ void printMatrixDebug(const std::vector<std::vector<double>>& matrix) {
             std::cout << ">" << std::endl;
         }
         std::cout << "]" << std::endl;
+        std::cout << "(" << matrix.size() << "," << matrix[0].size() << ")" << std::endl;
     }
 }
 
-
-
-void printMatrixShapeDebug(const std::vector<std::vector<double>>& matrix) {
-    if (DEBUG) {std::cout << "(" << matrix.size() << "," << matrix[0].size() << ")" << std::endl;}
-}
-
-void printVectorShapeDebug(const std::vector<double>& vector) {
-    if (DEBUG) {std::cout << "(" << vector.size() << ", " << ")" << std::endl;}
-}
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-
-void printVector(const std::vector<double>& vec) {
-    std::cout << "< ";
-    for (const auto& elem : vec) {
-        std::cout << elem << " ";
-    }
-    std::cout << ">" << std::endl;
-}
-
-void printMatrix(const std::vector<std::vector<double>>& matrix) {
-    std::cout << "[" << std::endl;
-    for (const auto& row : matrix) {
-        std::cout << "  < ";
-        for (const auto& elem : row) {
-            std::cout << elem << " ";
-        }
-        std::cout << ">" << std::endl;
-    }
-    std::cout << "]" << std::endl;
-
-}
-
-
-void printMatrixShape(const std::vector<std::vector<double>>& matrix) {
-    std::cout << "(" << matrix.size() << "," << matrix[0].size() << ")" << std::endl;
-}
-
-void printVectorShape(const std::vector<double>& vector) {
-    std::cout << "(" << vector.size() << ", " << ")" << std::endl;
-}
 
 void printPredictionsVSLabels(const std::vector<std::vector<std::vector<double>>>& predictions, 
                               const std::vector<std::vector<double>>& labels) {

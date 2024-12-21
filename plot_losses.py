@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 import pandas as pd
 
-# File path to the training loss file
+# File path to the training loss and gradient data
 file_path = "training_loss.txt"
 
 # Load the data using pandas
@@ -12,27 +12,43 @@ except FileNotFoundError:
     exit()
 
 # Check if the necessary columns exist
-if "Epoch" not in data.columns or "Loss" not in data.columns:
-    print("Error: File does not contain 'Epoch' or 'Loss' columns.")
+required_columns = {"Epoch", "Loss", "Gradient"}
+if not required_columns.issubset(data.columns):
+    print(f"Error: File does not contain the required columns: {required_columns}")
     exit()
 
 # Extract the data
 epochs = data["Epoch"]
 losses = data["Loss"]
+gradients = data["Gradient"]
 
 # Plot the data
-plt.figure(figsize=(10, 6))
+plt.figure(figsize=(12, 8))
+
+# Plot loss
 plt.plot(epochs, losses, marker="o", linestyle="-", color="b", label="Loss")
-plt.title("Training Loss Over Epochs", fontsize=16)
+
+# Plot gradient magnitudes
+plt.plot(
+    epochs,
+    gradients,
+    marker="x",
+    linestyle="--",
+    color="r",
+    label="Gradient Magnitude",
+)
+
+# Add titles and labels
+plt.title("Training Loss and Gradient Magnitude Over Epochs", fontsize=16)
 plt.xlabel("Epoch", fontsize=14)
-plt.ylabel("Loss", fontsize=14)
+plt.ylabel("Value", fontsize=14)
 plt.grid(True, linestyle="--", alpha=0.6)
 plt.legend(fontsize=12)
 plt.tight_layout()
 
 # Save the plot
-plt.savefig("training_loss_plot.png")
-print("Plot saved as 'training_loss_plot.png'.")
+plt.savefig("loss_and_gradient_plot.png")
+print("Plot saved as 'loss_and_gradient_plot.png'.")
 
 # Show the plot
 plt.show()

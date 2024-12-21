@@ -12,7 +12,8 @@ double innerProduct(const std::vector<double>& v1, const std::vector<double>& v2
 std::vector<std::vector<double>> matrixMultiply(const std::vector<std::vector<double>>& m1, const std::vector<std::vector<double>>& m2);
 void addRow(std::vector<std::vector<double>>& matrix, std::vector<double> row);
 void addColumn(std::vector<std::vector<double>>& matrix, std::vector<double> column);
-std::vector<double> solveSystem(const std::vector<std::vector<double>>& matrix, const std::vector<double>& b);
+std::vector<std::vector<double>> createColumnVector(const double &num, const int &length);
+std::vector<double> solveSystem(const std::vector<std::vector<double>> &matrix, const std::vector<double> &b);
 void deleteColumn(std::vector<std::vector<double>>& matrix, int column_index);
 void deleteRow(std::vector<std::vector<double>>& matrix, int row_index);
 std::vector<std::vector<double>> vector1DtoColumnVector(const std::vector<double>& vector);
@@ -31,5 +32,6 @@ std::vector<std::vector<double>> outerProduct(
     const std::vector<std::vector<double>>& col_vec,
     const std::vector<std::vector<double>>& row_vec);
 std::vector<std::vector<double>> subtractColumnVectors(const std::vector<std::vector<double>>& v1, const std::vector<std::vector<double>>& v2);
+double calculateMatrixEuclideanNorm(const std::vector<std::vector<double>> &matrix);
 
 #endif

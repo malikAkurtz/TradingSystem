@@ -91,26 +91,25 @@ int main() {
 
 
     // Select dataset (change this to switch datasets)
-    auto& selected_data = data4; // Use data1, data2, or data3
+    auto& selected_data = data2; // Use data1, data2, or data3
     auto& features = selected_data.first;
     auto& labels = selected_data.second;
 
 
-    if (!DEBUG) {
-        features = normalizeData(features);
-    }
+    //features = normalizeData(features);
 
     // Neural Network initialization
     int num_features = features[0].size();
     int num_labels = labels[0].size();  // Ensure compatibility with multiple outputs
     int num_epochs = 10000;
     
-    NeuralNetwork Network(0.1, num_epochs);  // Learning rate = 0.01, epochs = 1000
+    NeuralNetwork Network(0.01, num_epochs, SQUARRED_ERROR); 
     Network.addInputLayer(std::make_shared<InputLayer>(num_features));
     // Network.addLayer(std::make_shared<Layer>(5, RELU));
     // Network.addLayer(std::make_shared<Layer>(10, RELU));
-    Network.addLayer(std::make_shared<Layer>(3, SIGMOID));
-    Network.addLayer(std::make_shared<Layer>(num_labels, SIGMOID));  // Output layer with num_labels neurons
+    // Network.addLayer(std::make_shared<Layer>(3, RELU));
+
+    Network.addLayer(std::make_shared<Layer>(num_labels, NONE));  // Output layer with num_labels neurons
     
 
     // Train the model
@@ -123,15 +122,15 @@ int main() {
     std::vector<int> epochs(num_epochs);
     std::vector<double> losses = Network.epoch_losses;
     std::iota(epochs.begin(), epochs.end(), 1); // Fills with 1 to 1000
-    toCSV("training_loss.txt", epochs, Network.epoch_losses);
+    toCSV("training_loss.txt", epochs, Network.epoch_losses, Network.epoch_gradient_norms);
 
-    std::cout << "Trained Model MSE" << std::endl;
+    std::cout << "Trained Model Loss" << std::endl;
     std::cout << Network.model_loss << std::endl;
 
 
     // Print the weights of the hidden layers
-    print("Final Layer Parameters Starting from First Hidden Layer");
-    for (size_t i = 0; i < Network.num_layers; i++) {
+    printDebug("Final Layer Parameters Starting from First Hidden Layer");
+    for (size_t i = 0; i < Network.num_hidden_layers; i++) {
         printMatrix(Network.layers[i]->getWeightsMatrix());
     }
 

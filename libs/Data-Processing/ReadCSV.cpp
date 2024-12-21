@@ -119,7 +119,8 @@ std::vector<std::vector<double>> parseCSV(std::string file_name) {
 
 void toCSV(const std::string &file_name,
            const std::vector<int> &epochs,
-           const std::vector<double> &losses) 
+           const std::vector<double> &losses,
+           const std::vector<double> &gradients) 
 {
     // Check for consistent sizes
     if (epochs.size() != losses.size()) {
@@ -134,11 +135,11 @@ void toCSV(const std::string &file_name,
     }
 
     // Write header row
-    file << "Epoch,Loss\n";
+    file << "Epoch,Loss,Gradient\n";
 
     // Write each epoch and its corresponding loss
     for (size_t i = 0; i < epochs.size(); ++i) {
-        file << epochs[i] << "," << losses[i] << "\n";
+        file << epochs[i] << "," << losses[i] << "," << gradients[i] << "\n";
     }
 
     file.close();
