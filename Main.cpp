@@ -12,7 +12,7 @@
 #include "Neuron.h"
 #include "NetworkLayers.h"
 
-bool DEBUG = false;
+bool DEBUG = true;
 
 int main() {
     // Define datasets
@@ -107,21 +107,21 @@ int main() {
 
 
     // Select dataset (change this to switch datasets)
-    auto& selected_data = data4; // Use data1, data2, or data3
+    auto& selected_data = data2; // Use data1, data2, or data3
     auto& features = selected_data.first;
     auto& labels = selected_data.second;
 
 
     // Normalize features if required
-    features = normalizeData(features); // Uncomment if normalization is required
+    //features = normalizeData(features); // Uncomment if normalization is required
 
     // Neural Network initialization
     int num_features = features[0].size();
     int num_labels = labels[0].size();  // Ensure compatibility with multiple outputs
-    NeuralNetwork Network(0.01, 10000);  // Learning rate = 0.01, epochs = 1000
+    NeuralNetwork Network(0.01, 1000);  // Learning rate = 0.01, epochs = 1000
     Network.addInputLayer(std::make_shared<InputLayer>(num_features));
-    Network.addHiddenLayer(std::make_shared<HiddenLayer>(4, num_features, SIGMOID)); // Hidden layer with 2 neurons
-    Network.addOutputLayer(std::make_shared<OutputLayer>(num_labels, 4, SIGMOID));  // Output layer with num_labels neurons
+    //Network.addLayer(std::make_shared<Layer>(1, num_features, RELU)); // Hidden layer with 2 neurons
+    Network.addLayer(std::make_shared<Layer>(num_labels, num_features, NONE));  // Output layer with num_labels neurons
     
 
     // Train the model
@@ -137,13 +137,10 @@ int main() {
 
 
     // Print the weights of the hidden layers
-    print("Final Hidden Layer Parameters Starting from First Hidden Layer");
-    for (size_t i = 0; i < Network.hiddenLayers.size(); i++) {
-        printMatrix(Network.hiddenLayers[i]->getWeightsMatrix());
+    print("Final Layer Parameters Starting from First Hidden Layer");
+    for (size_t i = 0; i < Network.num_layers; i++) {
+        printMatrix(Network.layers[i]->getWeightsMatrix());
     }
-    // Print the weights of the output layer
-    print("Final Model Output Layer Parameters");
-    printMatrix(Network.outputLayer->getWeightsMatrix());
 
 
     return 0;

@@ -1,4 +1,5 @@
 #include "Neuron.h"
+#include "Output.h"
 
 // InputNeuron Definitions
 InputNeuron::InputNeuron() {}
@@ -12,7 +13,11 @@ InputNeuron::InputNeuron() {}
 
 // Neuron Definitions
 Neuron::Neuron(int num_weights) {
-    weights.resize(num_weights, static_cast<double>(rand()) / RAND_MAX - 0.5); //
+    if (DEBUG) {
+        weights.resize(num_weights, static_cast<double>(rand()) / RAND_MAX - 0.5);
+    } else {
+        weights.resize(num_weights, 2);
+    }
 }
 
 std::vector<double> Neuron::getWeights() const {

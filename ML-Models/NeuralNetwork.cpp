@@ -11,14 +11,13 @@ class NeuralNetwork {
     float learning_rate;
     int num_epochs;
     int num_layers ;
-    std::vector<std::shared_ptr<HiddenLayer>> hiddenLayers; // Use shared_ptr for polymorphism
     std::shared_ptr<InputLayer> inputLayer;                 // Input layer as a smart pointer
-    std::shared_ptr<OutputLayer> outputLayer;
+    std::vector<std::shared_ptr<Layer>> layers; // Use shared_ptr for polymorphism
     int num_features;
     double model_loss = INFINITY;
 
 
-    NeuralNetwork(float learningrate, int num_epochs) : inputLayer(nullptr), outputLayer(nullptr){
+    NeuralNetwork(float learningrate, int num_epochs) : inputLayer(nullptr){
         this->learning_rate = learningrate;
         this->num_layers = 0;
         this->num_epochs = num_epochs;
@@ -81,11 +80,11 @@ class NeuralNetwork {
                 printMatrixDebug(error_term_L);
                 printMatrixShapeDebug(error_term_L);
 
-                int last_hidden_layer_index = this->hiddenLayers.size()-1;
+                int last_hidden_layer_index = num_layers-2;
                 std::vector<std::vector<double>> A_hidden_with_bias;
 
                 if (last_hidden_layer_index >= 0) {
-                    A_hidden_with_bias = this->hiddenLayers[last_hidden_layer_index]->getActivationOutputs();
+                    A_hidden_with_bias = this->layers[last_hidden_layer_index]->getActivationOutputs();
                 } else{
                     A_hidden_with_bias = this->inputLayer->getInputs();
                 }
@@ -119,9 +118,9 @@ class NeuralNetwork {
                     std::vector<std::vector<double>> W_l_plus_1_T;
 
                     if (j == last_hidden_layer_index) {
-                        W_l_plus_1_T = takeTranspose(this->outputLayer->getWeightsMatrix());
+                        W_l_plus_1_T = takeTranspose(this->layers[num_layers-1]->getWeightsMatrix());
                     } else {
-                        W_l_plus_1_T = takeTranspose(this->hiddenLayers[j+1]->getWeightsMatrix());
+                        W_l_plus_1_T = takeTranspose(this->layers[j+1]->getWeightsMatrix());
                     }
 
                     printDebug("W_l_plus_1_T");
@@ -138,7 +137,7 @@ class NeuralNetwork {
                     printMatrixShapeDebug(error_term_lhs);
 
 
-                    std::vector<std::vector<double>> DA_hidden_with_no_bias = this->hiddenLayers[j]->getDerivativeActivationOutputs();
+                    std::vector<std::vector<double>> DA_hidden_with_no_bias = this->layers[j]->getDerivativeActivationOutputs();
                     
                     printDebug("DA_hidden_with_no_bias");
                     printMatrixDebug(DA_hidden_with_no_bias);
@@ -154,7 +153,7 @@ class NeuralNetwork {
                     if (j == 0) { // need to get input layer outputs
                         A_hidden_with_bias = this->inputLayer->getInputs();
                     } else {
-                        A_hidden_with_bias = this->hiddenLayers[j-1]->getActivationOutputs();
+                        A_hidden_with_bias = this->layers[j-1]->getActivationOutputs();
                         
                     }
                     A_hidden_with_bias.push_back({1}); 
@@ -176,19 +175,16 @@ class NeuralNetwork {
 
                 // update weights for output layer
                 printMatrixDebug(pd_Ci_rsp_all_layers_weights[0]);
-                this->outputLayer->updateNeuronWeights(pd_Ci_rsp_all_layers_weights[0], this->learning_rate);
                 // update weights for every hidden layer
-                for (int m = 0; m < this->hiddenLayers.size(); m++) {
-                    int gradient_index = pd_Ci_rsp_all_layers_weights.size() - 1 - m;
-                    this->hiddenLayers[m]->updateNeuronWeights(pd_Ci_rsp_all_layers_weights[gradient_index], this->learning_rate); //+1 since we already processed output layer
+                for (int m = 0; m < num_layers; m++) {
+                int gradient_index = pd_Ci_rsp_all_layers_weights.size() - 1 - m;
+                this->layers[m]->updateNeuronWeights(pd_Ci_rsp_all_layers_weights[gradient_index], this->learning_rate); //+1 since we already processed output layer
                 }
 
-                printDebug("New Hidden Layer Parameters Starting from First Hidden Layer After Processing This Sample");
-                for (int i = 0; i < this->hiddenLayers.size();i++) {
-                    printMatrixDebug(this->hiddenLayers[i]->getWeightsMatrix());
+                printDebug("New Layer Parameters Starting from OutputLayer After Processing This Sample");
+                for (int i = 0; i < num_layers;i++) {
+                    printMatrixDebug(this->layers[i]->getWeightsMatrix());
                 }
-                printDebug("New Output Layer Parameters After Processing This Sample");
-                printMatrixDebug(this->outputLayer->getWeightsMatrix());
                 printDebug("-------------------------------------------------END EPOCH-------------------------------------------------------------");
                 
             }
@@ -230,46 +226,35 @@ class NeuralNetwork {
             printMatrixShapeDebug(input_layer_output);
             // for every hidden layer in the network
             std::vector<std::vector<double>> prev_layer_output = input_layer_output;
-            for (int j = 0; j < this->hiddenLayers.size(); j++) {
-                this->hiddenLayers[j]->calculateLayerOutputs(prev_layer_output);
+            for (int j = 0; j < num_layers; j++) {
+                printDebug("Here");
+                printDebug(j);
+                this->layers[j]->calculateLayerOutputs(prev_layer_output);
+                
                 // print("Hidden layer activation outputs");
                 // printVector(this->hiddenLayers[j]->activation_outputs);
-                std::vector<std::vector<double>> this_layer_output = this->hiddenLayers[j]->getActivationOutputs();
+                std::vector<std::vector<double>> this_layer_output = this->layers[j]->getActivationOutputs();
                 printDebug("This Layer Output");
                 printMatrixDebug(this_layer_output);
                 printMatrixShapeDebug(this_layer_output);
                 prev_layer_output = this_layer_output;
             }
 
-            // final pass into output layer
-            this->outputLayer->calculateLayerOutputs(prev_layer_output);
-            // print("Output layer activation outputs");
-            // printVector(this->outputLayer->activation_outputs);
-            std::vector<std::vector<double>> output_layer_output = this->outputLayer->getActivationOutputs();
-            printDebug("Output Layer Output");
-            printMatrixDebug(output_layer_output);
-            printMatrixShapeDebug(output_layer_output);
-            predictions.push_back(output_layer_output);
+
+            predictions.push_back(this->layers[num_layers-1]->getActivationOutputs());
             printDebug("------------------------------------------------Got Prediction--------------------------------------------------------------");
         }
         
         return predictions;
     }
 
-    void addHiddenLayer(std::shared_ptr<HiddenLayer> hiddenLayer) {
-        this->hiddenLayers.push_back(hiddenLayer);
+    void addLayer(std::shared_ptr<Layer> layer) {
+        this->layers.push_back(layer);
         this->num_layers += 1;
     }
 
     void addInputLayer(std::shared_ptr<InputLayer> inputLayer) {
         this->inputLayer = inputLayer;
-        this->num_layers += 1;
     }
-
-    void addOutputLayer(std::shared_ptr<OutputLayer> outputLayer) {
-        this->outputLayer = outputLayer;
-        this->num_layers += 1;
-    }
-
 
 };
