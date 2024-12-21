@@ -118,14 +118,17 @@ std::vector<std::vector<double>> matrixMultiply(const std::vector<std::vector<do
         throw std::invalid_argument("Matrix dimensions do not match on call to matrixMultiply()");
     }
 
-    std::vector<std::vector<double>> resultant(m1.size(), std::vector<double>(m2[0].size()));
+    int rows = m1.size();
+    int cols = m2[0].size();
+    int inner_dimension = m2.size();
+    std::vector<std::vector<double>> resultant(rows, std::vector<double>(cols));
+    
 
-    std::vector<std::vector<double>>  m2_T = takeTranspose(m2);
-    // for every row in m1
     for (int i = 0; i < m1.size(); i++) {
-        // for every column in m2 aka every row in the transpose
-        for (int j = 0; j < m2_T.size(); j++) {
-            resultant[i][j] = innerProduct(m1[i], m2_T[j]);
+        for (int j = 0; j < m2[0].size(); j++) {
+            for (int k = 0; k < inner_dimension; k++) {
+                resultant[i][j] += m1[i][k] * m2[k][j];
+            }
         }
     }
 

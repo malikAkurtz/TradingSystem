@@ -112,7 +112,7 @@ int main() {
 
 
     // Select dataset (change this to switch datasets)
-    auto& selected_data = data3; // Use data1, data2, or data3
+    auto& selected_data = data2; // Use data1, data2, or data3
     auto& features = selected_data.first;
     auto& labels = selected_data.second;
 
@@ -124,17 +124,14 @@ int main() {
     // Neural Network initialization
     int num_features = features[0].size();
     int num_labels = labels[0].size();  // Ensure compatibility with multiple outputs
-    int num_epochs = 1000;
+    int num_epochs = 10000;
 
     if (DEBUG) {
         num_epochs = 1;
     }
     
-    NeuralNetwork Network(0.001, num_epochs);  // Learning rate = 0.01, epochs = 1000
+    NeuralNetwork Network(0.01, num_epochs);  // Learning rate = 0.01, epochs = 1000
     Network.addInputLayer(std::make_shared<InputLayer>(num_features));
-    Network.addLayer(std::make_shared<Layer>(10, RELU));
-    Network.addLayer(std::make_shared<Layer>(3, RELU));
-    Network.addLayer(std::make_shared<Layer>(10, RELU));
     // Network.addLayer(std::make_shared<Layer>(3, RELU));
     // Network.addLayer(std::make_shared<Layer>(10, RELU));
     // Network.addLayer(std::make_shared<Layer>(3, RELU));
