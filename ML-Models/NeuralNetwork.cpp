@@ -8,104 +8,123 @@
 
 class NeuralNetwork {
     public:
-    float learning_rate;
+    float LR;
     int num_epochs;
     int num_layers ;
-    std::shared_ptr<InputLayer> inputLayer;                 // Input layer as a smart pointer
-    std::vector<std::shared_ptr<Layer>> layers; // Use shared_ptr for polymorphism
+    std::shared_ptr<InputLayer> inputLayer;
+    std::vector<std::shared_ptr<Layer>> layers;
     int num_features;
     double model_loss = INFINITY;
     std::vector<double> epoch_losses;
 
 
     NeuralNetwork(float learningrate, int num_epochs) : inputLayer(nullptr){
-        this->learning_rate = learningrate;
+        this->LR = learningrate;
         this->num_layers = 0;
         this->num_epochs = num_epochs;
     }
 
 
     void fit(std::vector<std::vector<double>> featuresMatrix, std::vector<std::vector<double>>  labels) {
-        //convert from 1d vectors to 2d column vectors iniside the function
-        std::vector<std::vector<std::vector<double>>> pd_Ci_rsp_all_layers_weights; // matrix of matrices representing gradients
+        // ΔCᵢ, matrix of matrices representing gradients with respect to each of the layers weights
+        std::vector<std::vector<std::vector<double>>> gradient_Ci; 
         int num_samples = featuresMatrix.size();
         
+        // for every epochd
         for (int e = 0; e < this->num_epochs; e++) {
-            printDebug("-----------------------------------------------------NEW EPOCH-----------------------------------------------------------------");
+            printDebug("--------------------NEW EPOCH--------------------");
             double epoch_accumulated_loss = 0;
-            // for every sample
+            // for every sample in the data set
             for (int i = 0; i < num_samples; i++) {
-                pd_Ci_rsp_all_layers_weights.clear();
-                // print("----------------------------------------------------------------------------------------------------------------------------------");
-                // FORWARD PASS
-                printDebug("-----------------------------------------------------Forward Pass-----------------------------------------------------------------");
-                std::vector<std::vector<double>> X = vector1DtoColumnVector(featuresMatrix[i]); // featuresMatrix[i] is a 1d vector of features
-                // X will be used to transform the features for this particular sample into a column vector to be used in computation
+                // we are going to find the gradient of the loss of this particular sample with each layers weights
+                gradient_Ci.clear();
+
+                printDebug("-------------------Forward Pass----------------");
+                // Store the features for this particular sample as a column vector
+                std::vector<std::vector<double>> X = vector1DtoColumnVector(featuresMatrix[i]);
                 printDebug("Sample being processed");
                 printMatrixDebug(X);
                 printMatrixShapeDebug(X);
 
-                std::vector<std::vector<double>> Y = vector1DtoColumnVector(labels[i]); // labels[i] is a 1d vector of labels
-                // Y will be used to transform the labels for this particular sample into a column vector to be used in computation
+                // Store the labels for this particular sample as a column vector
+                std::vector<std::vector<double>> Y = vector1DtoColumnVector(labels[i]); 
                 printDebug("Sample Label");
                 printMatrixDebug(Y);
                 printMatrixShapeDebug(Y);
-                // this particular prediction for his 1 sample will be returned as a column vector i.e a matrix of shape (x, 1)
-                // but it will be stored inside of another matrix
-                // essentially its like passing in a featureMatrix with just one row (one sample) into get predictions and just getting the first 
-                // and only thing that is returned by the function which would be the predictions
-                // getPredictions takes in a data set matrix, so pass in the row as a matrix, essentially a dataset with 1 row i.e 1 sample
-                // getPredictions returns a vector of Column vectors representing predictions, so get the first one and only one
-                // so A_L will automatically be a column vector
+
+                /* 
+                The output of the last hidden layer for this sample, Aᴸ, will be the result of indexing the first and only output of the getPredictions method, which takes in a matrix of features, and returns a vector of column vectors representing Aᴸ outputs for each sample, which in this case is only one. Hence why we wrap featuresMatrix[i] in a vector, since were essentially getting predictions on an entire dataset that consists of only one sample)
+                */
                 std::vector<std::vector<double>> A_L = getPredictions({featuresMatrix[i]})[0];
                 printDebug("Sample Predictions");
                 printMatrixDebug(A_L);
                 printMatrixShapeDebug(A_L);
 
-                // BACKWARD PASS
-                printDebug("-----------------------------------------------------Backward Pass-----------------------------------------------------------------");
-                // compute error + gradient at output layer, because were processing one sample at a time, m = 1, so loss = cost = squarred error
-                // essentially our loss is going to be the column vector of predictions - column vector of labels, and take the dot product
-                // of the resultant which itself to get the squarred error
-                double loss = modifiedSquarredError(A_L, Y); // gradient is just A - y since the ^2 and 1/2 cancel
+                printDebug("--------------------Backward Pass-------------------------");
+                /* 
+                The loss for this one sample is the squarred error / 2 (to make the derivative easier) essentially takes the column vector of predictions, Aᴸ, and subtracts the labels vector Y, to produce another vector representing the error of each node output aᵢᴸ with respect to each label yᵢ. We then take the dot product of this resulant vector with itself to get the sum of squarred errors for each term, and divide it by 2 this will represent the loss for this samples forward pass
+                */
+                double loss = modifiedSquarredError(A_L, Y);
                 printDebug("Sample Squarred Error i.e Loss i.e Cost of ith sample");
                 printDebug(loss);
                 epoch_accumulated_loss += loss;
 
-                // begin back propogation starting at the output layer
-                // gradient of loss of this particular sample with respect to loss will be a vector of matrices
+                /*
+                For this one sample, we want to find the gradient of the cost/loss function with respect to each layers' weights starting with the last hidden layer L
+                so we begin by finding the partial derivative of the cost function with respect
+                to the weights of the last hidden layer L, ∂Cᵢ/∂Wᴸ
+                */
                 std::vector<std::vector<double>> pd_Ci_W_L;
-                std::vector<std::vector<double>> error_term_L = subtractColumnVectors(A_L, Y);
+
+                /*
+                calculte the δᴸ term for the last hidden layer L and remember that derivative of the modified squarred error is just the difference of the two vectors
+                δᴸ = g'(Zᴸ) ⊙ (Aᴸ-Y)
+                */
+                int outputLayer_index = num_layers - 1;
+                std::vector<std::vector<double>> error_term_L = hadamardProduct(
+                    this->layers[outputLayer_index]->getDerivativeActivationOutputs(),
+                    subtractColumnVectors(A_L, Y));
 
                 printDebug("error term for output layer");
                 printMatrixDebug(error_term_L);
                 printMatrixShapeDebug(error_term_L);
 
                 int last_hidden_layer_index = num_layers-2;
-                std::vector<std::vector<double>> A_hidden_with_bias;
 
+
+                // Aˡ⁻¹ but tacking on a 1 to the bottom of the column vector for the bias term
+                std::vector<std::vector<double>> A_prev_activation_with_bias;
+                
+                // if there are other hidden layers
                 if (last_hidden_layer_index >= 0) {
-                    A_hidden_with_bias = this->layers[last_hidden_layer_index]->getActivationOutputs();
+                    // get the previous layers activations
+                    A_prev_activation_with_bias = this->layers[last_hidden_layer_index]->getActivationOutputs();
                 } else{
-                    A_hidden_with_bias = this->inputLayer->getInputs();
+                    // otherwise we just retreive the input layers activations which were just the inputs into the network
+                    A_prev_activation_with_bias = this->inputLayer->getInputs();
                 }
-                A_hidden_with_bias.push_back({1}); // adding a one to the bottom of the column vector (for bias term)
+
+                A_prev_activation_with_bias.push_back({1}); 
 
                 printDebug("vector1Dto2D(A_hidden_with_bias)");
-                printMatrixDebug(A_hidden_with_bias);
-                printMatrixShapeDebug(A_hidden_with_bias);
+                printMatrixDebug(A_prev_activation_with_bias);
+                printMatrixShapeDebug(A_prev_activation_with_bias);
 
                 printDebug("takeTranspose(A_hidden_with_bias)");
-                printMatrixDebug(takeTranspose(A_hidden_with_bias));
-                printMatrixShapeDebug(takeTranspose(A_hidden_with_bias));
-
-                pd_Ci_W_L = outerProduct(error_term_L, takeTranspose(A_hidden_with_bias)); // LOL check notes for why taking transpose
+                printMatrixDebug(takeTranspose(A_prev_activation_with_bias));
+                printMatrixShapeDebug(takeTranspose(A_prev_activation_with_bias));
+                
+                /*
+                ∂Cᵢ/∂Wᴸ = δᴸ * (Aˡ⁻¹)ᵀ
+                */
+                pd_Ci_W_L = outerProduct(error_term_L, takeTranspose(A_prev_activation_with_bias));
 
                 printDebug("pd_Ci_W_L");
                 printMatrixDebug(pd_Ci_W_L);
                 printMatrixShapeDebug(pd_Ci_W_L);
 
-                pd_Ci_rsp_all_layers_weights.push_back(pd_Ci_W_L);
+                // push the partial derivative of the cost with respect to this layers weights to the gradient for this particular sample
+                gradient_Ci.push_back(pd_Ci_W_L);
                 
 
                 // Propogate gradients to previous layers starting with last hidden layer and stopping at input layer
@@ -152,34 +171,36 @@ class NeuralNetwork {
                     printMatrixShapeDebug(error_term);
 
                     if (j == 0) { // need to get input layer outputs
-                        A_hidden_with_bias = this->inputLayer->getInputs();
+                        A_prev_activation_with_bias = this->inputLayer->getInputs();
                     } else {
-                        A_hidden_with_bias = this->layers[j-1]->getActivationOutputs();
+                        A_prev_activation_with_bias = this->layers[j-1]->getActivationOutputs();
                         
                     }
-                    A_hidden_with_bias.push_back({1}); 
+                    A_prev_activation_with_bias.push_back({1}); 
 
                     printDebug("A_hidden_with_bias");
-                    printMatrixDebug(A_hidden_with_bias);
-                    printMatrixShapeDebug(A_hidden_with_bias);
-                    std::vector<std::vector<double>> A_hidden_with_bias_T = takeTranspose(A_hidden_with_bias);
-                    pd_Ci_W_l = matrixMultiply(error_term, A_hidden_with_bias_T);
+                    printMatrixDebug(A_prev_activation_with_bias);
+                    printMatrixShapeDebug(A_prev_activation_with_bias);
+                    
+                    std::vector<std::vector<double>> A_prev_activation_with_bias_T = takeTranspose(A_prev_activation_with_bias);
+                    printDebug("Here");
+                    pd_Ci_W_l = matrixMultiply(error_term, A_prev_activation_with_bias_T);
                     
                     printDebug("pd_Ci_W_l");
                     printMatrixDebug(pd_Ci_W_l);
                     printMatrixShapeDebug(pd_Ci_W_l);
 
-                    pd_Ci_rsp_all_layers_weights.push_back(pd_Ci_W_l);
+                    gradient_Ci.push_back(pd_Ci_W_l);
                     prev_error_term = error_term;
                 }
 
 
                 // update weights for output layer
-                printMatrixDebug(pd_Ci_rsp_all_layers_weights[0]);
+                printMatrixDebug(gradient_Ci[0]);
                 // update weights for every hidden layer
                 for (int m = 0; m < num_layers; m++) {
-                int gradient_index = pd_Ci_rsp_all_layers_weights.size() - 1 - m;
-                this->layers[m]->updateNeuronWeights(pd_Ci_rsp_all_layers_weights[gradient_index], this->learning_rate); //+1 since we already processed output layer
+                int gradient_index = gradient_Ci.size() - 1 - m;
+                this->layers[m]->updateNeuronWeights(gradient_Ci[gradient_index], this->LR); //+1 since we already processed output layer
                 }
                 printDebug("New Layer Parameters Starting from OutputLayer After Processing This Sample");
                 for (int i = 0; i < num_layers;i++) {
@@ -206,8 +227,7 @@ class NeuralNetwork {
         this->model_loss = accumulated_final_model_loss / labels.size(); // mean squarred error
     }
 
-    // currently this returns a matrix of column vectors representing the outputs for each forward pass of each sample
-    // takes in a VECTOR of COLUMN VECTORS
+    // currently this returns a vector of column vectors representing the outputs for each forward pass of each sample
     std::vector<std::vector<std::vector<double>>> getPredictions(std::vector<std::vector<double>> featuresMatrix) {
         printDebug("Features Matrix looks like");
         printMatrixDebug(featuresMatrix);

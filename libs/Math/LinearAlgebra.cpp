@@ -1,6 +1,7 @@
 #include <vector>
 #include <cmath>
 #include <stdexcept>
+#include <Output.h>
 
 
 double innerProduct(const std::vector<double>& v1, const std::vector<double>& v2) {

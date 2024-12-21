@@ -69,5 +69,9 @@
         "stack": "cpp",
         "random": "cpp",
         "filesystem": "cpp"
-    }
+    },
+    "editor.wordWrap": "wordWrapColumn",
+    "editor.wordWrapColumn": 100,
+    "editor.formatOnSave": true,
+    "editor.formatOnType": true
 }

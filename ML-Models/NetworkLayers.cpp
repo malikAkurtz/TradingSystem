@@ -37,8 +37,6 @@ void InputLayer::addNeuron(InputNeuron inputNeuron) {
 Layer::Layer(int num_neurons, ActivationFunction type)
     : AFtype(type) {
     for (int i = 0; i < num_neurons; ++i) {
-        printDebug("Number of neuron in previous layer");
-        print(NUM_NEURONS_PER_LAYER.back());
         Neuron neuron(NUM_NEURONS_PER_LAYER.back() + 1); // Including bias
         this->addNeuron(neuron);
         this->addNeuronWeights(neuron);
