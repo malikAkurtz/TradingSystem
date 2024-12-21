@@ -7,17 +7,16 @@
 InputLayer::InputLayer(int num_features) {
     for (int i = 0; i < num_features; ++i) {
         InputNeuron neuron;
-        inputNeurons.push_back(neuron);
+        this->inputNeurons.push_back(neuron);
     }
 }
 
 // InputLayer::calculateLayerOutputs
-void InputLayer::calculateLayerOutputs(std::vector<std::vector<double>> input_vector) {
-    pre_activation_outputs = input_vector;
+std::vector<std::vector<double>> InputLayer::getInputs() {
+    return this->inputs;
 }
-
-std::vector<std::vector<double>> InputLayer::getPreActivationOutputs() {
-    return pre_activation_outputs;
+void InputLayer::storeInputs(std::vector<std::vector<double>> input_vector) {
+    this->inputs = input_vector;
 }
 
 void InputLayer::addNeuron(InputNeuron inputNeuron) {
@@ -36,8 +35,8 @@ HiddenLayer::HiddenLayer(int num_neurons, int num_neurons_in_prev_layer, Activat
     : AFtype(type) {
     for (int i = 0; i < num_neurons; ++i) {
         Neuron neuron(num_neurons_in_prev_layer + 1); // Including bias
-        addNeuron(neuron);
-        addNeuronWeights(neuron);
+        this->addNeuron(neuron);
+        this->addNeuronWeights(neuron);
     }
 }
 
@@ -45,7 +44,7 @@ HiddenLayer::HiddenLayer(int num_neurons, int num_neurons_in_prev_layer, Activat
 void HiddenLayer::calculateLayerOutputs(std::vector<std::vector<double>> input_vector) {
     input_vector.push_back({1}); // Add bias
 
-    pre_activation_outputs = (matrixMultiply(getWeightsMatrix(), input_vector));
+    this->pre_activation_outputs = (matrixMultiply(this->getWeightsMatrix(), input_vector));
 
     if (AFtype == RELU) {
         this->activation_outputs = ReLU(this->pre_activation_outputs);
@@ -61,27 +60,27 @@ void HiddenLayer::calculateLayerOutputs(std::vector<std::vector<double>> input_v
 }
 
 std::vector<std::vector<double>> HiddenLayer::getActivationOutputs() {
-    return activation_outputs;
+    return this->activation_outputs;
 }
 
 std::vector<std::vector<double>> HiddenLayer::getPreActivationOutputs() {
-    return pre_activation_outputs;
+    return this->pre_activation_outputs;
 }
 
 std::vector<std::vector<double>> HiddenLayer::getDerivativeActivationOutputs() {
-    return derivative_activation_outputs;
+    return this->derivative_activation_outputs;
 }
 
 std::vector<std::vector<double>> HiddenLayer::getWeightsMatrix() {
-    return weightsMatrix;
+    return this->weightsMatrix;
 }
 
 void HiddenLayer::addNeuron(Neuron neuron) {
-    neurons.push_back(neuron);
+    this->neurons.push_back(neuron);
 }
 
 void HiddenLayer::addNeuronWeights(Neuron neuron) {
-        weightsMatrix.push_back(neuron.getWeights());
+        this->weightsMatrix.push_back(neuron.getWeights());
     }
 
 void HiddenLayer::updateNeuronWeights(std::vector<std::vector<double>> gradient_matrix, float LR) {
@@ -106,8 +105,8 @@ OutputLayer::OutputLayer(int num_neurons, int num_neurons_in_prev_layer, Activat
     : AFtype(type) {
     for (int i = 0; i < num_neurons; ++i) {
         Neuron neuron(num_neurons_in_prev_layer + 1); // Including bias
-        addNeuron(neuron);
-        addNeuronWeights(neuron);
+        this->addNeuron(neuron);
+        this->addNeuronWeights(neuron);
     }
 }
 
@@ -130,31 +129,30 @@ void OutputLayer::calculateLayerOutputs(std::vector<std::vector<double>> input_v
 }
 
 std::vector<std::vector<double>> OutputLayer::getActivationOutputs() {
-    return activation_outputs;
+    return this->activation_outputs;
 }
 
 std::vector<std::vector<double>> OutputLayer::getPreActivationOutputs() {
-    return pre_activation_outputs;
+    return this->pre_activation_outputs;
 }
 
 std::vector<std::vector<double>> OutputLayer::getDerivativeActivationOutputs() {
-    return derivative_activation_outputs;
+    return this->derivative_activation_outputs;
 }
 
 std::vector<std::vector<double>> OutputLayer::getWeightsMatrix() const{
-    return weightsMatrix;
+    return this->weightsMatrix;
 }
 
 void OutputLayer::addNeuron(Neuron neuron) {
-    neurons.push_back(neuron);
+    this->neurons.push_back(neuron);
 }
 
 void OutputLayer::addNeuronWeights(Neuron neuron) {
-        weightsMatrix.push_back(neuron.getWeights());
+        this->weightsMatrix.push_back(neuron.getWeights());
     }
 
 void OutputLayer::updateNeuronWeights(std::vector<std::vector<double>> gradient_matrix, float LR) {
-
         for (int i = 0; i < gradient_matrix.size(); i++) {
             for (int j = 0; j < gradient_matrix[0].size(); j++) {
                 this->weightsMatrix[i][j] -= (LR * gradient_matrix[i][j]);

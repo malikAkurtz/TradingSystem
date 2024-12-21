@@ -35,18 +35,19 @@ public:
 
 
 // Input Layer Class
-class InputLayer : public Layer {
+class InputLayer {
 public:
     std::vector<InputNeuron> inputNeurons;
+    std::vector<std::vector<double>> inputs;
 
     // Constructor
     explicit InputLayer(int num_features);
 
     // Calculate outputs for the input layer
-    void calculateLayerOutputs(std::vector<std::vector<double>> input_vector) override;
+    std::vector<std::vector<double>> getInputs();
 
-    // Getter for pre-activation outputs
-    std::vector<std::vector<double>> getPreActivationOutputs();
+    void storeInputs(std::vector<std::vector<double>> input_vector);
+
 
     void addNeuron(InputNeuron neuron);
 };

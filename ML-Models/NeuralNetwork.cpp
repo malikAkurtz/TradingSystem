@@ -87,7 +87,7 @@ class NeuralNetwork {
                 if (last_hidden_layer_index >= 0) {
                     A_hidden_with_bias = this->hiddenLayers[last_hidden_layer_index]->getActivationOutputs();
                 } else{
-                    A_hidden_with_bias = this->inputLayer->getPreActivationOutputs();
+                    A_hidden_with_bias = this->inputLayer->getInputs();
                 }
                 A_hidden_with_bias.push_back({1}); // adding a one to the bottom of the column vector (for bias term)
 
@@ -152,7 +152,7 @@ class NeuralNetwork {
                     printMatrixShapeDebug(error_term);
 
                     if (j == 0) { // need to get input layer outputs
-                        A_hidden_with_bias = this->inputLayer->getPreActivationOutputs();
+                        A_hidden_with_bias = this->inputLayer->getInputs();
                     } else {
                         A_hidden_with_bias = this->hiddenLayers[j-1]->getActivationOutputs();
                         
@@ -222,8 +222,8 @@ class NeuralNetwork {
         // for every sample
         for (int i = 0; i < num_samples; i++) {
             // pass the sample into the input layer and get output
-            this->inputLayer->calculateLayerOutputs(vector1DtoColumnVector(featuresMatrix[i]));
-            std::vector<std::vector<double>> input_layer_output = this->inputLayer->getPreActivationOutputs();
+            this->inputLayer->storeInputs(vector1DtoColumnVector(featuresMatrix[i]));
+            std::vector<std::vector<double>> input_layer_output = this->inputLayer->getInputs();
             printDebug("------------------------------------------------Getting Predictions--------------------------------------------------------------");
             printDebug("Input Layer Output");
             printMatrixDebug(input_layer_output);
