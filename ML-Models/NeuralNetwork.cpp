@@ -210,7 +210,7 @@ class NeuralNetwork {
         for (int i = 0; i < best_predictions.size(); i++) {
             accumulated_final_model_loss += calculateLoss(best_predictions[i], labels_as_col_vectors[i]);
         }
-        this->model_loss = accumulated_final_model_loss / labels.size(); // mean squarred error
+        this->model_loss = accumulated_final_model_loss / labels.size();
     }
 
     // currently this returns a vector of column vectors representing the outputs for each forward pass of each sample

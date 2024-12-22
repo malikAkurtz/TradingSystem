@@ -1,5 +1,4 @@
-1.) need to change the loss function used for binary classification
-2.) need to drop the bias contributioin in the last layers partial derivative
+2.) need to drop the bias contributioin in the last layers partial derivative??????
 
 
 Neural network, 1 input layer 1 neuron, 1 hidden layer 2 neurons, 1 output layer 1 neuron,

@@ -86,31 +86,73 @@ int main() {
         {1.0}  // Class 1
     }};
 
+    std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>> data5 = {{
+        {0.1, 0.2}, // Class 0
+        {0.3, 0.7}, // Class 1
+        {0.4, 0.4}, // Class 0
+        {0.6, 0.8}, // Class 1
+        {0.9, 0.9}, // Class 0
+        {0.2, 0.3}, // Class 0
+        {0.7, 0.1}, // Class 1
+        {0.8, 0.6}, // Class 1
+        {0.5, 0.2}, // Class 0
+        {0.3, 0.9}, // Class 1
+        {0.4, 0.1}, // Class 0
+        {0.8, 0.4}, // Class 1
+        {0.7, 0.9}, // Class 1
+        {0.2, 0.8}, // Class 1
+        {0.5, 0.5}, // Class 0
+        {0.1, 0.9}, // Class 1
+        {0.9, 0.3}, // Class 0
+        {0.6, 0.2}, // Class 0
+        {0.7, 0.8}, // Class 1
+        {0.2, 0.6}  // Class 1
+    },
+    {
+        {0.0}, // Class 0
+        {1.0}, // Class 1
+        {0.0}, // Class 0
+        {1.0}, // Class 1
+        {0.0}, // Class 0
+        {0.0}, // Class 0
+        {1.0}, // Class 1
+        {1.0}, // Class 1
+        {0.0}, // Class 0
+        {1.0}, // Class 1
+        {0.0}, // Class 0
+        {1.0}, // Class 1
+        {1.0}, // Class 1
+        {1.0}, // Class 1
+        {0.0}, // Class 0
+        {1.0}, // Class 1
+        {0.0}, // Class 0
+        {0.0}, // Class 0
+        {1.0}, // Class 1
+        {1.0}  // Class 1
+    }};
+
+
     std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>> data_test =
     {{{2}, {3}}, {{7}, {9}}};
 
 
     // Select dataset (change this to switch datasets)
-    auto& selected_data = data2; // Use data1, data2, or data3
+    auto& selected_data = data5; // Use data1, data2, or data3
     auto& features = selected_data.first;
     auto& labels = selected_data.second;
 
 
-    //features = normalizeData(features);
+    features = normalizeData(features);
 
     // Neural Network initialization
     int num_features = features[0].size();
     int num_labels = labels[0].size();  // Ensure compatibility with multiple outputs
     int num_epochs = 10000;
     
-    NeuralNetwork Network(0.01, num_epochs, SQUARRED_ERROR); 
+    NeuralNetwork Network(0.001, num_epochs, BINARY_CROSS_ENTROPY); 
     Network.addInputLayer(std::make_shared<InputLayer>(num_features));
-    // Network.addLayer(std::make_shared<Layer>(5, RELU));
-    // Network.addLayer(std::make_shared<Layer>(10, RELU));
-    // Network.addLayer(std::make_shared<Layer>(3, RELU));
-
-    Network.addLayer(std::make_shared<Layer>(num_labels, NONE));  // Output layer with num_labels neurons
-    
+    Network.addLayer(std::make_shared<Layer>(2, RELU));
+    Network.addLayer(std::make_shared<Layer>(num_labels, SIGMOID));
 
     // Train the model
     Network.fit(features, labels);
