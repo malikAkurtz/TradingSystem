@@ -14,7 +14,7 @@
 
 bool DEBUG = true;
 
-int main1() {
+int main() {
     // Define datasets
     std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>> data1 = {{
         {1.0, 2.5}, {1.5, 3.1}, {2.0, 3.7}, {2.5, 4.0},
@@ -49,16 +49,18 @@ int main1() {
 
     std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>> data3 = {{
         {1.0, 2.5}, 
-        {1.5, 3.0}, {2.0, 3.5}, {2.5, 4.0}, {3.0, 4.5},
-        {3.5, 5.0}, {4.0, 5.5}, {4.5, 6.0}, {5.0, 6.5}, {5.5, 7.0},
-        {6.0, 7.5}, {6.5, 8.0}, {7.0, 8.5}, {7.5, 9.0}, {8.0, 9.5},
-        {8.5, 10.0}, {9.0, 10.5}, {9.5, 11.0}, {10.0, 11.5}, {10.5, 12.0}
+        {1.5, 3.0}, 
+        // {2.0, 3.5}, {2.5, 4.0}, {3.0, 4.5},
+        // {3.5, 5.0}, {4.0, 5.5}, {4.5, 6.0}, {5.0, 6.5}, {5.5, 7.0},
+        // {6.0, 7.5}, {6.5, 8.0}, {7.0, 8.5}, {7.5, 9.0}, {8.0, 9.5},
+        // {8.5, 10.0}, {9.0, 10.5}, {9.5, 11.0}, {10.0, 11.5}, {10.5, 12.0}
     }, {
         {5.0, 10.0}, 
-        {6.0, 12.0}, {7.0, 14.0}, {8.0, 16.0}, {9.0, 18.0},
-        {10.0, 20.0}, {11.0, 22.0}, {12.0, 24.0}, {13.0, 26.0}, {14.0, 28.0},
-        {15.0, 30.0}, {16.0, 32.0}, {17.0, 34.0}, {18.0, 36.0}, {19.0, 38.0},
-        {20.0, 40.0}, {21.0, 42.0}, {22.0, 44.0}, {23.0, 46.0}, {24.0, 48.0}
+        {6.0, 12.0}, 
+        // {7.0, 14.0}, {8.0, 16.0}, {9.0, 18.0},
+        // {10.0, 20.0}, {11.0, 22.0}, {12.0, 24.0}, {13.0, 26.0}, {14.0, 28.0},
+        // {15.0, 30.0}, {16.0, 32.0}, {17.0, 34.0}, {18.0, 36.0}, {19.0, 38.0},
+        // {20.0, 40.0}, {21.0, 42.0}, {22.0, 44.0}, {23.0, 46.0}, {24.0, 48.0}
     }};
 
     std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>> data4 = {{
@@ -133,36 +135,34 @@ int main1() {
 
 
     std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>> data_test =
-    {{{2}, {3}}, {{7}, {9}}};
+    {{{2}, {3}}, // 2 samples, 1 feature
+    {{7}, {9}}}; // 2 samples, 1 label
 
 
     // Select dataset (change this to switch datasets)
-    auto& selected_data = data2; // Use data1, data2, or data3
+    auto& selected_data = data_test; // Use data1, data2, or data3
     auto& features = selected_data.first;
     auto& labels = selected_data.second;
 
 
-    features = normalizeData(features);
+    //features = normalizeData(features);
 
     // Neural Network initialization
     int num_features = features[0].size();
     int num_labels = labels[0].size();  // Ensure compatibility with multiple outputs
-    int num_epochs = 10000;
+    int num_epochs = 1;
     
-    NeuralNetwork Network(0.001, num_epochs, SQUARRED_ERROR, 1); 
+    NeuralNetwork Network(0.001, num_epochs, SQUARRED_ERROR, 2); 
     Network.addInputLayer(std::make_shared<InputLayer>(num_features));
-    Network.addLayer(std::make_shared<Layer>(2, RELU, RANDOM));
-    Network.addLayer(std::make_shared<Layer>(3, RELU, RANDOM));
-    Network.addLayer(std::make_shared<Layer>(2, SIGMOID, RANDOM));
-    Network.addLayer(std::make_shared<Layer>(num_labels, RELU, RANDOM));
+    Network.addLayer(std::make_shared<Layer>(2, RELU, CONSTANT));
+    Network.addLayer(std::make_shared<Layer>(num_labels, NONE, CONSTANT));
 
-    // Train the model
+    //Train the model
     Network.fit(features, labels);
 
     // Evaluate the model
-    std::vector<std::vector<std::vector<double>>> predictions = Network.getPredictions(features);
-    std::cout << "Predictions vs Labels" << std::endl;
-    printPredictionsVSLabels(predictions, labels);
+    std::vector<std::vector<double>> predictions = Network.getPredictions(features);
+    
     std::vector<int> epochs(num_epochs);
     std::vector<double> losses = Network.epoch_losses;
     std::iota(epochs.begin(), epochs.end(), 1); // Fills with 1 to 1000
@@ -184,7 +184,7 @@ int main1() {
 
 
 
-int main() {
+int main2() {
     std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>> data1 = {{
     {1.0, 2.5}, {1.5, 3.1}, {2.0, 3.7}, {2.5, 4.0},
     {3.1, 4.2}, {3.5, 4.6}, {4.0, 5.1}, {4.5, 5.6},
@@ -205,14 +205,49 @@ int main() {
     {26.0}, {26.5}, {27.1}, {27.7},
     {28.4}, {29.0}
     }};
-    printMatrixDebug(data1.first);
-    std::vector<std::vector<std::vector<double>>> batches = createBatches(data1.first, 5);
-    printMatrixDebug(batches[0]);
 
-    std::vector<std::vector<std::vector<double>>> X(batches[0].size());
-    for (int s = 0; s < X.size(); s++) {
-        X[s] = vector1DtoColumnVector(batches[0][s]);
-    }
-    printMatrixDebug(X[0]);
+    std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>> data2 = {{
+    // {1}, 
+    {2}, {3}, 
+    // {4}, {5}, {6}, {7}, {8}, {9}, {10},
+    // {11}, {12}, {13}, {14}, {15}, {16}, {17}, {18}, {19}, {20}
+    },
+    {
+        // {5}, 
+        {7}, {9},  
+        // {11}, {13}, {15}, {17}, {19}, {21}, {23},
+        // {25}, {27}, {29}, {31}, {33}, {35}, {37}, {39}, {41}, {43}
+    }};
+    printMatrixDebug(data2.first);
+
+    NeuralNetwork Network(0.001, 1, SQUARRED_ERROR, 2); 
+    Network.addInputLayer(std::make_shared<InputLayer>(data2.first[0].size()));
+    Network.addLayer(std::make_shared<Layer>(2, RELU, CONSTANT));
+    Network.addLayer(std::make_shared<Layer>(data2.second[0].size(), NONE, CONSTANT));
+
+   std::vector<std::vector<double>> predictions = Network.getPredictions(data2.first);
+
+   printMatrixDebug(predictions);
+
+   // std::vector<std::vector<std::vector<double>>> batches = createBatches(data2.first, 5); // 4 batches otal
+   // printMatrixDebug(batches[0]);
+
+   // std::vector<std::vector<std::vector<double>>> X(batches[0].size());
+   // for (int s = 0; s < X.size(); s++) {
+   //     X[s] = vector1DtoColumnVector(batches[0][s]);
+   // }
+   // printMatrixDebug(X[1]);
+   return 0;
+}
+
+int main6(){
+    std::vector<std::vector<double>> m1 = {
+        {1, 2},
+        {3, 4}};
+    std::vector<std::vector<double>> m2 = {
+        {1, 2},
+        {3, 4}};
+
+    printMatrixDebug(hadamardProduct(m1, m2));
     return 0;
 }

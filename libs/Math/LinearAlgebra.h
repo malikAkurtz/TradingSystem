@@ -33,5 +33,6 @@ std::vector<std::vector<double>> outerProduct(
     const std::vector<std::vector<double>>& row_vec);
 std::vector<std::vector<double>> subtractColumnVectors(const std::vector<std::vector<double>>& v1, const std::vector<std::vector<double>>& v2);
 double calculateMatrixEuclideanNorm(const std::vector<std::vector<double>> &matrix);
+std::vector<std::vector<double>> subtractMatrices(const std::vector<std::vector<double>> &m1, const std::vector<std::vector<double>> &m2);
 
 #endif

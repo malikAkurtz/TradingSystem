@@ -18,8 +18,8 @@ InputLayer::InputLayer(int num_features) {
 std::vector<std::vector<double>> InputLayer::getInputs() {
     return this->inputs;
 }
-void InputLayer::storeInputs(std::vector<std::vector<double>> input_vector) {
-    this->inputs = input_vector;
+void InputLayer::storeInputs(std::vector<std::vector<double>> input_matrix) {
+    this->inputs = input_matrix;
 }
 
 void InputLayer::addNeuron(InputNeuron inputNeuron) {
@@ -43,11 +43,13 @@ Layer::Layer(int num_neurons, ActivationFunction AFtype, NeuronInitialization NI
     NUM_NEURONS_PER_LAYER.push_back(num_neurons);
 }
 
-void Layer::calculateLayerOutputs(std::vector<std::vector<double>> input_vector) {
-    input_vector.push_back({1}); // Add bias
+void Layer::calculateLayerOutputs(std::vector<std::vector<double>> input_matrix) {
+    int num_columns = input_matrix[0].size();
+    std::vector<double> ones_to_append(num_columns, 1);
 
+    input_matrix.push_back(ones_to_append); // Add bias
 
-    this->pre_activation_outputs = (matrixMultiply(this->getWeightsMatrix(), input_vector));
+    this->pre_activation_outputs = (matrixMultiply(this->getWeightsMatrix(), input_matrix));
     if (AFtype == RELU) {
         this->activation_outputs = ReLU(this->pre_activation_outputs);
         this->derivative_activation_outputs = d_ReLU(this->pre_activation_outputs);

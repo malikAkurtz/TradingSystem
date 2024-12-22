@@ -31,31 +31,36 @@ double calculateLogLoss(const std::vector<double> &predictions, const std::vecto
 }
 
 // takes two column vectors
-double modifiedSquarredError(const std::vector<std::vector<double>> &predictions, const std::vector<std::vector<double>> &labels)
+double modifiedSquarredError(const std::vector<double> &predictions, const std::vector<double> &labels)
 {
-    std::vector<double> preds1D = columnVectortoVector1D(predictions);
-    std::vector<double> actual1D = columnVectortoVector1D(labels);
+    // printDebug("Predictions contents");
+    // for (int i = 0; i < predictions.size(); i++)
+    // {
+    //     printDebug(predictions[i]);
+    // }
+    // printDebug("Labels contents");
+    // for (int i = 0; i < labels.size(); i++) {
+    //     printDebug(labels[i]);
+    // }
 
-    if (predictions.size() != labels.size())
-    {
-        throw std::invalid_argument("Size mismatch between predictions and labels");
-    }
-    std::vector<double> error = subtractVectors(preds1D, actual1D);
+        if (predictions.size() != labels.size())
+        {
+            throw std::invalid_argument("Size mismatch between predictions and labels");
+        }
+    std::vector<double> error = subtractVectors(predictions, labels);
     return (innerProduct(error, error) / 2);
 }
 
-double vectorizedLogLoss(const std::vector<std::vector<double>> &predictions, const std::vector<std::vector<double>> &labels)
+double vectorizedLogLoss(const std::vector<double> &predictions, const std::vector<double> &labels)
 {
     double cumSum = 0;
     const double epsilon = 1e-10;
 
-    std::vector<double> preds1D = columnVectortoVector1D(predictions);
-    std::vector<double> labels1D = columnVectortoVector1D(labels);
 
     for (int i = 0; i < predictions.size(); i++)
     {
-        double clipped_prediction = std::max(epsilon, std::min(1 - epsilon, preds1D[i]));
-        cumSum += (labels1D[i] * std::log(clipped_prediction)) + ((1 - labels1D[i]) * std::log((1 - clipped_prediction)));
+        double clipped_prediction = std::max(epsilon, std::min(1 - epsilon, predictions[i]));
+        cumSum += (labels[i] * std::log(clipped_prediction)) + ((1 - labels[i]) * std::log((1 - clipped_prediction)));
     }
 
     return (-1 * (cumSum / predictions.size()));
@@ -199,17 +204,17 @@ std::vector<std::vector<double>> d_ReLU(const std::vector<std::vector<double>> &
     return resultant;
 }
 
-std::vector<std::vector<std::vector<double>>> createBatches(const std::vector<std::vector<double>> &features, int batchSize)
-{
+std::vector<std::vector<std::vector<double>>> createBatches(const std::vector<std::vector<double>> &features, int batchSize) {
     std::vector<std::vector<std::vector<double>>> batches;
 
-    int start_index;
-    int end_index;
-    
-    for (int i = 0; i < batchSize; i++)
-    {
-        start_index = i * batchSize;
-        end_index = std::min(start_index + batchSize, static_cast<int>(features.size()));
+    int num_samples = features.size();
+    int num_batches = (num_samples + batchSize - 1) / batchSize; // Ceiling division to calculate number of batches
+
+    for (int i = 0; i < num_batches; i++) {
+        int start_index = i * batchSize;
+        int end_index = std::min(start_index + batchSize, num_samples);
+        
+        // Create a batch from the feature vectors in the current range
         std::vector<std::vector<double>> batch(features.begin() + start_index, features.begin() + end_index);
         batches.push_back(batch);
     }

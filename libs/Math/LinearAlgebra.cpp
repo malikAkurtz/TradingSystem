@@ -268,17 +268,22 @@ void addElement(std::vector<double>& v1, double value, int col_index) {
 
 
 
-// takes two column vector, returns column vector
-std::vector<std::vector<double>> hadamardProduct(const std::vector<std::vector<double>>& col_v1, const std::vector<std::vector<double>>& col_v2) {
-    int num_elements = col_v1.size();
-    if (num_elements != col_v2.size()) {
-        throw std::invalid_argument("Vector dimensions do not match on call to hadamardProduct()");
+// takes two matrices, returns a matrix
+std::vector<std::vector<double>> hadamardProduct(const std::vector<std::vector<double>>& m1, const std::vector<std::vector<double>>& m2) {
+    if (m1.size() != m2.size() || m1[0].size() != m2[0].size()) {
+        throw std::invalid_argument("Matrix dimensions do not match for hadamardProduct.");
     }
 
-    std::vector<std::vector<double>> resultant(num_elements, std::vector<double>(1));
+    int num_rows = m1.size();
+    int num_cols = m1[0].size();
 
-    for (int i = 0; i < num_elements; i++) {
-        resultant[i][0] = col_v1[i][0] * col_v2[i][0];
+    std::vector<std::vector<double>> resultant(num_rows, std::vector<double>(num_cols));
+
+    for (int i = 0; i < num_rows; i++) {
+        for (int j = 0; j < num_cols; j++) {
+            resultant[i][j] = m1[i][j] * m2[i][j];
+        }
+        
     }
 
     return resultant;
@@ -328,4 +333,22 @@ double calculateMatrixEuclideanNorm(const std::vector<std::vector<double>>& matr
         }
     }
     return sqrt(cumSum);
+}
+
+std::vector<std::vector<double>> subtractMatrices(const std::vector<std::vector<double>>& m1, const std::vector<std::vector<double>>& m2) {
+    if (m1.size() != m2.size() || m1[0].size() != m2[0].size()) {
+        throw std::invalid_argument("Matrix dimensions do not match for subtraction.");
+    }
+
+    int num_rows = m1.size();
+    int num_cols = m1[0].size();
+    std::vector<std::vector<double>> resultantMatrix(num_rows, std::vector<double>(num_cols));
+
+    for (int i = 0; i < num_rows; i++) {
+        for (int j = 0; j < num_cols; j++) {
+            resultantMatrix[i][j] = m1[i][j] - m2[i][j];
+        }
+    }
+
+    return resultantMatrix;
 }
