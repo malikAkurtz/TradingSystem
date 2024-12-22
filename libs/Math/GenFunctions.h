@@ -23,5 +23,6 @@ std::vector<std::vector<double>> d_ReLU(const std::vector<std::vector<double>>& 
 double calculateMSE_Simple(const std::vector<double>& predictions, const std::vector<double>& labels);
 double modifiedSquarredError(const std::vector<std::vector<double>>& predictions, const std::vector<std::vector<double>>& labels);
 std::vector<std::vector<double>> d_sigmoid(const std::vector<std::vector<double>>& v1);
+std::vector<std::vector<std::vector<double>>> createBatches(const std::vector<std::vector<double>> &features, int batchSize);
 
 #endif

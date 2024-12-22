@@ -12,7 +12,7 @@
 #include "Neuron.h"
 #include "NetworkLayers.h"
 
-bool DEBUG = false;
+bool DEBUG = true;
 
 int main1() {
     // Define datasets
@@ -149,7 +149,7 @@ int main1() {
     int num_labels = labels[0].size();  // Ensure compatibility with multiple outputs
     int num_epochs = 10000;
     
-    NeuralNetwork Network(0.001, num_epochs, SQUARRED_ERROR); 
+    NeuralNetwork Network(0.001, num_epochs, SQUARRED_ERROR, 1); 
     Network.addInputLayer(std::make_shared<InputLayer>(num_features));
     Network.addLayer(std::make_shared<Layer>(2, RELU, RANDOM));
     Network.addLayer(std::make_shared<Layer>(3, RELU, RANDOM));
@@ -185,15 +185,34 @@ int main1() {
 
 
 int main() {
-    std::vector<std::vector<double>>  n = {
-        {38, 50},
-        {38, 50}
-    };
-    std::vector<std::vector<double>> m = {
-        {2, 1},
-        {3, 1}
-    };
-    std::vector<std::vector<double>> result = matrixMultiply(n, m);
-    printMatrix(result);
+    std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>> data1 = {{
+    {1.0, 2.5}, {1.5, 3.1}, {2.0, 3.7}, {2.5, 4.0},
+    {3.1, 4.2}, {3.5, 4.6}, {4.0, 5.1}, {4.5, 5.6},
+    {5.2, 6.8}, {5.8, 7.1}, {6.3, 7.5}, {6.9, 7.7},
+    {7.4, 8.0}, {7.9, 8.6}, {8.5, 9.1}, {8.8, 9.6},
+    {9.0, 10.2}, {9.5, 10.8}, {10.1, 11.5}, {10.6, 12.1},
+    {11.0, 12.8}, {11.5, 13.3}, {12.0, 14.0}, {12.5, 14.6},
+    {13.0, 15.2}, {13.5, 15.7}, {14.0, 16.3}, {14.5, 16.8},
+    {15.0, 17.4}, {15.5, 18.0}
+    },
+    {
+    {5.0}, {6.0}, {7.1}, {8.0},
+    {9.3}, {9.8}, {10.5}, {11.0},
+    {13.2}, {14.1}, {15.0}, {15.6},
+    {16.5}, {17.1}, {18.3}, {18.7},
+    {19.7}, {20.3}, {21.9}, {22.5},
+    {23.1}, {23.9}, {24.6}, {25.2},
+    {26.0}, {26.5}, {27.1}, {27.7},
+    {28.4}, {29.0}
+    }};
+    printMatrixDebug(data1.first);
+    std::vector<std::vector<std::vector<double>>> batches = createBatches(data1.first, 5);
+    printMatrixDebug(batches[0]);
+
+    std::vector<std::vector<std::vector<double>>> X(batches[0].size());
+    for (int s = 0; s < X.size(); s++) {
+        X[s] = vector1DtoColumnVector(batches[0][s]);
+    }
+    printMatrixDebug(X[0]);
     return 0;
 }
