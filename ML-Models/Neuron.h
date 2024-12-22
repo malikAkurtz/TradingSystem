@@ -3,6 +3,12 @@
 
 #include <vector>
 
+enum NeuronInitialization {
+    CONSTANT,
+    XAVIER,
+    RANDOM
+};
+
 // Neuron Class
 class Neuron {
 public:
@@ -10,7 +16,7 @@ public:
     std::vector<double> weights;
 
     // Constructor to initialize weights to a default value
-    explicit Neuron(int num_weights);
+    explicit Neuron(int num_weights, NeuronInitialization type);
 
     // Getter for weights
     std::vector<double> getWeights() const;

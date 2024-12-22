@@ -151,8 +151,8 @@ int main() {
     
     NeuralNetwork Network(0.001, num_epochs, BINARY_CROSS_ENTROPY); 
     Network.addInputLayer(std::make_shared<InputLayer>(num_features));
-    Network.addLayer(std::make_shared<Layer>(2, RELU));
-    Network.addLayer(std::make_shared<Layer>(num_labels, SIGMOID));
+    Network.addLayer(std::make_shared<Layer>(2, RELU, RANDOM));
+    Network.addLayer(std::make_shared<Layer>(num_labels, SIGMOID, RANDOM));
 
     // Train the model
     Network.fit(features, labels);

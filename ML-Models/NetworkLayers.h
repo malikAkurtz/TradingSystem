@@ -16,6 +16,7 @@ enum ActivationFunction {
     NONE
 };
 
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
@@ -48,6 +49,7 @@ class Layer {
     public:
     std::vector<Neuron> neurons;
     ActivationFunction AFtype;
+    NeuronInitialization initalization;
     std::vector<std::vector<double>> weightsMatrix;
     std::vector<std::vector<double>> pre_activation_outputs;
     std::vector<std::vector<double>> activation_outputs;
@@ -55,7 +57,7 @@ class Layer {
     
 
     // Constructor
-    Layer(int num_neurons, ActivationFunction type);
+    Layer(int num_neurons, ActivationFunction AFtype, NeuronInitialization NItype);
 
     // Calculate outputs for the hidden layer
     void calculateLayerOutputs(std::vector<std::vector<double>> input_vector);
