@@ -182,3 +182,10 @@ int main() {
 
 
 
+int main1() {
+    std::vector<std::vector<double>> col_vec = vector1DtoColumnVector({38, 38});
+    std::vector<std::vector<double>> row_vec = {{2, 1}};
+    std::vector<std::vector<double>> result = outerProduct(col_vec, row_vec);
+    printMatrix(result);
+    return 0;
+}

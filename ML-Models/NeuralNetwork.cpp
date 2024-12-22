@@ -73,10 +73,15 @@ class NeuralNetwork {
                 so we begin by finding the partial derivative of the cost function with respect
                 to the weights of the last hidden layer L, ∂Cᵢ/∂Wᴸ
                 */
+
+               /*
+               ∂Cᵢ/∂Wᴸ = δᴸ * (Aˡ⁻¹)ᵀ, where * is a outer product
+               we will begin by finding δᴸ
+               */
                 std::vector<std::vector<double>> pd_Ci_W_L;
 
                 /*
-                calculte the δᴸ term for the last hidden layer L and remember that derivative of the modified squarred error is just the difference of the two vectors
+                calculte the error term, δᴸ term for the last hidden layer L and remember that derivative of the modified squarred error is just the difference of the two vectors
                 δᴸ = g'(Zᴸ) ⊙ (Aᴸ-Y)
                 */
                 int outputLayer_index = num_hidden_layers - 1;
@@ -88,7 +93,7 @@ class NeuralNetwork {
                 printMatrixDebug(subtractColumnVectors(A_L, Y));
 
                 std::vector<std::vector<double>> error_term_L = hadamardProduct(
-                    this->layers[outputLayer_index]->getDerivativeActivationOutputs(), // for some reason this results in worse performance than normal activations
+                    this->layers[outputLayer_index]->getDerivativeActivationOutputs(),
                     subtractColumnVectors(A_L, Y));
                 printDebug("δᴸ");
                 printMatrixDebug(error_term_L);
@@ -115,7 +120,7 @@ class NeuralNetwork {
                 printMatrixDebug(A_prev_activation_with_bias);
 
                 /*
-                ∂Cᵢ/∂Wᴸ = δᴸ * (Aˡ⁻¹)ᵀ
+                ∂Cᵢ/∂Wᴸ = δᴸ * (Aᴸ⁻¹)ᵀ
                 */
                 pd_Ci_W_L = outerProduct(error_term_L, takeTranspose(A_prev_activation_with_bias));
                 printDebug("∂Cᵢ/∂Wᴸ");
@@ -132,6 +137,11 @@ class NeuralNetwork {
                 // for every hidden layer
                 // if this is negative this means that there arent layers to propogate through (i.e a two layer network)
                 for (int j = prev_hidden_layer_index; j >= 0; j--) {
+                    /*
+                    For any hidden layer l, 
+                    ∂Cᵢ/∂Wˡ = δˡ * (Aˡ⁻¹)ᵀ, where * is an outer product and 
+                    δˡ = ((Wˡ⁺¹)ᵀ * δˡ⁺¹) ⊙ g'(Zˡ)
+                    */
                     std::vector<std::vector<double>> pd_Ci_W_l;
                     std::vector<std::vector<double>> error_term;
                     std::vector<std::vector<double>> W_l_plus_1_T;
@@ -146,10 +156,10 @@ class NeuralNetwork {
                     error_term_lhs.pop_back(); // remove the bias contribution
 
 
-                    std::vector<std::vector<double>> DA_hidden_with_no_bias = this->layers[j]->getDerivativeActivationOutputs();
+                    std::vector<std::vector<double>> DZ_hidden_with_no_bias = this->layers[j]->getDerivativeActivationOutputs();
 
                     
-                    error_term = hadamardProduct(error_term_lhs, DA_hidden_with_no_bias);
+                    error_term = hadamardProduct(error_term_lhs, DZ_hidden_with_no_bias);
 
                     printDebug("δˡ");
                     printMatrixDebug(error_term);
@@ -166,7 +176,7 @@ class NeuralNetwork {
                     std::vector<std::vector<double>> A_prev_activation_with_bias_T = takeTranspose(A_prev_activation_with_bias);
 
                     
-                    pd_Ci_W_l = matrixMultiply(error_term, A_prev_activation_with_bias_T);
+                    pd_Ci_W_l = outerProduct(error_term, A_prev_activation_with_bias_T);
                     printDebug("∂Cᵢ/∂Wˡ");
                     printMatrixDebug(pd_Ci_W_l);
 
@@ -175,7 +185,7 @@ class NeuralNetwork {
                 }
 
 
-                // update weights for every hidden layer
+                // update weights for every hidden layer using the gradient for that layers weights
                 for (int m = 0; m < num_hidden_layers; m++) {
                 int gradient_index = gradient_Ci.size() - 1 - m;
                 this->layers[m]->updateNeuronWeights(gradient_Ci[gradient_index], this->LR);
@@ -192,16 +202,19 @@ class NeuralNetwork {
                 printDebug("------------------------END EPOCH-------------------------------");
                 
             }
-            double epoch_MSE = epoch_accumulated_loss / num_samples; // mean squarred error for this epoch
-            this->epoch_losses.push_back(epoch_MSE);
+            // mean squarred error for this epoch
+            double epoch_Loss = epoch_accumulated_loss / num_samples; 
+            this->epoch_losses.push_back(epoch_Loss);
+            // calcuate the average gradient over this epoch as well
             double average_gradient = epoch_accumulated_gradient / num_samples;
             this->epoch_gradient_norms.push_back(average_gradient);
 
-            std::cout << "Epoch: " << e << " Loss: " << epoch_MSE << " | Average Gradient: " << average_gradient << std::endl;
+            std::cout << "Epoch: " << e << " Loss: " << epoch_Loss << " | Average Gradient: " << average_gradient << std::endl;
         }
         // now getting predictions of the entire feature matrix, i.e all samples
         // best_predictions will then consist of a vector of column vectors
         std::vector<std::vector<std::vector<double>>> best_predictions = getPredictions(featuresMatrix);
+        
         double accumulated_final_model_loss = 0;
         std::vector<std::vector<std::vector<double>>> labels_as_col_vectors;
         for (int i = 0; i < labels.size(); i++) {
