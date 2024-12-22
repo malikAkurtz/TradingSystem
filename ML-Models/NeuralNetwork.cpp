@@ -75,14 +75,13 @@ class NeuralNetwork {
                 */
 
                /*
-               ∂Cᵢ/∂Wᴸ = δᴸ * (Aˡ⁻¹)ᵀ, where * is a outer product
-               we will begin by finding δᴸ
+               ∂Cᵢ/∂Wᴸ = δᴸ * (Aˡ⁻¹)ᵀ, where * is a outer product and
+               δᴸ = g'(Zᴸ) ⊙ (Aᴸ-Y)
                */
                 std::vector<std::vector<double>> pd_Ci_W_L;
 
                 /*
                 calculte the error term, δᴸ term for the last hidden layer L and remember that derivative of the modified squarred error is just the difference of the two vectors
-                δᴸ = g'(Zᴸ) ⊙ (Aᴸ-Y)
                 */
                 int outputLayer_index = num_hidden_layers - 1;
                 
@@ -140,7 +139,7 @@ class NeuralNetwork {
                     /*
                     For any hidden layer l, 
                     ∂Cᵢ/∂Wˡ = δˡ * (Aˡ⁻¹)ᵀ, where * is an outer product and 
-                    δˡ = ((Wˡ⁺¹)ᵀ * δˡ⁺¹) ⊙ g'(Zˡ)
+                    δˡ = ((Wˡ⁺¹)ᵀ * δˡ⁺¹) ⊙ g'(Zˡ), where * is a matrix multiply
                     */
                     std::vector<std::vector<double>> pd_Ci_W_l;
                     std::vector<std::vector<double>> error_term;
@@ -214,7 +213,7 @@ class NeuralNetwork {
         // now getting predictions of the entire feature matrix, i.e all samples
         // best_predictions will then consist of a vector of column vectors
         std::vector<std::vector<std::vector<double>>> best_predictions = getPredictions(featuresMatrix);
-        
+
         double accumulated_final_model_loss = 0;
         std::vector<std::vector<std::vector<double>>> labels_as_col_vectors;
         for (int i = 0; i < labels.size(); i++) {

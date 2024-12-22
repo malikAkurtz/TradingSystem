@@ -14,7 +14,7 @@
 
 bool DEBUG = false;
 
-int main() {
+int main1() {
     // Define datasets
     std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>> data1 = {{
         {1.0, 2.5}, {1.5, 3.1}, {2.0, 3.7}, {2.5, 4.0},
@@ -137,7 +137,7 @@ int main() {
 
 
     // Select dataset (change this to switch datasets)
-    auto& selected_data = data5; // Use data1, data2, or data3
+    auto& selected_data = data2; // Use data1, data2, or data3
     auto& features = selected_data.first;
     auto& labels = selected_data.second;
 
@@ -149,10 +149,12 @@ int main() {
     int num_labels = labels[0].size();  // Ensure compatibility with multiple outputs
     int num_epochs = 10000;
     
-    NeuralNetwork Network(0.001, num_epochs, BINARY_CROSS_ENTROPY); 
+    NeuralNetwork Network(0.001, num_epochs, SQUARRED_ERROR); 
     Network.addInputLayer(std::make_shared<InputLayer>(num_features));
     Network.addLayer(std::make_shared<Layer>(2, RELU, RANDOM));
-    Network.addLayer(std::make_shared<Layer>(num_labels, SIGMOID, RANDOM));
+    Network.addLayer(std::make_shared<Layer>(3, RELU, RANDOM));
+    Network.addLayer(std::make_shared<Layer>(2, SIGMOID, RANDOM));
+    Network.addLayer(std::make_shared<Layer>(num_labels, RELU, RANDOM));
 
     // Train the model
     Network.fit(features, labels);
@@ -182,10 +184,16 @@ int main() {
 
 
 
-int main1() {
-    std::vector<std::vector<double>> col_vec = vector1DtoColumnVector({38, 38});
-    std::vector<std::vector<double>> row_vec = {{2, 1}};
-    std::vector<std::vector<double>> result = outerProduct(col_vec, row_vec);
+int main() {
+    std::vector<std::vector<double>>  n = {
+        {38, 50},
+        {38, 50}
+    };
+    std::vector<std::vector<double>> m = {
+        {2, 1},
+        {3, 1}
+    };
+    std::vector<std::vector<double>> result = matrixMultiply(n, m);
     printMatrix(result);
     return 0;
 }
