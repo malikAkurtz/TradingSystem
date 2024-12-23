@@ -50,17 +50,17 @@ int main() {
     std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>> data3 = {{
         {1.0, 2.5}, 
         {1.5, 3.0}, 
-        // {2.0, 3.5}, {2.5, 4.0}, {3.0, 4.5},
-        // {3.5, 5.0}, {4.0, 5.5}, {4.5, 6.0}, {5.0, 6.5}, {5.5, 7.0},
-        // {6.0, 7.5}, {6.5, 8.0}, {7.0, 8.5}, {7.5, 9.0}, {8.0, 9.5},
-        // {8.5, 10.0}, {9.0, 10.5}, {9.5, 11.0}, {10.0, 11.5}, {10.5, 12.0}
+        {2.0, 3.5}, {2.5, 4.0}, {3.0, 4.5},
+        {3.5, 5.0}, {4.0, 5.5}, {4.5, 6.0}, {5.0, 6.5}, {5.5, 7.0},
+        {6.0, 7.5}, {6.5, 8.0}, {7.0, 8.5}, {7.5, 9.0}, {8.0, 9.5},
+        {8.5, 10.0}, {9.0, 10.5}, {9.5, 11.0}, {10.0, 11.5}, {10.5, 12.0}
     }, {
         {5.0, 10.0}, 
         {6.0, 12.0}, 
-        // {7.0, 14.0}, {8.0, 16.0}, {9.0, 18.0},
-        // {10.0, 20.0}, {11.0, 22.0}, {12.0, 24.0}, {13.0, 26.0}, {14.0, 28.0},
-        // {15.0, 30.0}, {16.0, 32.0}, {17.0, 34.0}, {18.0, 36.0}, {19.0, 38.0},
-        // {20.0, 40.0}, {21.0, 42.0}, {22.0, 44.0}, {23.0, 46.0}, {24.0, 48.0}
+        {7.0, 14.0}, {8.0, 16.0}, {9.0, 18.0},
+        {10.0, 20.0}, {11.0, 22.0}, {12.0, 24.0}, {13.0, 26.0}, {14.0, 28.0},
+        {15.0, 30.0}, {16.0, 32.0}, {17.0, 34.0}, {18.0, 36.0}, {19.0, 38.0},
+        {20.0, 40.0}, {21.0, 42.0}, {22.0, 44.0}, {23.0, 46.0}, {24.0, 48.0}
     }};
 
     std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>> data4 = {{
@@ -140,7 +140,7 @@ int main() {
 
 
     // Select dataset (change this to switch datasets)
-    auto& selected_data = data1; // Use data1, data2, or data3
+    auto& selected_data = data4; // Use data1, data2, or data3
     auto& features = selected_data.first;
     auto& labels = selected_data.second;
 
@@ -149,14 +149,14 @@ int main() {
 
     // Neural Network initialization
     int num_features = features[0].size();
-    int num_labels = labels[0].size();  // Ensure compatibility with multiple outputs
-    int num_epochs = 10000;
+    int num_labels = labels[0].size();
+    int num_epochs = 10000; // higher leads to overfitting i.e reduced accuracy on training data but increasing this during training should only decrease overall training loss
     
-    NeuralNetwork Network(0.0001, num_epochs, SQUARRED_ERROR, 32); 
+    NeuralNetwork Network(0.1, num_epochs, BINARY_CROSS_ENTROPY, 32); 
     Network.addInputLayer(std::make_shared<InputLayer>(num_features));
-    Network.addLayer(std::make_shared<Layer>(2, RELU, RANDOM));
-    //Network.addLayer(std::make_shared<Layer>(2, RELU, RANDOM));
-    Network.addLayer(std::make_shared<Layer>(num_labels, NONE, RANDOM));
+    Network.addLayer(std::make_shared<Layer>(2, SIGMOID, RANDOM));
+    Network.addLayer(std::make_shared<Layer>(2, SIGMOID, RANDOM));
+    Network.addLayer(std::make_shared<Layer>(num_labels, SIGMOID, RANDOM));
 
     //Train the model
     Network.fit(features, labels);

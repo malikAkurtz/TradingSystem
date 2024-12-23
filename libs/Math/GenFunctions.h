@@ -13,8 +13,8 @@ double calculateMSE(const std::vector<double>& predictions, const std::vector<do
 double calculateLogLoss(const std::vector<double>& predictions, const std::vector<double>& labels);
 double vectorizedLogLoss(const std::vector<double> &predictions, const std::vector<double> &labels);
 std::vector<double> thresholdFunction(const std::vector<double> &softPredictions, const double &threshhold);
-std::vector<std::vector<double>> sigmoid(const std::vector<std::vector<double>>& v1); // derivative not yet implemented
-double sigmoid_single(const double& value);
+std::vector<std::vector<double>> sigmoid(const std::vector<std::vector<double>> &v1);
+double sigmoid_single(const double &value);
 double calculateMean(const std::vector<double>& v1);
 double calculateSTD(const std::vector<double>& v1);
 std::vector<std::vector<double>> normalizeData(const std::vector<std::vector<double>>& dataMatrix);

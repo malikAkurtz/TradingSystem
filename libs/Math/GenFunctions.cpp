@@ -85,21 +85,61 @@ std::vector<double> thresholdFunction(const std::vector<double> &softPredictions
     return hardPredictions;
 }
 
-std::vector<std::vector<double>> sigmoid(const std::vector<std::vector<double>> &v1)
+std::vector<std::vector<double>> ReLU(const std::vector<std::vector<double>> &v1)
 {
-    std::vector<std::vector<double>> resultant = v1;
-    for (int i = 0; i < resultant.size(); i++)
-    {
-        if (resultant[i][0] >= 0)
-        {
-            resultant[i][0] = 1.0 / (1.0 + std::exp(-resultant[i][0]));
-        }
-        else
-        {
-            double exp_val = std::exp(resultant[i][0]);
-            resultant[i][0] = exp_val / (1.0 + exp_val);
+    int num_rows = v1.size();
+    int num_cols = v1[0].size();
+
+    std::vector<std::vector<double>> resultant(num_rows, std::vector<double>(num_cols));
+    
+    for (int i = 0; i < num_rows;i++){
+        for (int j = 0; j < num_cols; j++) {
+            if (v1[i][j] >= 0) {
+                resultant[i][j] = v1[i][j];
+            } else {
+                resultant[i][j] = 0;
+            }
         }
     }
+
+    return resultant;
+}
+
+
+std::vector<std::vector<double>> d_ReLU(const std::vector<std::vector<double>>& v1)
+{
+    int num_rows = v1.size();
+    int num_cols = v1[0].size();
+
+    std::vector<std::vector<double>> resultant(num_rows, std::vector<double>(num_cols));
+    
+    for (int i = 0; i < num_rows;i++){
+        for (int j = 0; j < num_cols; j++) {
+            if (v1[i][j] >= 0) {
+                resultant[i][j] = 1;
+            } else{
+                resultant[i][j] = 0;
+            }
+        }
+    }
+
+    return resultant;
+}
+
+
+std::vector<std::vector<double>> sigmoid(const std::vector<std::vector<double>> &v1)
+{
+    int num_rows = v1.size();
+    int num_cols = v1[0].size();
+
+    std::vector<std::vector<double>> resultant(num_rows, std::vector<double>(num_cols));
+
+    for (int i = 0; i < num_rows; i++) {
+        for (int j = 0; j < num_cols; j++) {
+            resultant[i][j] = 1.0 / (1.0 + std::exp(-v1[i][j]));
+        }
+    }
+
     return resultant;
 }
 
@@ -116,16 +156,24 @@ double sigmoid_single(const double &value)
     }
 }
 
+
 std::vector<std::vector<double>> d_sigmoid(const std::vector<std::vector<double>> &v1)
 {
-    std::vector<std::vector<double>> resultant(v1.size(), std::vector<double>(1));
-    for (int i = 0; i < resultant.size(); i++)
-    {
-        double sig = sigmoid_single(v1[i][0]);
-        resultant[i][0] = sig * (1 - sig);
+    int num_rows = v1.size();
+    int num_cols = v1[0].size();
+
+    std::vector<std::vector<double>> resultant(num_rows, std::vector<double>(num_cols));
+
+    for (int i = 0; i < num_rows; i++) {
+        for (int j = 0; j < num_cols; j++) {
+            double sig = sigmoid_single(v1[i][j]);
+            resultant[i][j] = sig * (1 - sig);
+        }
     }
+
     return resultant;
 }
+
 
 double calculateMean(const std::vector<double> &v1)
 {
@@ -169,46 +217,6 @@ std::vector<std::vector<double>> normalizeData(const std::vector<std::vector<dou
     return normalized_matrix;
 }
 
-std::vector<std::vector<double>> ReLU(const std::vector<std::vector<double>> &v1)
-{
-    int num_rows = v1.size();
-    int num_cols = v1[0].size();
-
-    std::vector<std::vector<double>> resultant(num_rows, std::vector<double>(num_cols));
-    
-    for (int i = 0; i < num_rows;i++){
-        for (int j = 0; j < num_cols; j++) {
-            if (v1[i][j] >= 0) {
-                resultant[i][j] = v1[i][j];
-            } else {
-                resultant[i][j] = 0;
-            }
-        }
-    }
-
-    return resultant;
-}
-
-
-std::vector<std::vector<double>> d_ReLU(const std::vector<std::vector<double>>& v1)
-{
-    int num_rows = v1.size();
-    int num_cols = v1[0].size();
-
-    std::vector<std::vector<double>> resultant(num_rows, std::vector<double>(num_cols));
-    
-    for (int i = 0; i < num_rows;i++){
-        for (int j = 0; j < num_cols; j++) {
-            if (v1[i][j] >= 0) {
-                resultant[i][j] = 1;
-            } else{
-                resultant[i][j] = 0;
-            }
-        }
-    }
-
-    return resultant;
-}
 
 std::vector<std::vector<std::vector<double>>> createBatches(const std::vector<std::vector<double>> &features, int batchSize) {
     std::vector<std::vector<std::vector<double>>> batches;
