@@ -22,8 +22,7 @@ void printDebug(const T& value) {
     }
 }
 
-void printPredictionsVSLabels(const std::vector<std::vector<std::vector<double>>>& predictions, 
-                              const std::vector<std::vector<double>>& labels);
-
+void printPredictionsVSLabels(const std::vector<std::vector<double>> &predictions,
+                              const std::vector<std::vector<double>> &labels);
 
 #endif

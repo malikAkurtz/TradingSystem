@@ -53,13 +53,12 @@ void Layer::calculateLayerOutputs(std::vector<std::vector<double>> input_matrix)
     if (AFtype == RELU) {
         this->activation_outputs = ReLU(this->pre_activation_outputs);
         this->derivative_activation_outputs = d_ReLU(this->pre_activation_outputs);
-
         } else if(AFtype == SIGMOID) {
         this->activation_outputs = sigmoid(this->pre_activation_outputs);
         this->derivative_activation_outputs = d_sigmoid(this->pre_activation_outputs);
     } else if (AFtype == NONE) {
         this->activation_outputs = this->pre_activation_outputs;
-        this->derivative_activation_outputs = createColumnVector(1, this->pre_activation_outputs.size());
+        this->derivative_activation_outputs = createOnesMatrix(this->pre_activation_outputs.size(), this->pre_activation_outputs[0].size());
     }
 }
 

@@ -24,5 +24,6 @@ double calculateMSE_Simple(const std::vector<double>& predictions, const std::ve
 double modifiedSquarredError(const std::vector<double> &predictions, const std::vector<double> &labels);
 std::vector<std::vector<double>> d_sigmoid(const std::vector<std::vector<double>> &v1);
 std::vector<std::vector<std::vector<double>>> createBatches(const std::vector<std::vector<double>> &features, int batchSize);
+std::vector<std::vector<double>> createOnesMatrix(int num_rows, int num_cols);
 
 #endif

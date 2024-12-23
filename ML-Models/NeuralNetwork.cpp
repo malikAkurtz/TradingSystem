@@ -70,6 +70,7 @@ class NeuralNetwork {
                 std::vector<std::vector<double>> A_L = getPredictions(cur_X_batch_matrix);
                 // since A_L was tranpose in the prediction process to make it a vector of column vectors
                 std::vector<std::vector<double>> cur_Y_batch_matrix_T = takeTranspose(cur_Y_batch_matrix);
+
                 printDebug("Network Predictions");
                 printMatrixDebug(A_L);
 
@@ -111,11 +112,15 @@ class NeuralNetwork {
                 printMatrixDebug(this->layers[outputLayer_index]->getDerivativeActivationOutputs());
 
                 printDebug("(Aᴸ-Y)");
-                printMatrixDebug(subtractMatrices(A_L, cur_Y_batch_matrix));
+                printDebug("A_L");
+                printMatrixDebug(A_L);
+                printDebug("cur_Y_batch_matrix");
+                printMatrixDebug(cur_Y_batch_matrix_T);
+                printMatrixDebug(subtractMatrices(A_L, cur_Y_batch_matrix_T));
 
                 std::vector<std::vector<double>> error_term_L = hadamardProduct(
                     this->layers[outputLayer_index]->getDerivativeActivationOutputs(),
-                    subtractMatrices(A_L, cur_Y_batch_matrix));
+                    subtractMatrices(A_L, cur_Y_batch_matrix_T));
                 printDebug("δᴸ");
                 printMatrixDebug(error_term_L);
 
@@ -240,9 +245,13 @@ class NeuralNetwork {
         std::vector<std::vector<double>> best_predictions = getPredictions(featuresMatrix);
         std::vector<std::vector<double>> labels_T = takeTranspose(labels);
         double accumulated_final_model_loss = 0;
-
-        for (int i = 0; i < best_predictions.size(); i++) {
-            accumulated_final_model_loss += calculateLoss(best_predictions[i], labels[i]);
+        printDebug("best_predictions");
+        printMatrixDebug(best_predictions);
+        printDebug("labels_T");
+        printMatrixDebug(labels_T);
+        for (int i = 0; i < best_predictions.size(); i++)
+        {
+            accumulated_final_model_loss += calculateLoss(getColumn(best_predictions, i), getColumn(labels_T, i));
         }
         this->model_loss = accumulated_final_model_loss / labels.size();
     }

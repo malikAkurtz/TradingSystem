@@ -2,6 +2,7 @@
 #include <vector>
 #include <string>
 #include "Output.h"
+#include "LinearAlgebra.h"
 
 void printMatrix(const std::vector<std::vector<double>>& matrix) {
     std::cout << "[" << std::endl;
@@ -36,29 +37,35 @@ void printMatrixDebug(const std::vector<std::vector<double>>& matrix) {
 
 
 
-void printPredictionsVSLabels(const std::vector<std::vector<std::vector<double>>>& predictions, 
-                              const std::vector<std::vector<double>>& labels) {
-    if (predictions.size() != labels.size()) {
+void printPredictionsVSLabels(const std::vector<std::vector<double>> &predictions, 
+                              const std::vector<std::vector<double>> &labels) {
+    // Transpose predictions so each row corresponds to a sample
+    std::vector<std::vector<double>> predictions_T = takeTranspose(predictions);
+
+    // Check size compatibility
+    if (predictions_T.size() != labels.size()) {
         std::cerr << "Error: Predictions and labels sizes do not match!" << std::endl;
         return;
     }
 
     // Iterate over all prediction-label pairs
-    for (size_t i = 0; i < predictions.size(); i++) {
+    for (size_t i = 0; i < predictions_T.size(); i++) {
         std::cout << "Prediction-Label Pair " << i + 1 << ": ";
-        std::cout << "<";
 
-        // Flatten the 2D column vector in `predictions[i]` and compare with the corresponding `labels[i]`
-        if (predictions[i].size() != labels[i].size()) {
+        // Check if sizes of predictions and labels for the current sample match
+        if (predictions_T[i].size() != labels[i].size()) {
             std::cerr << "Error: Mismatch in the number of outputs for prediction and label at index " << i << "!" << std::endl;
             continue;
         }
 
-        for (size_t j = 0; j < predictions[i].size(); j++) {
-            // Extract the single value from the column vector (always the first column)
-            std::cout << "<" << predictions[i][j][0] << ", " << labels[i][j] << ">";
+        std::cout << "<";
+        for (size_t j = 0; j < predictions_T[i].size(); j++) {
+            // Print each prediction-label pair for this sample
+            std::cout << "(" << predictions_T[i][j] << ", " << labels[i][j] << ")";
+            if (j < predictions_T[i].size() - 1) {
+                std::cout << ", "; // Add a comma separator if not the last pair
+            }
         }
-
         std::cout << ">" << std::endl;
     }
 }

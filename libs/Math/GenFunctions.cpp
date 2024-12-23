@@ -169,38 +169,44 @@ std::vector<std::vector<double>> normalizeData(const std::vector<std::vector<dou
     return normalized_matrix;
 }
 
-// takes in a column vector
 std::vector<std::vector<double>> ReLU(const std::vector<std::vector<double>> &v1)
 {
-    std::vector<std::vector<double>> resultant = v1;
+    int num_rows = v1.size();
+    int num_cols = v1[0].size();
 
-    for (int i = 0; i < v1.size(); i++)
-    {
-        if (v1[i][0] < 0)
-        {
-            resultant[i][0] = 0;
-        }
-        else
-        {
+    std::vector<std::vector<double>> resultant(num_rows, std::vector<double>(num_cols));
+    
+    for (int i = 0; i < num_rows;i++){
+        for (int j = 0; j < num_cols; j++) {
+            if (v1[i][j] >= 0) {
+                resultant[i][j] = v1[i][j];
+            } else {
+                resultant[i][j] = 0;
+            }
         }
     }
+
     return resultant;
 }
 
-std::vector<std::vector<double>> d_ReLU(const std::vector<std::vector<double>> &v1)
+
+std::vector<std::vector<double>> d_ReLU(const std::vector<std::vector<double>>& v1)
 {
-    std::vector<std::vector<double>> resultant(v1.size(), std::vector<double>(1));
-    for (int i = 0; i < v1.size(); i++)
-    {
-        if (v1[i][0] >= 0)
-        {
-            resultant[i][0] = 1;
-        }
-        else
-        {
-            resultant[i][0] = 0;
+    int num_rows = v1.size();
+    int num_cols = v1[0].size();
+
+    std::vector<std::vector<double>> resultant(num_rows, std::vector<double>(num_cols));
+    
+    for (int i = 0; i < num_rows;i++){
+        for (int j = 0; j < num_cols; j++) {
+            if (v1[i][j] >= 0) {
+                resultant[i][j] = 1;
+            } else{
+                resultant[i][j] = 0;
+            }
         }
     }
+
     return resultant;
 }
 
@@ -220,4 +226,16 @@ std::vector<std::vector<std::vector<double>>> createBatches(const std::vector<st
     }
 
     return batches;
+}
+
+std::vector<std::vector<double>> createOnesMatrix(int num_rows, int num_cols) {
+    std::vector<std::vector<double>> onesMatrix(num_rows, std::vector<double>(num_cols));
+
+    for (int i = 0; i < num_rows;i++ ) {
+        for (int j = 0; j < num_cols; j++) {
+            onesMatrix[i][j] = 1;
+        }
+    }
+
+    return onesMatrix;
 }
