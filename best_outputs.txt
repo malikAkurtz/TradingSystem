@@ -1,0 +1,86 @@
+*************************************************************************************
+Data3
+NeuralNetwork Network(0.0001, 1000, SQUARRED_ERROR, 32); 
+Network.addInputLayer(std::make_shared<InputLayer>(num_features));
+Network.addLayer(std::make_shared<Layer>(2, RELU, RANDOM));
+Network.addLayer(std::make_shared<Layer>(3, RELU, RANDOM));
+Network.addLayer(std::make_shared<Layer>(3, RELU, RANDOM));
+Network.addLayer(std::make_shared<Layer>(num_labels, NONE, RANDOM));
+
+Prediction-Label Pair 1: <(5.21149, 5), (10.4547, 10)>
+Prediction-Label Pair 2: <(5.99051, 6), (12.0106, 12)>
+Prediction-Label Pair 3: <(6.99063, 7), (14.0082, 14)>
+Prediction-Label Pair 4: <(7.99075, 8), (16.0057, 16)>
+Prediction-Label Pair 5: <(8.99087, 9), (18.0032, 18)>
+Prediction-Label Pair 6: <(9.99099, 10), (20.0007, 20)>
+Prediction-Label Pair 7: <(10.9911, 11), (21.9983, 22)>
+Prediction-Label Pair 8: <(11.9912, 12), (23.9958, 24)>
+Prediction-Label Pair 9: <(12.9913, 13), (25.9933, 26)>
+Prediction-Label Pair 10: <(13.9989, 14), (28.0056, 28)>
+Prediction-Label Pair 11: <(14.9996, 15), (30.0045, 30)>
+Prediction-Label Pair 12: <(16.0004, 16), (32.0033, 32)>
+Prediction-Label Pair 13: <(17.0012, 17), (34.0022, 34)>
+Prediction-Label Pair 14: <(18.002, 18), (36.001, 36)>
+Prediction-Label Pair 15: <(19.0028, 19), (37.9999, 38)>
+Prediction-Label Pair 16: <(20.0035, 20), (39.9987, 40)>
+Prediction-Label Pair 17: <(21.0043, 21), (41.9976, 42)>
+Prediction-Label Pair 18: <(22.0051, 22), (43.9964, 44)>
+Prediction-Label Pair 19: <(23.0059, 23), (45.9953, 46)>
+Prediction-Label Pair 20: <(23.9874, 24), (47.9557, 48)>
+Trained Model Loss
+0.00629178
+[
+  < -0.408351 -0.408351 1.3428 >
+  < -0.473159 -0.473159 -0.208162 >
+]
+[
+  < -0.924241 -0.320964 2.87767 >
+  < -0.0413499 -0.0413499 -0.0413499 >
+  < -0.776503 -0.244702 1.18482 >
+]
+[
+  < -0.281041 -0.281041 -0.281041 -0.281041 >
+  < -0.452955 -0.452955 -0.452955 -0.452955 >
+  < 2.99938 0.178865 1.43985 2.30495 >
+]
+[
+  < 0.179296 0.179296 1.81635 1.02488 >
+  < 0.434693 0.434693 3.62778 2.09282 >
+]
+*************************************************************************************
+Data3
+NeuralNetwork Network(0.0001, 1000, SQUARRED_ERROR, 32); 
+Network.addInputLayer(std::make_shared<InputLayer>(num_features));
+Network.addLayer(std::make_shared<Layer>(2, RELU, RANDOM));
+Network.addLayer(std::make_shared<Layer>(num_labels, NONE, RANDOM));
+
+Prediction-Label Pair 1: <(5.14755, 5), (10.192, 10)>
+Prediction-Label Pair 2: <(6.02938, 6), (11.9656, 12)>
+Prediction-Label Pair 3: <(7.02681, 7), (13.9684, 14)>
+Prediction-Label Pair 4: <(8.02425, 8), (15.9713, 16)>
+Prediction-Label Pair 5: <(9.02169, 9), (17.9742, 18)>
+Prediction-Label Pair 6: <(10.0191, 10), (19.977, 20)>
+Prediction-Label Pair 7: <(11.0166, 11), (21.9799, 22)>
+Prediction-Label Pair 8: <(12.014, 12), (23.9828, 24)>
+Prediction-Label Pair 9: <(13.0115, 13), (25.9857, 26)>
+Prediction-Label Pair 10: <(14.0089, 14), (27.9885, 28)>
+Prediction-Label Pair 11: <(15.0063, 15), (29.9914, 30)>
+Prediction-Label Pair 12: <(16.0038, 16), (31.9943, 32)>
+Prediction-Label Pair 13: <(17.0012, 17), (33.9972, 34)>
+Prediction-Label Pair 14: <(17.9987, 18), (36, 36)>
+Prediction-Label Pair 15: <(18.9961, 19), (38.0029, 38)>
+Prediction-Label Pair 16: <(19.9935, 20), (40.0058, 40)>
+Prediction-Label Pair 17: <(20.991, 21), (42.0087, 42)>
+Prediction-Label Pair 18: <(21.9884, 22), (44.0115, 44)>
+Prediction-Label Pair 19: <(22.9859, 23), (46.0144, 46)>
+Prediction-Label Pair 20: <(23.9833, 24), (48.0173, 48)>
+Trained Model Loss
+0.00151727
+[
+  < 0.666254 0.666254 2.77462 >
+  < 1.14939 1.14939 3.72302 >
+]
+[
+  < 1.212 1.79943 4.44543 >
+  < 2.50948 3.56937 8.73826 >
+]

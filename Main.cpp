@@ -140,7 +140,7 @@ int main() {
 
 
     // Select dataset (change this to switch datasets)
-    auto& selected_data = data4; // Use data1, data2, or data3
+    auto& selected_data = data3; // Use data1, data2, or data3
     auto& features = selected_data.first;
     auto& labels = selected_data.second;
 
@@ -150,13 +150,13 @@ int main() {
     // Neural Network initialization
     int num_features = features[0].size();
     int num_labels = labels[0].size();
-    int num_epochs = 10000; // higher leads to overfitting i.e reduced accuracy on training data but increasing this during training should only decrease overall training loss
+    int num_epochs = 1000; // higher leads to overfitting i.e reduced accuracy on training data but increasing this during training should only decrease overall training loss
     
-    NeuralNetwork Network(0.1, num_epochs, BINARY_CROSS_ENTROPY, 32); 
+    NeuralNetwork Network(0.0001, num_epochs, SQUARRED_ERROR, 32); 
     Network.addInputLayer(std::make_shared<InputLayer>(num_features));
-    Network.addLayer(std::make_shared<Layer>(2, SIGMOID, RANDOM));
-    Network.addLayer(std::make_shared<Layer>(2, SIGMOID, RANDOM));
-    Network.addLayer(std::make_shared<Layer>(num_labels, SIGMOID, RANDOM));
+    Network.addLayer(std::make_shared<Layer>(2, RELU, RANDOM));
+
+    Network.addLayer(std::make_shared<Layer>(num_labels, NONE, RANDOM));
 
     //Train the model
     Network.fit(features, labels);
@@ -183,6 +183,7 @@ int main() {
 
 
     return 0;
+
 }
 
 
