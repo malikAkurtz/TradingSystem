@@ -241,6 +241,11 @@ namespace OptimizationMethods
         // Initialize Population
         std::vector<NeuralNetwork> population(initial_population_size, network); //
 
+        for (int i = 0; i < initial_population_size; i++)
+        {
+            population[i].reInitializeLayers();
+        }
 
+        
     }
 }

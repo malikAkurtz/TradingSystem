@@ -104,9 +104,14 @@ void Layer::updateNeuronWeights(std::vector<std::vector<double>> gradient_matrix
                 this->neurons[i].weights[j] -=(LR * gradient_matrix[i][j]);
             }
         }
+}
+
+void Layer::reInitializeNeurons()
+{
+    for (Neuron neuron : neurons)
+    {
+        neuron.reInitializeWeights(this->initalization);
     }
-
-
-
+}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

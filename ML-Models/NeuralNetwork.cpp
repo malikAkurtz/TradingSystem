@@ -73,3 +73,10 @@ void NeuralNetwork::addInputLayer(std::shared_ptr<InputLayer> inputLayer) {
     this->inputLayer = inputLayer;
 }
 
+void NeuralNetwork::reInitializeLayers()
+{
+    for (std::shared_ptr<Layer> layer : layers)
+    {
+        layer->reInitializeNeurons(layer->initalization);
+    }
+}

@@ -36,6 +36,7 @@ public:
     double calculateLoss(const std::vector<double>& predictions, const std::vector<double>& labels);
     void addLayer(std::shared_ptr<Layer> layer);
     void addInputLayer(std::shared_ptr<InputLayer> inputLayer);
+    void reInitializeLayers();
 };
 
 #endif // NEURALNETWORK_H
