@@ -236,7 +236,8 @@ namespace OptimizationMethods
 
     void NeuroEvolution(NeuralNetwork &network, const std::vector<std::vector<double>> &featuresMatrix, const std::vector<std::vector<double>> &labels)
     {
-        int num_features = featuresMatrix.size();
+        int num_samples = featuresMatrix.size();
+        std::vector<std::vector<double>> labels_T = takeTranspose(labels);
         int population_size = 100;
         int max_generations = 1000;
 
@@ -250,7 +251,8 @@ namespace OptimizationMethods
 
         // for every generation
         for (int g = 0; g < max_generations; g++)
-        {   
+        {  
+            std::vector<std::pair<double, NeuralNetwork>> population_loss;
             // need to evaluate the population
             // for every network in the population
             for (int i = 0; i < population_size; i++)
@@ -261,8 +263,35 @@ namespace OptimizationMethods
                 // A matrix where each column is a prediction for that sample from left to right
                 std::vector<std::vector<double>> thisNNoutputs = thisNN.getPredictions(featuresMatrix);
 
-                
+                double thisNNloss = 0;
+                for (int j = 0; j < thisNNoutputs.size(); j++)
+                {
+                    thisNNloss += network.calculateLoss(getColumn(thisNNoutputs, j), getColumn(labels_T, j));
+                }
+                thisNNloss /= num_samples;
+                std::pair<double, NeuralNetwork> NNxLoss(thisNNloss, thisNN);
+
+                population_loss.push_back(NNxLoss);
             }
+
+            // sort the dictionary
+            std::sort(population_loss.begin(), population_loss.end());
+
+            // Elitism selection, keeping top 20%
+            int num_surviving_networks = population_size * 0.2;
+
+            std::vector<std::pair<double, NeuralNetwork>> elites(population_loss.begin(), population_loss.begin() + num_surviving_networks + 1);
+
+            population.clear();
+            for (auto& elite : elites)
+            {
+                population.push_back(elite.second);
+            }
+
+            // crossover/breeding
+            std::vector<NeuralNetwork> children(elites.size());
+
+
         }
     }
 }
