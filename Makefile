@@ -1,7 +1,9 @@
 # Compiler
 CXX = g++
 
-CXXFLAGS = -std=c++11 -Wall -Ilibs -Ilibs/Data-Processing -Ilibs/Math -IML-Models
+CXXFLAGS = -std=c++11 -Wall -Ilibs -Ilibs/Data-Processing -Ilibs/Math -IML-Models -I/opt/homebrew/include/SDL2
+
+LDFLAGS = -L/opt/homebrew/lib -lSDL2
 
 
 # Target executable
@@ -18,7 +20,7 @@ all: $(TARGET)
 
 # Rule to link all object files into the executable
 $(TARGET): $(OBJECTS)
-	$(CXX) $(CXXFLAGS) -o $(TARGET) $(OBJECTS)
+	$(CXX) $(CXXFLAGS) -o $(TARGET) $(OBJECTS) $(LDFLAGS)
 
 # Rule to compile each .cpp file into a .o file
 %.o: %.cpp

@@ -144,7 +144,6 @@ int main() {
     auto& features = selected_data.first;
     auto& labels = selected_data.second;
 
-
     features = normalizeData(features); //******** UNCOMMENT THIS YOU FUCKING RETARD **************
 
     // Neural Network initialization
@@ -152,10 +151,11 @@ int main() {
     int num_labels = labels[0].size();
     int num_epochs = 1000; // higher leads to overfitting i.e reduced accuracy on training data but increasing this during training should only decrease overall training loss
     
-    NeuralNetwork Network(0.0001, num_epochs, SQUARRED_ERROR, 32); 
+    NeuralNetwork Network(0.0001, 1000, SQUARRED_ERROR, 32); 
     Network.addInputLayer(std::make_shared<InputLayer>(num_features));
     Network.addLayer(std::make_shared<Layer>(2, RELU, RANDOM));
-
+    Network.addLayer(std::make_shared<Layer>(3, RELU, RANDOM));
+    Network.addLayer(std::make_shared<Layer>(3, RELU, RANDOM));
     Network.addLayer(std::make_shared<Layer>(num_labels, NONE, RANDOM));
 
     //Train the model
