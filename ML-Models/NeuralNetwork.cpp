@@ -154,7 +154,7 @@ void NeuralNetwork::reInitializeLayers()
     }
 }
 
-std::vector<double> NeuralNetwork::getNetworkEncoding()
+std::vector<double> NeuralNetwork::getNetworkEncoding() const
 {
     
     std::vector<double> NNsequence;

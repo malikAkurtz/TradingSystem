@@ -38,7 +38,7 @@ public:
     void addLayer(std::shared_ptr<Layer> layer);
     void addInputLayer(std::shared_ptr<InputLayer> inputLayer);
     void reInitializeLayers();
-    std::vector<double> getNetworkEncoding();
+    std::vector<double> getNetworkEncoding() const;
 };
 
 #endif // NEURALNETWORK_H

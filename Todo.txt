@@ -2,7 +2,6 @@
 2.) double check loss calculations
 3.) implemenet xavier initialization
 
-2.) add a constructor to neural network to build a neural network based on an encoding
 
 Neural network, 1 input layer 1 neuron, 1 hidden layer 2 neurons, 1 output layer 1 neuron,
 

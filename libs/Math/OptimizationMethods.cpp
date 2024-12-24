@@ -1,4 +1,5 @@
 #include "OptimizationMethods.h"
+#include "NeuroHelperFuncs.h"
 
 using namespace LinearAlgebra;
 
@@ -236,6 +237,7 @@ namespace OptimizationMethods
 
     void NeuroEvolution(NeuralNetwork &network, const std::vector<std::vector<double>> &featuresMatrix, const std::vector<std::vector<double>> &labels)
     {
+        float mutation_rate = 0.1;
         int num_samples = featuresMatrix.size();
         std::vector<std::vector<double>> labels_T = takeTranspose(labels);
         int population_size = 100;
@@ -286,15 +288,30 @@ namespace OptimizationMethods
             std::vector<std::pair<double, NeuralNetwork>> elites(population_loss.begin(), population_loss.begin() + num_surviving_networks + 1);
 
             population.clear();
+
             for (auto& elite : elites)
             {
                 population.push_back(elite.second);
             }
 
             // crossover/breeding
-            //std::vector<NeuralNetwork> children(elites.size());
+
+            int children_needed = population_size - num_surviving_networks;
+
+            for (int i = 0; i < children_needed; i++)
+            {
+                //pick two random elites
+                NeuralNetwork& parent1 = population[rand() % population_size];
+                NeuralNetwork& parent2 = population[rand() % population_size];
+                std::vector<double> childEncoding = uniformCrossover(parent1, parent2);
+                population.emplace_back(network, childEncoding);
+            }
+
+            // mutate
 
 
         }
+        
     }
+    
 }
