@@ -8,6 +8,7 @@ class NeuralNetwork;
 namespace OptimizationMethods
 {
     void batchGradientDescent(NeuralNetwork &network, const std::vector<std::vector<double>> &featuresMatrix, const std::vector<std::vector<double>> &labels);
+    void NeuroEvolution(NeuralNetwork &network, const std::vector<std::vector<double>> &featuresMatrix, const std::vector<std::vector<double>> &labels);
 }
 
 #endif

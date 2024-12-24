@@ -192,9 +192,10 @@ namespace OptimizationMethods
 
 
                 // update weights for every hidden layer using the gradient for that layers weights
-                for (int m = 0; m < network.num_hidden_layers; m++) {
-                int gradient_index = gradient_J.size() - 1 - m;
-                network.layers[m]->updateNeuronWeights(gradient_J[gradient_index], network.LR);
+                for (int m = 0; m < network.num_hidden_layers; m++) 
+                {
+                    int gradient_index = gradient_J.size() - 1 - m;
+                    network.layers[m]->updateNeuronWeights(gradient_J[gradient_index], network.LR);
                 }
 
                 // norm of gradient for this particular sample
@@ -236,16 +237,32 @@ namespace OptimizationMethods
     void NeuroEvolution(NeuralNetwork &network, const std::vector<std::vector<double>> &featuresMatrix, const std::vector<std::vector<double>> &labels)
     {
         int num_features = featuresMatrix.size();
-        int initial_population_size = 100;
+        int population_size = 100;
+        int max_generations = 1000;
 
         // Initialize Population
-        std::vector<NeuralNetwork> population(initial_population_size, network); //
+        std::vector<NeuralNetwork> population(population_size, network);
 
-        for (int i = 0; i < initial_population_size; i++)
+        for (int i = 0; i < population_size; i++)
         {
             population[i].reInitializeLayers();
         }
 
-        
+        // for every generation
+        for (int g = 0; g < max_generations; g++)
+        {   
+            // need to evaluate the population
+            // for every network in the population
+            for (int i = 0; i < population_size; i++)
+            {
+                NeuralNetwork &thisNN = population[i];
+                // perform a forward pass of the entire dataset through this network
+
+                // A matrix where each column is a prediction for that sample from left to right
+                std::vector<std::vector<double>> thisNNoutputs = thisNN.getPredictions(featuresMatrix);
+
+                
+            }
+        }
     }
 }

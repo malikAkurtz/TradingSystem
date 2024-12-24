@@ -16,7 +16,18 @@ NeuralNetwork::NeuralNetwork(float learningrate, int num_epochs, LossFunction lo
 
 void NeuralNetwork::fit(std::vector<std::vector<double>> featuresMatrix, std::vector<std::vector<double>>  labels) 
 {
-    batchGradientDescent(*this, featuresMatrix, labels);
+    if (this->optimizationMethod == GRADIENT_DESCENT) 
+    {
+        batchGradientDescent(*this, featuresMatrix, labels);
+    }
+    else if (this->optimizationMethod == NEUROEVOLUTION)
+    {
+        NeuroEvolution(*this, featuresMatrix, labels);
+    }
+    else
+    {
+        throw std::invalid_argument("No Optimization Type Specified!");
+    }
 }
 
 // takes in a features matrix and returns a matrix where each column is a vector of 
