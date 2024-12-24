@@ -6,6 +6,8 @@
 #include "Neuron.h"
 #include "LinearAlgebra.h"
 #include "GenFunctions.h"
+#include "ActivationFunctions.h"
+
 
 extern std::vector<double> NUM_NEURONS_PER_LAYER;
 

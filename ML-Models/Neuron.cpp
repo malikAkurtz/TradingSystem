@@ -1,5 +1,5 @@
 #include "Neuron.h"
-#include "Output.h"
+
 
 // InputNeuron Definitions
 InputNeuron::InputNeuron() {}

@@ -1,7 +1,8 @@
 #include "NetworkLayers.h"
-#include "Neuron.h"
-#include "Output.h"
-#include <iostream>
+
+
+using namespace LinearAlgebra;
+using namespace ActivationFunctions;
 
 std::vector<double> NUM_NEURONS_PER_LAYER = {};
 
@@ -51,11 +52,11 @@ void Layer::calculateLayerOutputs(std::vector<std::vector<double>> input_matrix)
 
     this->pre_activation_outputs = (matrixMultiply(this->getWeightsMatrix(), input_matrix));
     if (AFtype == RELU) {
-        this->activation_outputs = ReLU(this->pre_activation_outputs);
-        this->derivative_activation_outputs = d_ReLU(this->pre_activation_outputs);
+        this->activation_outputs = matrix_ReLU(this->pre_activation_outputs);
+        this->derivative_activation_outputs = matrix_d_ReLU(this->pre_activation_outputs);
         } else if(AFtype == SIGMOID) {
-        this->activation_outputs = sigmoid(this->pre_activation_outputs);
-        this->derivative_activation_outputs = d_sigmoid(this->pre_activation_outputs);
+        this->activation_outputs = matrix_sigmoid(this->pre_activation_outputs);
+        this->derivative_activation_outputs = matrix_d_sigmoid(this->pre_activation_outputs);
     } else if (AFtype == NONE) {
         this->activation_outputs = this->pre_activation_outputs;
         this->derivative_activation_outputs = createOnesMatrix(this->pre_activation_outputs.size(), this->pre_activation_outputs[0].size());

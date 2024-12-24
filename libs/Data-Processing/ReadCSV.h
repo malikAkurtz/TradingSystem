@@ -4,6 +4,9 @@
 #include <vector>
 #include <fstream>
 #include <sstream>
+#include <iostream>
+#include <cctype> // For std::isdigit
+#include <string>
 
 std::vector<std::vector<double>> parseCSV(std::string file_name);
 std::vector<std::string> getCSVHeaders(std::string file_name);

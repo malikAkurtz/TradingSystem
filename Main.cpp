@@ -1,16 +1,8 @@
-#include "ML-Models/linear_regression.cpp"
-#include "ML-Models/logistic_regression.cpp"
-#include "ML-Models/NeuralNetwork.cpp"
-#include <iostream>
-#include "LinearAlgebra.h"
-#include "Output.h"
-#include <iomanip> // Required for std::fixed and std::setprecision
+#include "NeuralNetwork.h"
+#include <numeric>
 #include "ReadCSV.h"
-#include "LinearAlgebra.h"
-#include <string>
-#include <cmath>
-#include "Neuron.h"
-#include "NetworkLayers.h"
+
+using namespace LinearAlgebra;
 
 bool DEBUG = false;
 
@@ -150,8 +142,8 @@ int main() {
     int num_features = features[0].size();
     int num_labels = labels[0].size();
     int num_epochs = 1000; // higher leads to overfitting i.e reduced accuracy on training data but increasing this during training should only decrease overall training loss
-    
-    NeuralNetwork Network(0.0001, 1000, SQUARRED_ERROR, 32); 
+
+    NeuralNetwork Network(0.0001, 1000, SQUARRED_ERROR, 32, GRADIENT_DESCENT); 
     Network.addInputLayer(std::make_shared<InputLayer>(num_features));
     Network.addLayer(std::make_shared<Layer>(2, RELU, RANDOM));
     Network.addLayer(std::make_shared<Layer>(3, RELU, RANDOM));

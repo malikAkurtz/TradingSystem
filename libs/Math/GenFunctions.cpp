@@ -1,8 +1,6 @@
-#include <vector>
-#include <cmath>
-#include "LinearAlgebra.h"
-#include <iostream>
-#include "Output.h"
+#include "GenFunctions.h"
+
+using namespace LinearAlgebra;
 
 double calculateMSE(const std::vector<double> &predictions, std::vector<double> &labels)
 {
@@ -30,41 +28,7 @@ double calculateLogLoss(const std::vector<double> &predictions, const std::vecto
     return (-1 * (cumSum / predictions.size()));
 }
 
-// takes two column vectors
-double modifiedSquarredError(const std::vector<double> &predictions, const std::vector<double> &labels)
-{
-    // printDebug("Predictions contents");
-    // for (int i = 0; i < predictions.size(); i++)
-    // {
-    //     printDebug(predictions[i]);
-    // }
-    // printDebug("Labels contents");
-    // for (int i = 0; i < labels.size(); i++) {
-    //     printDebug(labels[i]);
-    // }
 
-        if (predictions.size() != labels.size())
-        {
-            throw std::invalid_argument("Size mismatch between predictions and labels");
-        }
-    std::vector<double> error = subtractVectors(predictions, labels);
-    return (innerProduct(error, error) / 2);
-}
-
-double vectorizedLogLoss(const std::vector<double> &predictions, const std::vector<double> &labels)
-{
-    double cumSum = 0;
-    const double epsilon = 1e-10;
-
-
-    for (int i = 0; i < predictions.size(); i++)
-    {
-        double clipped_prediction = std::max(epsilon, std::min(1 - epsilon, predictions[i]));
-        cumSum += (labels[i] * std::log(clipped_prediction)) + ((1 - labels[i]) * std::log((1 - clipped_prediction)));
-    }
-
-    return (-1 * (cumSum / predictions.size()));
-}
 
 std::vector<double> thresholdFunction(const std::vector<double> &softPredictions, const double &threshhold)
 {
@@ -85,94 +49,6 @@ std::vector<double> thresholdFunction(const std::vector<double> &softPredictions
     return hardPredictions;
 }
 
-std::vector<std::vector<double>> ReLU(const std::vector<std::vector<double>> &v1)
-{
-    int num_rows = v1.size();
-    int num_cols = v1[0].size();
-
-    std::vector<std::vector<double>> resultant(num_rows, std::vector<double>(num_cols));
-    
-    for (int i = 0; i < num_rows;i++){
-        for (int j = 0; j < num_cols; j++) {
-            if (v1[i][j] >= 0) {
-                resultant[i][j] = v1[i][j];
-            } else {
-                resultant[i][j] = 0;
-            }
-        }
-    }
-
-    return resultant;
-}
-
-
-std::vector<std::vector<double>> d_ReLU(const std::vector<std::vector<double>>& v1)
-{
-    int num_rows = v1.size();
-    int num_cols = v1[0].size();
-
-    std::vector<std::vector<double>> resultant(num_rows, std::vector<double>(num_cols));
-    
-    for (int i = 0; i < num_rows;i++){
-        for (int j = 0; j < num_cols; j++) {
-            if (v1[i][j] >= 0) {
-                resultant[i][j] = 1;
-            } else{
-                resultant[i][j] = 0;
-            }
-        }
-    }
-
-    return resultant;
-}
-
-
-std::vector<std::vector<double>> sigmoid(const std::vector<std::vector<double>> &v1)
-{
-    int num_rows = v1.size();
-    int num_cols = v1[0].size();
-
-    std::vector<std::vector<double>> resultant(num_rows, std::vector<double>(num_cols));
-
-    for (int i = 0; i < num_rows; i++) {
-        for (int j = 0; j < num_cols; j++) {
-            resultant[i][j] = 1.0 / (1.0 + std::exp(-v1[i][j]));
-        }
-    }
-
-    return resultant;
-}
-
-double sigmoid_single(const double &value)
-{
-    if (value >= 0)
-    {
-        return 1.0 / (1.0 + std::exp(-value));
-    }
-    else
-    {
-        double exp_val = std::exp(value);
-        return exp_val / (1.0 + exp_val);
-    }
-}
-
-
-std::vector<std::vector<double>> d_sigmoid(const std::vector<std::vector<double>> &v1)
-{
-    int num_rows = v1.size();
-    int num_cols = v1[0].size();
-
-    std::vector<std::vector<double>> resultant(num_rows, std::vector<double>(num_cols));
-
-    for (int i = 0; i < num_rows; i++) {
-        for (int j = 0; j < num_cols; j++) {
-            double sig = sigmoid_single(v1[i][j]);
-            resultant[i][j] = sig * (1 - sig);
-        }
-    }
-
-    return resultant;
-}
 
 
 double calculateMean(const std::vector<double> &v1)
@@ -236,14 +112,3 @@ std::vector<std::vector<std::vector<double>>> createBatches(const std::vector<st
     return batches;
 }
 
-std::vector<std::vector<double>> createOnesMatrix(int num_rows, int num_cols) {
-    std::vector<std::vector<double>> onesMatrix(num_rows, std::vector<double>(num_cols));
-
-    for (int i = 0; i < num_rows;i++ ) {
-        for (int j = 0; j < num_cols; j++) {
-            onesMatrix[i][j] = 1;
-        }
-    }
-
-    return onesMatrix;
-}

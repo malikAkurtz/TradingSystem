@@ -1,10 +1,7 @@
 # Compiler
 CXX = g++
 
-CXXFLAGS = -std=c++11 -Wall -Ilibs -Ilibs/Data-Processing -Ilibs/Math -IML-Models -I/opt/homebrew/include/SDL2
-
-LDFLAGS = -L/opt/homebrew/lib -lSDL2
-
+CXXFLAGS = -std=c++11 -Wall -Ilibs -Ilibs/Data-Processing -Ilibs/Math -IML-Models
 
 # Target executable
 TARGET = out
@@ -28,4 +25,4 @@ $(TARGET): $(OBJECTS)
 
 # Clean up object files and the executable
 clean:
-	rm -f $(OBJECTS) $(TARGET) results.csv
+	rm -f $(OBJECTS) $(TARGET) results.csv out

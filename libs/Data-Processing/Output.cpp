@@ -1,8 +1,7 @@
-#include <iostream>
-#include <vector>
-#include <string>
 #include "Output.h"
-#include "LinearAlgebra.h"
+
+
+using namespace LinearAlgebra;
 
 void printMatrix(const std::vector<std::vector<double>>& matrix) {
     std::cout << "[" << std::endl;
