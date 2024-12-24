@@ -5,18 +5,11 @@
 #include "NetworkLayers.h"
 #include "LossFunctions.h"
 #include "LinearAlgebra.h"
+#include "OptimizationMethods.h"
+#include "OptimizationTypes.h"
 
-// Enum for Loss Functions
-enum LossFunction {
-    SQUARRED_ERROR,
-    BINARY_CROSS_ENTROPY
-};
 
-enum OptimizationMethod
-{
-    GRADIENT_DESCENT,
-    NEUROEVOLUTION
-};
+
 
 class NeuralNetwork {
 public:

@@ -8,7 +8,17 @@
 #include <vector>
 #include "LinearAlgebra.h"
 
-double vectorizedModifiedSquarredError(const std::vector<double> &predictions, const std::vector<double> &labels);
-double vectorizedLogLoss(const std::vector<double> &predictions, const std::vector<double> &labels);
+// Enum for Loss Functions
+enum LossFunction {
+    SQUARRED_ERROR,
+    BINARY_CROSS_ENTROPY
+};
+
+namespace LossFunctions
+{
+    double vectorizedModifiedSquarredError(const std::vector<double> &predictions, const std::vector<double> &labels);
+    double vectorizedLogLoss(const std::vector<double> &predictions, const std::vector<double> &labels);
+
+}
 
 #endif

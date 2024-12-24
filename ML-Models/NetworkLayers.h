@@ -52,7 +52,6 @@ class Layer {
     std::vector<Neuron> neurons;
     ActivationFunction AFtype;
     NeuronInitialization initalization;
-    std::vector<std::vector<double>> weightsMatrix;
     std::vector<std::vector<double>> pre_activation_outputs;
     std::vector<std::vector<double>> activation_outputs;
     std::vector<std::vector<double>> derivative_activation_outputs;
@@ -76,8 +75,6 @@ class Layer {
     std::vector<std::vector<double>> getWeightsMatrix();
 
     void addNeuron(Neuron neuron);
-
-    void addNeuronWeights(Neuron neuron);
 
     void updateNeuronWeights(std::vector<std::vector<double>> gradient_matrix, float LR);
 };
