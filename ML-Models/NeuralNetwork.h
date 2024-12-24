@@ -29,6 +29,7 @@ public:
 
     // Constructor
     NeuralNetwork(float learningrate, int num_epochs, LossFunction lossFunction, int batchSize, OptimizationMethod optimizationMethod);
+    NeuralNetwork(const NeuralNetwork& baseNN, const std::vector<double>& encoding);
 
     // Public methods
     void fit(std::vector<std::vector<double>> featuresMatrix, std::vector<std::vector<double>> labels);
@@ -37,6 +38,7 @@ public:
     void addLayer(std::shared_ptr<Layer> layer);
     void addInputLayer(std::shared_ptr<InputLayer> inputLayer);
     void reInitializeLayers();
+    std::vector<double> getNetworkEncoding();
 };
 
 #endif // NEURALNETWORK_H

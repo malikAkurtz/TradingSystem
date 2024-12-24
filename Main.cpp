@@ -143,52 +143,54 @@ int main() {
     int num_labels = labels[0].size();
     int num_epochs = 1000; // higher leads to overfitting i.e reduced accuracy on training data but increasing this during training should only decrease overall training loss
 
-    NeuralNetwork Network(0.0001, 1000, SQUARRED_ERROR, 32, GRADIENT_DESCENT); 
-    Network.addInputLayer(std::make_shared<InputLayer>(num_features));
-    Network.addLayer(std::make_shared<Layer>(2, RELU, RANDOM));
-    Network.addLayer(std::make_shared<Layer>(3, RELU, RANDOM));
-    Network.addLayer(std::make_shared<Layer>(3, RELU, RANDOM));
-    Network.addLayer(std::make_shared<Layer>(num_labels, NONE, RANDOM));
+    NeuralNetwork network(0.0001, 1000, SQUARRED_ERROR, 32, GRADIENT_DESCENT); 
+    network.addInputLayer(std::make_shared<InputLayer>(num_features));
+    network.addLayer(std::make_shared<Layer>(2, RELU, CONSTANT));
+    network.addLayer(std::make_shared<Layer>(num_labels, NONE, RANDOM));
 
-    //Train the model
-    Network.fit(features, labels);
+
+
+    //     printMatrix(Network.layers[i]->getWeightsMatrix());
+    // }
+    // Train the model
+    // Network.fit(features, labels);
 
     // Evaluate the model
-    std::vector<std::vector<double>> predictions = Network.getPredictions(features);
-    
-    std::vector<int> epochs(num_epochs);
-    std::vector<double> losses = Network.epoch_losses;
-    std::iota(epochs.begin(), epochs.end(), 1); // Fills with 1 to 1000
-    toCSV("training_loss.txt", epochs, Network.epoch_losses, Network.epoch_gradient_norms);
+    // std::vector<std::vector<double>> predictions = Network.getPredictions(features);
 
-    printPredictionsVSLabels(predictions, labels);
+    // std::vector<int> epochs(num_epochs);
+    // std::vector<double> losses = Network.epoch_losses;
+    // std::iota(epochs.begin(), epochs.end(), 1); // Fills with 1 to 1000
+    // toCSV("training_loss.txt", epochs, Network.epoch_losses, Network.epoch_gradient_norms);
 
-    std::cout << "Trained Model Loss" << std::endl;
-    std::cout << Network.model_loss << std::endl;
+    // printPredictionsVSLabels(predictions, labels);
 
+    // std::cout << "Trained Model Loss" << std::endl;
+    // std::cout << Network.model_loss << std::endl;
 
-    // Print the weights of the hidden layers
-    printDebug("Final Layer Parameters Starting from First Hidden Layer");
-    for (size_t i = 0; i < Network.num_hidden_layers; i++) {
-        printMatrix(Network.layers[i]->getWeightsMatrix());
-    }
-
+    // // Print the weights of the hidden layers
+    // printDebug("Final Layer Parameters Starting from First Hidden Layer");
+    // for (size_t i = 0; i < Network.num_hidden_layers; i++) {
+    //     printMatrix(Network.layers[i]->getWeightsMatrix());
+    // }
 
     return 0;
+    }
 
-}
-
-
-
-
-int main6(){
+int main1(){
     std::vector<std::vector<double>> m1 = {
         {1, 2},
         {3, 4}};
     std::vector<std::vector<double>> m2 = {
-        {1, 2},
-        {3, 4}};
+        {1, 2, 4},
+        {3, 4, 6},
+        {1, 2, 3}};
 
-    printMatrixDebug(hadamardProduct(m1, m2));
+    std::vector<double> vector = flattenMatrix(m2);
+    for (double d : vector)
+    {
+        std::cout << d << std::endl;
+    }
+
     return 0;
 }

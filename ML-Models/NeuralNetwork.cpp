@@ -14,6 +14,64 @@ NeuralNetwork::NeuralNetwork(float learningrate, int num_epochs, LossFunction lo
     this->optimizationMethod = optimizationMethod;
 }
 
+// takes in a template base neural net, and an encoding of weights and parameters and constructs a new neural network
+NeuralNetwork::NeuralNetwork(const NeuralNetwork& baseNN, const std::vector<double>& encoding)
+{
+    this->LR = baseNN.LR;
+    this->num_hidden_layers = 0;
+    this->num_epochs = baseNN.num_epochs;
+    this->selectedLoss = baseNN.selectedLoss;
+    this->batch_size = baseNN.batch_size;
+    this->optimizationMethod = NEUROCHILD;
+
+
+    int num_neurons_prev_layer = baseNN.inputLayer->inputNeurons.size();
+    std::shared_ptr<InputLayer> new_input_layer = std::make_shared<InputLayer>(num_neurons_prev_layer);
+
+    int encoding_index = 0;
+    for (std::shared_ptr<Layer> base_layer : baseNN.layers)
+    {   
+        // std::cout << "The weights matrix for the base layer is: " << std::endl;
+        // std::cout << "[" << std::endl;
+        // for (const auto& row : base_layer->getWeightsMatrix()) {
+        //     std::cout << "  < ";
+        //     for (const auto& elem : row) {
+        //         std::cout << elem << " ";
+        //     }
+        //     std::cout << ">" << std::endl;
+        // }
+        // std::cout << "]" << std::endl;
+
+        std::shared_ptr<Layer> new_layer = std::make_shared<Layer>(num_neurons_prev_layer, base_layer->AFtype, base_layer->initalization);
+
+        int num_neurons_cur_layer = base_layer->neurons.size();
+
+        for (int i = 0; i < num_neurons_cur_layer; i++)
+        {
+            for (int j = 0; j < (num_neurons_prev_layer+1); j++)
+            {
+                // std::cout << "Setting new_layer->neurons[" << i << "].weights[" << j
+                //   << "] = encoding[" << encoding_index << "] = "
+                //   << encoding[encoding_index] << std::endl;
+                new_layer->neurons[i].weights[j] = encoding[encoding_index++];
+            }
+        }
+        // std::cout << "The weights matrix for the copied layer is: " << std::endl;
+        // std::cout << "[" << std::endl;
+        // for (const auto& row : new_layer->getWeightsMatrix()) {
+        //     std::cout << "  < ";
+        //     for (const auto& elem : row) {
+        //         std::cout << elem << " ";
+        //     }
+        //     std::cout << ">" << std::endl;
+        // }
+        // std::cout << "]" << std::endl;
+
+        num_neurons_prev_layer = num_neurons_cur_layer;
+        this->addLayer(new_layer);
+    }
+}
+
 void NeuralNetwork::fit(std::vector<std::vector<double>> featuresMatrix, std::vector<std::vector<double>>  labels) 
 {
     if (this->optimizationMethod == GRADIENT_DESCENT) 
@@ -23,6 +81,10 @@ void NeuralNetwork::fit(std::vector<std::vector<double>> featuresMatrix, std::ve
     else if (this->optimizationMethod == NEUROEVOLUTION)
     {
         NeuroEvolution(*this, featuresMatrix, labels);
+    }
+    else if (this->optimizationMethod == NEUROCHILD)
+    {
+        throw std::invalid_argument("This is a child network, can't call fit!");
     }
     else
     {
@@ -86,8 +148,21 @@ void NeuralNetwork::addInputLayer(std::shared_ptr<InputLayer> inputLayer) {
 
 void NeuralNetwork::reInitializeLayers()
 {
-    for (std::shared_ptr<Layer> layer : layers)
+    for (std::shared_ptr<Layer> layer : this->layers)
     {
         layer->reInitializeNeurons();
     }
+}
+
+std::vector<double> NeuralNetwork::getNetworkEncoding()
+{
+    
+    std::vector<double> NNsequence;
+    for (std::shared_ptr<Layer> layer: this->layers)
+    {
+        std::vector<double> flattened = flattenMatrix(layer->getWeightsMatrix());
+        NNsequence.insert(NNsequence.end(), flattened.begin(), flattened.end());
+    }
+
+    return NNsequence;
 }

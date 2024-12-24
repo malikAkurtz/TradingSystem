@@ -38,7 +38,7 @@
     double calculateMatrixEuclideanNorm(const std::vector<std::vector<double>> &matrix);
     std::vector<std::vector<double>> subtractMatrices(const std::vector<std::vector<double>> &m1, const std::vector<std::vector<double>> &m2);
     std::vector<std::vector<double>> createOnesMatrix(int num_rows, int num_cols);
+    std::vector<double> flattenMatrix(const std::vector<std::vector<double>> &m1);
  }
-
 
 #endif

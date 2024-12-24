@@ -2,6 +2,8 @@
 2.) double check loss calculations
 3.) implemenet xavier initialization
 
+2.) add a constructor to neural network to build a neural network based on an encoding
+
 Neural network, 1 input layer 1 neuron, 1 hidden layer 2 neurons, 1 output layer 1 neuron,
 
 suppose the value x = 2 is fed forward with the corresponding label 7 and weight matrices of hidden layer initialized to a square 2 x 2 matrix full of twos and output layer weight matrix a 1 x 3 matrix also initialized to 2s and has a ReLU activation function, suppose I am including the bias in the weight matrix (it is being calculated alongside all other weights) walk through a forward pass explaining all of the shapes at each stage and then walk through a backward pass doing the same thing

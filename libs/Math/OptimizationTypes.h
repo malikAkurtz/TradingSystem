@@ -4,7 +4,8 @@
 enum OptimizationMethod
 {
     GRADIENT_DESCENT,
-    NEUROEVOLUTION
+    NEUROEVOLUTION,
+    NEUROCHILD
 };
 
 #endif // OPTIMIZATION_TYPES_H

@@ -275,7 +275,10 @@ namespace OptimizationMethods
             }
 
             // sort the dictionary
-            std::sort(population_loss.begin(), population_loss.end());
+            std::sort(population_loss.begin(), population_loss.end(), 
+            [](const std::pair<double, NeuralNetwork>& a, const std::pair<double, NeuralNetwork>& b) {
+                return a.first < b.first;
+            });
 
             // Elitism selection, keeping top 20%
             int num_surviving_networks = population_size * 0.2;
@@ -289,7 +292,7 @@ namespace OptimizationMethods
             }
 
             // crossover/breeding
-            std::vector<NeuralNetwork> children(elites.size());
+            //std::vector<NeuralNetwork> children(elites.size());
 
 
         }

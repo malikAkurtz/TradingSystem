@@ -363,5 +363,23 @@ namespace LinearAlgebra
 
         return onesMatrix;
     }
+
+    std::vector<double> flattenMatrix(const std::vector<std::vector<double>> &m1)
+    {   
+        int num_rows = m1.size();
+        int num_cols = m1[0].size();
+
+        std::vector<double> flattened(num_rows * num_cols);
+
+        for (int i = 0; i < num_rows; i++)
+        {
+            for (int j = 0; j < num_cols; j++)
+            {
+                flattened[(i * num_cols) + j] = m1[i][j];
+            }
+        }
+
+        return flattened;
+    }
 }
 
