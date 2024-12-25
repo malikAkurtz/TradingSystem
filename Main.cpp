@@ -134,7 +134,7 @@ int main() {
 
 
     // Select dataset (change this to switch datasets)
-    auto& selected_data = data2; // Use data1, data2, or data3
+    auto& selected_data = data3; // Use data1, data2, or data3
     auto& features = selected_data.first;
     auto& labels = selected_data.second;
 
@@ -146,9 +146,10 @@ int main() {
     int num_labels = labels[0].size();
     int num_epochs = 1000; // higher leads to overfitting i.e reduced accuracy on training data but increasing this during training should only decrease overall training loss
 
-    NeuralNetwork network(0.0001, num_epochs, SQUARRED_ERROR, 32, NEUROEVOLUTION); 
+    NeuralNetwork network(0.001, num_epochs, SQUARRED_ERROR, 32, NEUROEVOLUTION); 
     network.addInputLayer(num_features);
-    network.addLayer(num_labels, NONE, CONSTANT);
+    network.addLayer(4, RELU, RANDOM);
+    network.addLayer(num_labels, NONE, RANDOM);
 
     // fit the model
     network.fit(features, labels);

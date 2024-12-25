@@ -243,7 +243,7 @@ namespace OptimizationMethods
         printMatrixDebug(labels_T);
 
         int population_size = 100;
-        int max_generations = 1000;
+        int max_generations = 10000;
 
         std::vector<double> baseEncoding = network.getNetworkEncoding();
         printDebug("Base network encoding is");
