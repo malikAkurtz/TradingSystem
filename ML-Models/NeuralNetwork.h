@@ -24,11 +24,11 @@ public:
     std::vector<double> epoch_losses;       // Losses for each epoch
     std::vector<double> epoch_gradient_norms; // Gradient norms for each epoch
     LossFunction selectedLoss;              // Loss function to be used
-    OptimizationMethod optimizationMethod;
+    OptimizationType optimizationMethod;
     int batch_size; // Batch size
 
     // Constructor
-    NeuralNetwork(float learningrate, int num_epochs, LossFunction lossFunction, int batchSize, OptimizationMethod optimizationMethod);
+    NeuralNetwork(float learningrate, int num_epochs, LossFunction lossFunction, int batchSize, OptimizationType optimizationMethod);
     NeuralNetwork(const NeuralNetwork& baseNN, const std::vector<double>& encoding);
 
     // Public methods

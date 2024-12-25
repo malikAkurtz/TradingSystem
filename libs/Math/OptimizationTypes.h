@@ -1,7 +1,7 @@
 #ifndef OP_TYPES
 #define OP_TYPES
 
-enum OptimizationMethod
+enum OptimizationType
 {
     GRADIENT_DESCENT,
     NEUROEVOLUTION,

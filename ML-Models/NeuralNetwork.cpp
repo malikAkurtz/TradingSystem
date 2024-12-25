@@ -5,7 +5,7 @@ using namespace LinearAlgebra;
 using namespace LossFunctions;
 using namespace OptimizationMethods;
 
-NeuralNetwork::NeuralNetwork(float learningrate, int num_epochs, LossFunction lossFunction, int batchSize, OptimizationMethod optimizationMethod) : inputLayer(nullptr){
+NeuralNetwork::NeuralNetwork(float learningrate, int num_epochs, LossFunction lossFunction, int batchSize, OptimizationType optimizationMethod) : inputLayer(nullptr){
     this->LR = learningrate;
     this->num_hidden_layers = 0;
     this->num_epochs = num_epochs;
