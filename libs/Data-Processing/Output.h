@@ -11,6 +11,9 @@ extern bool DEBUG;
 void printMatrixDebug(const std::vector<std::vector<double>>& matrix);
 void printMatrix(const std::vector<std::vector<double>> &matrix);
 
+void printVectorDebug(const std::vector<double> &vec);
+void printVector(const std::vector<double> &vec);
+
 template <typename T>
 void print(const T& value) {
     std::cout << value << std::endl;

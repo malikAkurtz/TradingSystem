@@ -2,7 +2,7 @@
 #define NEURON_H
 
 #include <vector>
-
+#include <random>
 enum NeuronInitialization {
     CONSTANT,
     XAVIER,

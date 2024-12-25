@@ -7,6 +7,8 @@ using namespace LinearAlgebra;
 bool DEBUG = false;
 
 int main() {
+    // seed for random
+    srand(static_cast<unsigned int>(time(0)));
     // Define datasets
     std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>> data1 = {{
         {1.0, 2.5}, {1.5, 3.1}, {2.0, 3.7}, {2.5, 4.0},
@@ -132,47 +134,44 @@ int main() {
 
 
     // Select dataset (change this to switch datasets)
-    auto& selected_data = data3; // Use data1, data2, or data3
+    auto& selected_data = data2; // Use data1, data2, or data3
     auto& features = selected_data.first;
     auto& labels = selected_data.second;
 
     features = normalizeData(features); //******** UNCOMMENT THIS YOU FUCKING RETARD **************
+    //labels = normalizeData(labels);
 
     // Neural Network initialization
     int num_features = features[0].size();
     int num_labels = labels[0].size();
     int num_epochs = 1000; // higher leads to overfitting i.e reduced accuracy on training data but increasing this during training should only decrease overall training loss
 
-    NeuralNetwork network(0.0001, 1000, SQUARRED_ERROR, 32, GRADIENT_DESCENT); 
+    NeuralNetwork network(0.0001, num_epochs, SQUARRED_ERROR, 32, NEUROEVOLUTION); 
     network.addInputLayer(std::make_shared<InputLayer>(num_features));
-    network.addLayer(std::make_shared<Layer>(2, RELU, CONSTANT));
-    network.addLayer(std::make_shared<Layer>(num_labels, NONE, RANDOM));
+    //network.addLayer(std::make_shared<Layer>(2, num_features, RELU, RANDOM));
+    network.addLayer(std::make_shared<Layer>(num_labels, num_features, NONE, RANDOM));
 
+    // fit the model
+    network.fit(features, labels);
 
+    //Evaluate the model
+    std::vector<std::vector<double>> predictions = network.getPredictions(features);
 
-    //     printMatrix(Network.layers[i]->getWeightsMatrix());
-    // }
-    // Train the model
-    // Network.fit(features, labels);
+    std::vector<int> epochs(num_epochs);
+    std::vector<double> losses = network.epoch_losses;
+    std::iota(epochs.begin(), epochs.end(), 1); // Fills with 1 to 1000
+    toCSV("training_loss.txt", epochs, network.epoch_losses, network.epoch_gradient_norms);
 
-    // Evaluate the model
-    // std::vector<std::vector<double>> predictions = Network.getPredictions(features);
-
-    // std::vector<int> epochs(num_epochs);
-    // std::vector<double> losses = Network.epoch_losses;
-    // std::iota(epochs.begin(), epochs.end(), 1); // Fills with 1 to 1000
-    // toCSV("training_loss.txt", epochs, Network.epoch_losses, Network.epoch_gradient_norms);
-
-    // printPredictionsVSLabels(predictions, labels);
+    printPredictionsVSLabels(predictions, labels);
 
     // std::cout << "Trained Model Loss" << std::endl;
-    // std::cout << Network.model_loss << std::endl;
+    // std::cout << network.model_loss << std::endl;
 
-    // // Print the weights of the hidden layers
-    // printDebug("Final Layer Parameters Starting from First Hidden Layer");
-    // for (size_t i = 0; i < Network.num_hidden_layers; i++) {
-    //     printMatrix(Network.layers[i]->getWeightsMatrix());
-    // }
+    // Print the weights of the hidden layers
+    printDebug("Final Layer Parameters Starting from First Hidden Layer");
+    for (size_t i = 0; i < network.num_hidden_layers; i++) {
+        printMatrix(network.layers[i]->getWeightsMatrix());
+    }
 
     return 0;
     }

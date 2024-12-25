@@ -236,19 +236,52 @@ namespace OptimizationMethods
 
 
     void NeuroEvolution(NeuralNetwork &network, const std::vector<std::vector<double>> &featuresMatrix, const std::vector<std::vector<double>> &labels)
-    {
-        float mutation_rate = 0.1;
+    {   
+        // this is what were looking for
+        std::vector<double> bestEncoding; 
+
+        float mutation_rate = 0.01;
+        printDebug("Mutation rate is");
+        printDebug(mutation_rate);
+
         int num_samples = featuresMatrix.size();
+        printDebug("Number of samples is");
+        printDebug(num_samples);
+
         std::vector<std::vector<double>> labels_T = takeTranspose(labels);
-        int population_size = 100;
+        std::vector<std::vector<double>> features_T = takeTranspose(featuresMatrix);
+        printDebug("Features tranpose are");
+        printMatrixDebug(features_T);
+
+        printDebug("Labels tranposed are");
+        printMatrixDebug(labels_T);
+
+        int population_size = 1000;
         int max_generations = 1000;
 
+        std::vector<double> baseEncoding = network.getNetworkEncoding();
+        printDebug("Base network encoding is");
+        printVectorDebug(baseEncoding);
+
         // Initialize Population
-        std::vector<NeuralNetwork> population(population_size, network);
+        std::vector<NeuralNetwork> population;
+        population.reserve(population_size);
 
         for (int i = 0; i < population_size; i++)
         {
-            population[i].reInitializeLayers();
+            
+            std::vector<double> new_member_encoding = baseEncoding;
+            randomizeEncoding(new_member_encoding);
+            printDebug("New member encoding after mutation is:");
+            printVectorDebug(new_member_encoding);
+            population.emplace_back(network, new_member_encoding);
+
+        }
+
+        printDebug("New Member Encodings:");
+        for (auto& nn : population)
+        {
+            printVectorDebug(nn.getNetworkEncoding());
         }
 
         // for every generation
@@ -260,19 +293,20 @@ namespace OptimizationMethods
             for (int i = 0; i < population_size; i++)
             {
                 NeuralNetwork &thisNN = population[i];
+                
                 // perform a forward pass of the entire dataset through this network
 
                 // A matrix where each column is a prediction for that sample from left to right
                 std::vector<std::vector<double>> thisNNoutputs = thisNN.getPredictions(featuresMatrix);
-
                 double thisNNloss = 0;
-                for (int j = 0; j < thisNNoutputs.size(); j++)
+                for (int j = 0; j < thisNNoutputs[0].size(); j++)
                 {
                     thisNNloss += network.calculateLoss(getColumn(thisNNoutputs, j), getColumn(labels_T, j));
                 }
                 thisNNloss /= num_samples;
                 std::pair<double, NeuralNetwork> NNxLoss(thisNNloss, thisNN);
-
+                printDebug("This encodings loss is:");
+                printDebug(thisNNloss);
                 population_loss.push_back(NNxLoss);
             }
 
@@ -282,8 +316,19 @@ namespace OptimizationMethods
                 return a.first < b.first;
             });
 
+            
+            bestEncoding = population_loss[0].second.getNetworkEncoding();
+
+            printDebug("New best encoding");
+            printVectorDebug(bestEncoding);
+            printDebug("Best encoding loss");
+            printDebug(population_loss[0].first);
+
             // Elitism selection, keeping top 20%
             int num_surviving_networks = population_size * 0.2;
+
+            printDebug("Number of surviving networks will be");
+            printDebug(num_surviving_networks);
 
             std::vector<std::pair<double, NeuralNetwork>> elites(population_loss.begin(), population_loss.begin() + num_surviving_networks + 1);
 
@@ -294,24 +339,37 @@ namespace OptimizationMethods
                 population.push_back(elite.second);
             }
 
-            // crossover/breeding
+            for (auto& nn : population)
+            {
+                printDebug("This elite NN's encoding");
+                printVectorDebug(nn.getNetworkEncoding());
+            }
 
+            // crossover/breeding
+            
+            
             int children_needed = population_size - num_surviving_networks;
 
+            printDebug("Number of children needed is");
+            printDebug(children_needed);
+            
             for (int i = 0; i < children_needed; i++)
             {
                 //pick two random elites
-                NeuralNetwork& parent1 = population[rand() % population_size];
-                NeuralNetwork& parent2 = population[rand() % population_size];
+                // printDebug("Random index for parent 1");
+                // printDebug(rand() % population_size);
+                NeuralNetwork &parent1 = population[rand() % num_surviving_networks];
+                NeuralNetwork& parent2 = population[rand() % num_surviving_networks];
+                // printDebug("random index for parent 2");
+                // printDebug(rand() % population_size);
                 std::vector<double> childEncoding = uniformCrossover(parent1, parent2);
+
+                // mutate
+                childEncoding = mutate(childEncoding, mutation_rate);
                 population.emplace_back(network, childEncoding);
             }
-
-            // mutate
-
-
         }
-        
+
+        network.setEncoding(bestEncoding);
     }
-    
 }

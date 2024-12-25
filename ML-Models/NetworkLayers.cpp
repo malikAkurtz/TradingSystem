@@ -4,15 +4,12 @@
 using namespace LinearAlgebra;
 using namespace ActivationFunctions;
 
-std::vector<double> NUM_NEURONS_PER_LAYER = {};
-
 // InputLayer Constructor
 InputLayer::InputLayer(int num_features) {
     for (int i = 0; i < num_features; ++i) {
         InputNeuron neuron;
         this->inputNeurons.push_back(neuron);
     }
-    NUM_NEURONS_PER_LAYER.push_back(num_features);
 }
 
 // InputLayer::calculateLayerOutputs
@@ -34,13 +31,12 @@ void InputLayer::addNeuron(InputNeuron inputNeuron) {
 
 
 // Layer Constructor
-Layer::Layer(int num_neurons, ActivationFunction AFtype, NeuronInitialization NItype)
+Layer::Layer(int num_neurons, int num_inputs, ActivationFunction AFtype, NeuronInitialization NItype)
     : AFtype(AFtype), initalization(NItype) {
     for (int i = 0; i < num_neurons; ++i) {
-        Neuron neuron(NUM_NEURONS_PER_LAYER.back() + 1, NItype); // Including bias
+        Neuron neuron(num_inputs + 1, NItype); // Including bias
         this->addNeuron(neuron);
     }
-    NUM_NEURONS_PER_LAYER.push_back(num_neurons);
 }
 
 void Layer::calculateLayerOutputs(std::vector<std::vector<double>> input_matrix) {
@@ -48,8 +44,8 @@ void Layer::calculateLayerOutputs(std::vector<std::vector<double>> input_matrix)
     std::vector<double> ones_to_append(num_columns, 1);
 
     input_matrix.push_back(ones_to_append); // Add bias
-    printDebug("Weights lool like");
-    printMatrixDebug(this->getWeightsMatrix());
+    // printDebug("Weights lool like");
+    // printMatrixDebug(this->getWeightsMatrix());
     this->pre_activation_outputs = (matrixMultiply(this->getWeightsMatrix(), input_matrix));
     if (AFtype == RELU) {
         this->activation_outputs = matrix_ReLU(this->pre_activation_outputs);

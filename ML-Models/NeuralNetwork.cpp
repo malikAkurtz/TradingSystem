@@ -25,8 +25,10 @@ NeuralNetwork::NeuralNetwork(const NeuralNetwork& baseNN, const std::vector<doub
     this->optimizationMethod = NEUROCHILD;
 
 
-    int num_neurons_prev_layer = baseNN.inputLayer->inputNeurons.size();
-    std::shared_ptr<InputLayer> new_input_layer = std::make_shared<InputLayer>(num_neurons_prev_layer);
+    int num_neurons_input_layer = baseNN.inputLayer->inputNeurons.size();
+
+    std::shared_ptr<InputLayer> new_input_layer = std::make_shared<InputLayer>(num_neurons_input_layer);
+    this->addInputLayer(new_input_layer);
 
     int encoding_index = 0;
     for (std::shared_ptr<Layer> base_layer : baseNN.layers)
@@ -42,13 +44,14 @@ NeuralNetwork::NeuralNetwork(const NeuralNetwork& baseNN, const std::vector<doub
         // }
         // std::cout << "]" << std::endl;
 
-        std::shared_ptr<Layer> new_layer = std::make_shared<Layer>(num_neurons_prev_layer, base_layer->AFtype, base_layer->initalization);
+        int num_neurons_in_this_layer = base_layer->neurons.size();
+        int num_weights_per_neuron = base_layer->neurons[0].getWeights().size() - 1; // since the bias is already included when a layer is initialized
 
-        int num_neurons_cur_layer = base_layer->neurons.size();
+        std::shared_ptr<Layer> new_layer = std::make_shared<Layer>(num_neurons_in_this_layer, num_weights_per_neuron, base_layer->AFtype, base_layer->initalization);
 
-        for (int i = 0; i < num_neurons_cur_layer; i++)
+        for (int i = 0; i < num_neurons_in_this_layer; i++)
         {
-            for (int j = 0; j < (num_neurons_prev_layer+1); j++)
+            for (int j = 0; j < (num_weights_per_neuron); j++)
             {
                 // std::cout << "Setting new_layer->neurons[" << i << "].weights[" << j
                 //   << "] = encoding[" << encoding_index << "] = "
@@ -67,7 +70,6 @@ NeuralNetwork::NeuralNetwork(const NeuralNetwork& baseNN, const std::vector<doub
         // }
         // std::cout << "]" << std::endl;
 
-        num_neurons_prev_layer = num_neurons_cur_layer;
         this->addLayer(new_layer);
     }
 }
@@ -90,20 +92,19 @@ void NeuralNetwork::fit(std::vector<std::vector<double>> featuresMatrix, std::ve
     {
         throw std::invalid_argument("No Optimization Type Specified!");
     }
+
 }
 
 // takes in a features matrix and returns a matrix where each column is a vector of 
 // predictions for that sample
 std::vector<std::vector<double>> NeuralNetwork::getPredictions(std::vector<std::vector<double>> featuresMatrix) 
 {
-    std::vector<std::vector<double>> featuresMatrix_T = takeTranspose(featuresMatrix);
-
-    printMatrixDebug(featuresMatrix_T);
+    std::vector<std::vector<double>> features_T = takeTranspose(featuresMatrix);
 
     // returning a vector of column vectors for each sample that is passed int
     std::vector<std::vector<double>> predictions;
 
-    this->inputLayer->storeInputs(featuresMatrix_T);
+    this->inputLayer->storeInputs(features_T);
     std::vector<std::vector<double>> input_layer_output = this->inputLayer->getInputs();
     printDebug("-------------------Getting Predictions------------------------------");
     printDebug("Input Layer Output");
@@ -122,6 +123,7 @@ std::vector<std::vector<double>> NeuralNetwork::getPredictions(std::vector<std::
     }
 
     predictions = this->layers[num_hidden_layers - 1]->getActivationOutputs();
+    printDebug("-------------------Got Predictions------------------------------");
     return predictions;
 }
 
@@ -165,4 +167,51 @@ std::vector<double> NeuralNetwork::getNetworkEncoding() const
     }
 
     return NNsequence;
+}
+
+void NeuralNetwork::setEncoding(std::vector<double> encoding)
+{
+    int num_neurons_prev_layer = this->inputLayer->inputNeurons.size();
+    std::shared_ptr<InputLayer> new_input_layer = std::make_shared<InputLayer>(num_neurons_prev_layer);
+
+    int encoding_index = 0;
+    for (std::shared_ptr<Layer> base_layer : this->layers)
+    {   
+        // std::cout << "The weights matrix for the base layer is: " << std::endl;
+        // std::cout << "[" << std::endl;
+        // for (const auto& row : base_layer->getWeightsMatrix()) {
+        //     std::cout << "  < ";
+        //     for (const auto& elem : row) {
+        //         std::cout << elem << " ";
+        //     }
+        //     std::cout << ">" << std::endl;
+        // }
+        // std::cout << "]" << std::endl;
+
+
+        int num_neurons_cur_layer = base_layer->neurons.size();
+
+        for (int i = 0; i < num_neurons_cur_layer; i++)
+        {
+            for (int j = 0; j < (num_neurons_prev_layer+1); j++)
+            {
+                // std::cout << "Setting new_layer->neurons[" << i << "].weights[" << j
+                //   << "] = encoding[" << encoding_index << "] = "
+                //   << encoding[encoding_index] << std::endl;
+                base_layer->neurons[i].weights[j] = encoding[encoding_index++];
+            }
+        }
+        // std::cout << "The weights matrix for the copied layer is: " << std::endl;
+        // std::cout << "[" << std::endl;
+        // for (const auto& row : new_layer->getWeightsMatrix()) {
+        //     std::cout << "  < ";
+        //     for (const auto& elem : row) {
+        //         std::cout << elem << " ";
+        //     }
+        //     std::cout << ">" << std::endl;
+        // }
+        // std::cout << "]" << std::endl;
+
+        num_neurons_prev_layer = num_neurons_cur_layer;
+    }
 }

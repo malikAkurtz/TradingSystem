@@ -30,6 +30,25 @@ void printMatrixDebug(const std::vector<std::vector<double>>& matrix) {
     }
 }
 
+void printVector(const std::vector<double>& vec) {
+    std::cout << "[ ";
+    for (const auto& val : vec) {
+        std::cout << val << " ";
+    }
+    std::cout << "]" << std::endl;
+}
+
+void printVectorDebug(const std::vector<double>& vec) {
+    if (DEBUG)
+    {
+        std::cout << "[ ";
+        for (const auto& val : vec) {
+            std::cout << val << " ";
+        }
+        std::cout << "]" << std::endl;
+    }
+    
+}
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
