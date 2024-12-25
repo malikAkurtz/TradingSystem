@@ -138,7 +138,7 @@ int main() {
     auto& features = selected_data.first;
     auto& labels = selected_data.second;
 
-    features = normalizeData(features); //******** UNCOMMENT THIS YOU FUCKING RETARD **************
+    //features = normalizeData(features); //******** UNCOMMENT THIS YOU FUCKING RETARD **************
     //labels = normalizeData(labels);
 
     // Neural Network initialization
@@ -149,7 +149,9 @@ int main() {
     NeuralNetwork network(0.0001, num_epochs, SQUARRED_ERROR, 32, NEUROEVOLUTION); 
     network.addInputLayer(std::make_shared<InputLayer>(num_features));
     //network.addLayer(std::make_shared<Layer>(2, num_features, RELU, RANDOM));
-    network.addLayer(std::make_shared<Layer>(num_labels, num_features, NONE, RANDOM));
+    // network.addLayer(std::make_shared<Layer>(2, num_features, RELU, RANDOM));
+    // network.addLayer(std::make_shared<Layer>(3, 2, RELU, RANDOM));
+    network.addLayer(std::make_shared<Layer>(num_labels, num_features, NONE, CONSTANT));
 
     // fit the model
     network.fit(features, labels);
@@ -164,8 +166,8 @@ int main() {
 
     printPredictionsVSLabels(predictions, labels);
 
-    // std::cout << "Trained Model Loss" << std::endl;
-    // std::cout << network.model_loss << std::endl;
+    std::cout << "Trained Model Loss" << std::endl;
+    std::cout << network.model_loss << std::endl;
 
     // Print the weights of the hidden layers
     printDebug("Final Layer Parameters Starting from First Hidden Layer");

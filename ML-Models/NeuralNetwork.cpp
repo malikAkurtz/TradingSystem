@@ -29,7 +29,7 @@ NeuralNetwork::NeuralNetwork(const NeuralNetwork& baseNN, const std::vector<doub
 
     std::shared_ptr<InputLayer> new_input_layer = std::make_shared<InputLayer>(num_neurons_input_layer);
     this->addInputLayer(new_input_layer);
-
+    int num_neurons_in_previous_layer = num_neurons_input_layer;
     int encoding_index = 0;
     for (std::shared_ptr<Layer> base_layer : baseNN.layers)
     {   
@@ -45,13 +45,13 @@ NeuralNetwork::NeuralNetwork(const NeuralNetwork& baseNN, const std::vector<doub
         // std::cout << "]" << std::endl;
 
         int num_neurons_in_this_layer = base_layer->neurons.size();
-        int num_weights_per_neuron = base_layer->neurons[0].getWeights().size() - 1; // since the bias is already included when a layer is initialized
 
-        std::shared_ptr<Layer> new_layer = std::make_shared<Layer>(num_neurons_in_this_layer, num_weights_per_neuron, base_layer->AFtype, base_layer->initalization);
+
+        std::shared_ptr<Layer> new_layer = std::make_shared<Layer>(num_neurons_in_this_layer, num_neurons_in_previous_layer, base_layer->AFtype, base_layer->initalization);
 
         for (int i = 0; i < num_neurons_in_this_layer; i++)
         {
-            for (int j = 0; j < (num_weights_per_neuron); j++)
+            for (int j = 0; j < (num_neurons_in_previous_layer+1); j++) // need to include the bias here
             {
                 // std::cout << "Setting new_layer->neurons[" << i << "].weights[" << j
                 //   << "] = encoding[" << encoding_index << "] = "
@@ -71,6 +71,7 @@ NeuralNetwork::NeuralNetwork(const NeuralNetwork& baseNN, const std::vector<doub
         // std::cout << "]" << std::endl;
 
         this->addLayer(new_layer);
+        num_neurons_in_previous_layer = new_layer->neurons.size();
     }
 }
 
@@ -92,6 +93,21 @@ void NeuralNetwork::fit(std::vector<std::vector<double>> featuresMatrix, std::ve
     {
         throw std::invalid_argument("No Optimization Type Specified!");
     }
+
+    // now getting predictions of the entire feature matrix, i.e all samples
+    // best_predictions will then consist of a vector of column vectors
+    std::vector<std::vector<double>> best_predictions = this->getPredictions(featuresMatrix);
+    std::vector<std::vector<double>> labels_T = takeTranspose(labels);
+    double accumulated_final_model_loss = 0;
+    // printDebug("best_predictions");
+    // printMatrixDebug(best_predictions);
+    // printDebug("labels_T");
+    // printMatrixDebug(labels_T);
+    for (int i = 0; i < best_predictions.size(); i++)
+    {
+        accumulated_final_model_loss += this->calculateLoss(getColumn(best_predictions, i), getColumn(labels_T, i));
+    }
+    this->model_loss = accumulated_final_model_loss / labels.size();
 
 }
 

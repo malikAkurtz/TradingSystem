@@ -218,20 +218,6 @@ namespace OptimizationMethods
 
             std::cout << "Epoch: " << e << " Loss: " << epoch_Loss << " | Average Gradient: " << average_gradient << std::endl;
         }
-        // now getting predictions of the entire feature matrix, i.e all samples
-        // best_predictions will then consist of a vector of column vectors
-        std::vector<std::vector<double>> best_predictions = network.getPredictions(featuresMatrix);
-        std::vector<std::vector<double>> labels_T = takeTranspose(labels);
-        double accumulated_final_model_loss = 0;
-        printDebug("best_predictions");
-        printMatrixDebug(best_predictions);
-        printDebug("labels_T");
-        printMatrixDebug(labels_T);
-        for (int i = 0; i < best_predictions.size(); i++)
-        {
-            accumulated_final_model_loss += network.calculateLoss(getColumn(best_predictions, i), getColumn(labels_T, i));
-        }
-        network.model_loss = accumulated_final_model_loss / labels.size();
     }
 
 
@@ -240,7 +226,7 @@ namespace OptimizationMethods
         // this is what were looking for
         std::vector<double> bestEncoding; 
 
-        float mutation_rate = 0.01;
+        float mutation_rate = 0.1;
         printDebug("Mutation rate is");
         printDebug(mutation_rate);
 
@@ -256,7 +242,7 @@ namespace OptimizationMethods
         printDebug("Labels tranposed are");
         printMatrixDebug(labels_T);
 
-        int population_size = 1000;
+        int population_size = 100;
         int max_generations = 1000;
 
         std::vector<double> baseEncoding = network.getNetworkEncoding();
