@@ -138,7 +138,7 @@ int main() {
     auto& features = selected_data.first;
     auto& labels = selected_data.second;
 
-    //features = normalizeData(features); //******** UNCOMMENT THIS YOU FUCKING RETARD **************
+    features = normalizeData(features); //******** UNCOMMENT THIS YOU FUCKING RETARD **************
     //labels = normalizeData(labels);
 
     // Neural Network initialization
@@ -147,11 +147,8 @@ int main() {
     int num_epochs = 1000; // higher leads to overfitting i.e reduced accuracy on training data but increasing this during training should only decrease overall training loss
 
     NeuralNetwork network(0.0001, num_epochs, SQUARRED_ERROR, 32, NEUROEVOLUTION); 
-    network.addInputLayer(std::make_shared<InputLayer>(num_features));
-    //network.addLayer(std::make_shared<Layer>(2, num_features, RELU, RANDOM));
-    network.addLayer(std::make_shared<Layer>(2, num_features, RELU, RANDOM));
-    network.addLayer(std::make_shared<Layer>(3, 2, RELU, RANDOM));
-    network.addLayer(std::make_shared<Layer>(num_labels, 3, NONE, RANDOM));
+    network.addInputLayer(num_features);
+    network.addLayer(num_labels, NONE, CONSTANT);
 
     // fit the model
     network.fit(features, labels);
@@ -172,7 +169,7 @@ int main() {
     // Print the weights of the hidden layers
     printDebug("Final Layer Parameters Starting from First Hidden Layer");
     for (size_t i = 0; i < network.num_hidden_layers; i++) {
-        printMatrix(network.layers[i]->getWeightsMatrix());
+        printMatrix(network.layers[i].getWeightsMatrix());
     }
 
     return 0;

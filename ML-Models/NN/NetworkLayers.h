@@ -20,6 +20,7 @@ public:
     std::vector<InputNeuron> inputNeurons;
     std::vector<std::vector<double>> inputs;
 
+    explicit InputLayer();
     // Constructor
     explicit InputLayer(int num_features);
 

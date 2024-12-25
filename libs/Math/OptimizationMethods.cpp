@@ -86,7 +86,7 @@ namespace OptimizationMethods
                 int outputLayer_index = network.num_hidden_layers - 1;
                 
                 printDebug("g'(Zᴸ)");
-                printMatrixDebug(network.layers[outputLayer_index]->getDerivativeActivationOutputs());
+                printMatrixDebug(network.layers[outputLayer_index].getDerivativeActivationOutputs());
 
                 printDebug("(Aᴸ-Y)");
                 printDebug("A_L");
@@ -96,7 +96,7 @@ namespace OptimizationMethods
                 printMatrixDebug(subtractMatrices(A_L, cur_Y_batch_matrix_T));
 
                 std::vector<std::vector<double>> error_term_L = hadamardProduct(
-                    network.layers[outputLayer_index]->getDerivativeActivationOutputs(),
+                    network.layers[outputLayer_index].getDerivativeActivationOutputs(),
                     subtractMatrices(A_L, cur_Y_batch_matrix_T));
                 printDebug("δᴸ");
                 printMatrixDebug(error_term_L);
@@ -111,11 +111,11 @@ namespace OptimizationMethods
                 // if there are other hidden layers
                 if (prev_hidden_layer_index >= 0) {
                     // get the previous layers activations
-                    A_prev_activation_with_bias = network.layers[prev_hidden_layer_index]->getActivationOutputs();
+                    A_prev_activation_with_bias = network.layers[prev_hidden_layer_index].getActivationOutputs();
                 } else{
                     // this would just be 1 input layer, 1 output layer NN
                     // otherwise we just retreive the input layers activations which were just the inputs into the network
-                    A_prev_activation_with_bias = network.inputLayer->getInputs();
+                    A_prev_activation_with_bias = network.inputLayer.getInputs();
                 }
                 std::vector<double> ones_to_append(A_prev_activation_with_bias[0].size(), 1);
 
@@ -151,7 +151,7 @@ namespace OptimizationMethods
                     std::vector<std::vector<double>> error_term;
                     std::vector<std::vector<double>> W_l_plus_1_T;
 
-                    W_l_plus_1_T = takeTranspose(network.layers[j+1]->getWeightsMatrix());
+                    W_l_plus_1_T = takeTranspose(network.layers[j+1].getWeightsMatrix());
 
                     printDebug("(Wˡ⁺¹)ᵀ");
                     printMatrixDebug(W_l_plus_1_T);
@@ -161,7 +161,7 @@ namespace OptimizationMethods
                     error_term_lhs.pop_back(); // remove the bias contribution
 
 
-                    std::vector<std::vector<double>> DZ_hidden_with_no_bias = network.layers[j]->getDerivativeActivationOutputs();
+                    std::vector<std::vector<double>> DZ_hidden_with_no_bias = network.layers[j].getDerivativeActivationOutputs();
 
                     
                     error_term = hadamardProduct(error_term_lhs, DZ_hidden_with_no_bias);
@@ -170,9 +170,9 @@ namespace OptimizationMethods
                     printMatrixDebug(error_term);
 
                     if (j == 0) { // need to get input layer outputs
-                        A_prev_activation_with_bias = network.inputLayer->getInputs();
+                        A_prev_activation_with_bias = network.inputLayer.getInputs();
                     } else {
-                        A_prev_activation_with_bias = network.layers[j-1]->getActivationOutputs();
+                        A_prev_activation_with_bias = network.layers[j-1].getActivationOutputs();
                         
                     }
 
@@ -196,7 +196,7 @@ namespace OptimizationMethods
                 for (int m = 0; m < network.num_hidden_layers; m++) 
                 {
                     int gradient_index = gradient_J.size() - 1 - m;
-                    network.layers[m]->updateNeuronWeights(gradient_J[gradient_index], network.LR);
+                    network.layers[m].updateNeuronWeights(gradient_J[gradient_index], network.LR);
                 }
 
                 // norm of gradient for this particular sample
@@ -226,7 +226,7 @@ namespace OptimizationMethods
         // this is what were looking for
         std::vector<double> bestEncoding; 
 
-        float mutation_rate = 0.3;
+        float mutation_rate = 0.2;
         printDebug("Mutation rate is");
         printDebug(mutation_rate);
 
@@ -243,7 +243,7 @@ namespace OptimizationMethods
         printMatrixDebug(labels_T);
 
         int population_size = 100;
-        int max_generations = 1;
+        int max_generations = 1000;
 
         std::vector<double> baseEncoding = network.getNetworkEncoding();
         printDebug("Base network encoding is");
@@ -356,6 +356,8 @@ namespace OptimizationMethods
             }
         }
 
+        printDebug("Best Encoding is");
+        printVectorDebug(bestEncoding);
         network.setEncoding(bestEncoding);
     }
 }

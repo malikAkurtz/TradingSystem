@@ -5,6 +5,8 @@ using namespace LinearAlgebra;
 using namespace ActivationFunctions;
 
 // InputLayer Constructor
+InputLayer::InputLayer() {}
+
 InputLayer::InputLayer(int num_features) {
     for (int i = 0; i < num_features; ++i) {
         InputNeuron neuron;
