@@ -149,9 +149,9 @@ int main() {
     NeuralNetwork network(0.0001, num_epochs, SQUARRED_ERROR, 32, NEUROEVOLUTION); 
     network.addInputLayer(std::make_shared<InputLayer>(num_features));
     //network.addLayer(std::make_shared<Layer>(2, num_features, RELU, RANDOM));
-    // network.addLayer(std::make_shared<Layer>(2, num_features, RELU, RANDOM));
-    // network.addLayer(std::make_shared<Layer>(3, 2, RELU, RANDOM));
-    network.addLayer(std::make_shared<Layer>(num_labels, num_features, NONE, CONSTANT));
+    network.addLayer(std::make_shared<Layer>(2, num_features, RELU, RANDOM));
+    network.addLayer(std::make_shared<Layer>(3, 2, RELU, RANDOM));
+    network.addLayer(std::make_shared<Layer>(num_labels, 3, NONE, RANDOM));
 
     // fit the model
     network.fit(features, labels);
