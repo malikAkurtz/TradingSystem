@@ -9,7 +9,7 @@ LDFLAGS = -L/opt/homebrew/lib -lSDL2 -lSDL2_ttf
 TARGET = out
 
 # Automatically detect all .cpp files in the project (including ML-Models)
-SOURCES = $(wildcard Games/pong.cpp libs/*/*.cpp ML-Models/NN/NeuralNetwork.cpp ML-Models/NN/NetworkLayers.cpp ML-Models/NN/Neuron.cpp ML-Models/NN/PongSimulation.cpp)
+SOURCES = $(wildcard pong.cpp libs/*/*.cpp ML-Models/NN/NeuralNetwork.cpp ML-Models/NN/NetworkLayers.cpp ML-Models/NN/Neuron.cpp ML-Models/NN/PongSimulation.cpp)
 
 # Generate object files from sources
 OBJECTS = $(SOURCES:.cpp=.o)

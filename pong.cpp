@@ -4,12 +4,13 @@
 #include <string>
 #include <iostream>
 #include "/Users/malikkurtz/Coding/TradingSystem/ML-Models/NN/NeuralNetwork.h"
+#include "Output.h"
 
-
+bool DEBUG = false;
 
 const int WINDOW_WIDTH = 1280;
 const int WINDOW_HEIGHT = 720;
-const float PADDLE_SPEED = 0.5f;
+const float PADDLE_SPEED = 0.35f;
 const int PADDLE_WIDTH = 10;
 const int PADDLE_HEIGHT = 100;
 const float BALL_SPEED = 0.5f;
