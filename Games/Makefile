@@ -1,18 +1,28 @@
 # Compiler
 CXX = g++
 
-CXXFLAGS = -std=c++11 -Wall -I/opt/homebrew/include -I/opt/homebrew/include/SDL2
+# Compiler flags
+CXXFLAGS = -std=c++11 -Wall -I/opt/homebrew/include -I/opt/homebrew/include/SDL2 -IML-Models/NN -Ilibs -Ilibs/Data-Processing -Ilibs/Math
 
-LDFLAGS = -L/opt/homebrew/lib -lSDL2 -L/opt/homebrew/lib -lSDL2_ttf
 
+# Linker flags
+LDFLAGS = -L/opt/homebrew/lib -lSDL2 -lSDL2_ttf
 
 # Target executable
-TARGET = out
+TARGET = pong
 
-# Automatically detect all .cpp files in the project (including ML-Models)
-SOURCES = pong.cpp
+# Source files
+SOURCES = pong.cpp \
+          ML-Models/NN/NeuralNetwork.cpp \
+          ML-Models/NN/Neuron.cpp \
+          ML-Models/NN/NetworkLayers.cpp \
+          libs/Math/ActivationFunctions.cpp \
+          libs/Math/LinearAlgebra.cpp \
+          libs/Math/GenFunctions.cpp \
+          libs/Math/OptimizationMethods.cpp \
+          libs/Math/NeuroHelperFuncs.cpp
 
-# Generate object files from sources
+# Object files
 OBJECTS = $(SOURCES:.cpp=.o)
 
 # Default rule to build the target
@@ -28,4 +38,4 @@ $(TARGET): $(OBJECTS)
 
 # Clean up object files and the executable
 clean:
-	rm -f $(OBJECTS) $(TARGET) out
+	rm -f $(OBJECTS) $(TARGET)

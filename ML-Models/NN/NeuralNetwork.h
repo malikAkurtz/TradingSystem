@@ -26,6 +26,7 @@ public:
     std::vector<int> layer_sizes;  
 
     // Constructor
+    NeuralNetwork();
     NeuralNetwork(float learningrate, int num_epochs, LossFunction lossFunction, int batchSize, OptimizationType optimizationMethod);
     NeuralNetwork(const NeuralNetwork& baseNN, const std::vector<double>& encoding);
 

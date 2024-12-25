@@ -3,6 +3,8 @@
 #include <SDL2/SDL_ttf.h>
 #include <string>
 #include <iostream>
+#include "/Users/malikkurtz/Coding/TradingSystem/ML-Models/NN/NeuralNetwork.h"
+
 
 
 const int WINDOW_WIDTH = 1280;
@@ -14,6 +16,7 @@ const float BALL_SPEED = 0.5f;
 const int BALL_WIDTH = 15;
 const int BALL_HEIGHT = 15;
 
+NeuralNetwork network(0.001, 100, SQUARRED_ERROR, 32, NEUROEVOLUTION); 
 
 enum Buttons
 {
@@ -336,227 +339,167 @@ Contact CheckWallCollision(Ball const& ball)
 
 int main()
 {
-	// Initialize SDL components
-	SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO);
-	TTF_Init();
+    std::vector<double> values = { 
+        0.323258, -0.113533, -0.0899762, -0.486736, 0.471876, 0.0518153, -0.0184189, -0.273636, 
+        0.396304, -0.412422, -0.000905141, 0.354829, -0.399854, -0.137014, -0.178376, 0.113365, 
+        -0.25301, 0.471661, -0.0737122, -0.278521, 0.0787687, 0.232234, 0.00227431, 0.42664, 
+        0.275098, 0.454603, -0.447217, -0.475666, 0.206636, -0.0488301, 0.0344653, -0.453071, 
+        -0.221345, 0.0749537, -0.43008, -0.317653, -0.499965, -0.228464, 0.204766, -0.178091, 
+        0.275995 
+    };
 
-	SDL_Window* window = SDL_CreateWindow("Pong", 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, SDL_WINDOW_SHOWN);
-	SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, 0);
+    network.addInputLayer(8);
+    network.addLayer(4, RELU, RANDOM);
+    network.addLayer(1, SIGMOID, RANDOM);
+    network.setEncoding(values);
 
+    // Initialize SDL components
+    SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO);
+    TTF_Init();
 
-	// Initialize the font
-	TTF_Font* scoreFont = TTF_OpenFont("DejaVuSans.ttf", 40);
+    SDL_Window* window = SDL_CreateWindow("Pong", 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, SDL_WINDOW_SHOWN);
+    SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, 0);
 
+    TTF_Font* scoreFont = TTF_OpenFont("DejaVuSans.ttf", 40);
 
+    // Game logic
+    {
+        PlayerScore playerOneScoreText(Vec2(WINDOW_WIDTH / 4, 20), renderer, scoreFont);
+        PlayerScore playerTwoScoreText(Vec2(3 * WINDOW_WIDTH / 4, 20), renderer, scoreFont);
 
-	// Game logic
-	{
-		// Create the player score text fields
-		PlayerScore playerOneScoreText(Vec2(WINDOW_WIDTH / 4, 20), renderer, scoreFont);
+        Ball ball(Vec2(WINDOW_WIDTH / 2.0f, WINDOW_HEIGHT / 2.0f), Vec2(BALL_SPEED, 0.0f));
+        Paddle paddleOne(Vec2(50.0f, WINDOW_HEIGHT / 2.0f), Vec2(0.0f, 0.0f));
+        Paddle paddleTwo(Vec2(WINDOW_WIDTH - 50.0f, WINDOW_HEIGHT / 2.0f), Vec2(0.0f, 0.0f));
 
-		PlayerScore playerTwoScoreText(Vec2(3 * WINDOW_WIDTH / 4, 20), renderer, scoreFont);
+        int playerOneScore = 0;
+        int playerTwoScore = 0;
 
+        bool running = true;
+        float dt = 0.0f;
 
-		// Create the ball
-		Ball ball(
-			Vec2(WINDOW_WIDTH / 2.0f, WINDOW_HEIGHT / 2.0f),
-			Vec2(BALL_SPEED, 0.0f));
+        while (running)
+        {
+            auto startTime = std::chrono::high_resolution_clock::now();
 
+            SDL_Event event;
+            while (SDL_PollEvent(&event))
+            {
+                if (event.type == SDL_QUIT)
+                {
+                    running = false;
+                }
+                else if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_ESCAPE)
+                {
+                    running = false;
+                }
+            }
 
-		// Create the paddles
-		Paddle paddleOne(
-			Vec2(50.0f, WINDOW_HEIGHT / 2.0f),
-			Vec2(0.0f, 0.0f));
+            // Neural network control for paddleTwo
+            std::vector<double> gameState = {
+                ball.position.x / WINDOW_WIDTH,
+                ball.position.y / WINDOW_HEIGHT,
+                ball.velocity.x / BALL_SPEED,
+                ball.velocity.y / BALL_SPEED,
+                paddleTwo.position.y / WINDOW_HEIGHT,
+                paddleOne.position.y / WINDOW_HEIGHT,
+                playerOneScore / 10.0,
+                playerTwoScore / 10.0
+            };
 
-		Paddle paddleTwo(
-			Vec2(WINDOW_WIDTH - 50.0f, WINDOW_HEIGHT / 2.0f),
-			Vec2(0.0f, 0.0f));
+            std::vector<std::vector<double>> inputMatrix = { gameState };
+            std::vector<std::vector<double>> predictions = network.getPredictions(inputMatrix);
+            double paddleTwoDecision = predictions[0][0];
 
+            if (paddleTwoDecision > 0.5)  // Move paddleTwo down
+            {
+                paddleTwo.velocity.y = PADDLE_SPEED;
+            }
+            else  // Move paddleTwo up
+            {
+                paddleTwo.velocity.y = -PADDLE_SPEED;
+            }
 
-		int playerOneScore = 0;
-		int playerTwoScore = 0;
+            // Manual control for paddleOne
+            const Uint8* keystate = SDL_GetKeyboardState(nullptr);
+            if (keystate[SDL_SCANCODE_W])
+            {
+                paddleOne.velocity.y = -PADDLE_SPEED;
+            }
+            else if (keystate[SDL_SCANCODE_S])
+            {
+                paddleOne.velocity.y = PADDLE_SPEED;
+            }
+            else
+            {
+                paddleOne.velocity.y = 0.0f;
+            }
 
-		bool running = true;
-		bool buttons[4] = {};
+            // Update positions
+            paddleOne.Update(dt);
+            paddleTwo.Update(dt);
+            ball.Update(dt);
 
-		float dt = 0.0f;
+            // Check collisions
+            if (Contact contact = CheckPaddleCollision(ball, paddleOne);
+                contact.type != CollisionType::None)
+            {
+                ball.CollideWithPaddle(contact);
+            }
+            else if (contact = CheckPaddleCollision(ball, paddleTwo);
+                     contact.type != CollisionType::None)
+            {
+                ball.CollideWithPaddle(contact);
+            }
+            else if (contact = CheckWallCollision(ball);
+                     contact.type != CollisionType::None)
+            {
+                ball.CollideWithWall(contact);
 
-		while (running)
-		{
-			auto startTime = std::chrono::high_resolution_clock::now();
-
-			SDL_Event event;
-			while (SDL_PollEvent(&event))
-			{
-				if (event.type == SDL_QUIT)
-				{
-					running = false;
-				}
-				else if (event.type == SDL_KEYDOWN)
-				{
-					if (event.key.keysym.sym == SDLK_ESCAPE)
-					{
-						running = false;
-					}
-					else if (event.key.keysym.sym == SDLK_w)
-					{
-						buttons[Buttons::PaddleOneUp] = true;
-					}
-					else if (event.key.keysym.sym == SDLK_s)
-					{
-						buttons[Buttons::PaddleOneDown] = true;
-					}
-					else if (event.key.keysym.sym == SDLK_UP)
-					{
-						buttons[Buttons::PaddleTwoUp] = true;
-					}
-					else if (event.key.keysym.sym == SDLK_DOWN)
-					{
-						buttons[Buttons::PaddleTwoDown] = true;
-					}
-				}
-				else if (event.type == SDL_KEYUP)
-				{
-					if (event.key.keysym.sym == SDLK_w)
-					{
-						buttons[Buttons::PaddleOneUp] = false;
-					}
-					else if (event.key.keysym.sym == SDLK_s)
-					{
-						buttons[Buttons::PaddleOneDown] = false;
-					}
-					else if (event.key.keysym.sym == SDLK_UP)
-					{
-						buttons[Buttons::PaddleTwoUp] = false;
-					}
-					else if (event.key.keysym.sym == SDLK_DOWN)
-					{
-						buttons[Buttons::PaddleTwoDown] = false;
-					}
-				}
-			}
-
-
-			if (buttons[Buttons::PaddleOneUp])
-			{
-				paddleOne.velocity.y = -PADDLE_SPEED;
-			}
-			else if (buttons[Buttons::PaddleOneDown])
-			{
-				paddleOne.velocity.y = PADDLE_SPEED;
-			}
-			else
-			{
-				paddleOne.velocity.y = 0.0f;
-			}
-
-			if (buttons[Buttons::PaddleTwoUp])
-			{
-				paddleTwo.velocity.y = -PADDLE_SPEED;
-			}
-			else if (buttons[Buttons::PaddleTwoDown])
-			{
-				paddleTwo.velocity.y = PADDLE_SPEED;
-			}
-			else
-			{
-				paddleTwo.velocity.y = 0.0f;
-			}
-
-
-			// Update the paddle positions
-			paddleOne.Update(dt);
-			paddleTwo.Update(dt);
-
-
-			// Update the ball position
-			ball.Update(dt);
-
-
-			// Check collisions
-			if (Contact contact = CheckPaddleCollision(ball, paddleOne);
-				contact.type != CollisionType::None)
-			{
-				ball.CollideWithPaddle(contact);
-
-			}
-			else if (contact = CheckPaddleCollision(ball, paddleTwo);
-				contact.type != CollisionType::None)
-			{
-				ball.CollideWithPaddle(contact);
-
-			}
-			else if (contact = CheckWallCollision(ball);
-				contact.type != CollisionType::None)
-			{
-				ball.CollideWithWall(contact);
-
-				if (contact.type == CollisionType::Left)
-				{
-					++playerTwoScore;
-                    std::cout << playerTwoScore << std::endl;
-
-					playerTwoScoreText.SetScore(playerTwoScore);
-				}
-				else if (contact.type == CollisionType::Right)
-				{
-					++playerOneScore;
-                    std::cout << playerOneScore << std::endl;
-
+                if (contact.type == CollisionType::Left)
+                {
+                    ++playerTwoScore;
+                    playerTwoScoreText.SetScore(playerTwoScore);
+                }
+                else if (contact.type == CollisionType::Right)
+                {
+                    ++playerOneScore;
                     playerOneScoreText.SetScore(playerOneScore);
-				}
-				else
-				{
-				}
-			}
+                }
+            }
 
+            // Rendering
+            SDL_SetRenderDrawColor(renderer, 0x0, 0x0, 0x0, 0xFF);
+            SDL_RenderClear(renderer);
 
-			// Clear the window to black
-			SDL_SetRenderDrawColor(renderer, 0x0, 0x0, 0x0, 0xFF);
-			SDL_RenderClear(renderer);
+            SDL_SetRenderDrawColor(renderer, 0xFF, 0xFF, 0xFF, 0xFF);
 
-			// Set the draw color to be white
-			SDL_SetRenderDrawColor(renderer, 0xFF, 0xFF, 0xFF, 0xFF);
+            // Draw the net
+            for (int y = 0; y < WINDOW_HEIGHT; ++y)
+            {
+                if (y % 5)
+                {
+                    SDL_RenderDrawPoint(renderer, WINDOW_WIDTH / 2, y);
+                }
+            }
 
+            ball.Draw(renderer);
+            paddleOne.Draw(renderer);
+            paddleTwo.Draw(renderer);
+            playerOneScoreText.Draw();
+            playerTwoScoreText.Draw();
 
-			// Draw the net
-			for (int y = 0; y < WINDOW_HEIGHT; ++y)
-			{
-				if (y % 5)
-				{
-					SDL_RenderDrawPoint(renderer, WINDOW_WIDTH / 2, y);
-				}
-			}
+            SDL_RenderPresent(renderer);
 
+            auto stopTime = std::chrono::high_resolution_clock::now();
+            dt = std::chrono::duration<float, std::chrono::milliseconds::period>(stopTime - startTime).count();
+        }
+    }
 
-			// Draw the ball
-			ball.Draw(renderer);
+    SDL_DestroyRenderer(renderer);
+    SDL_DestroyWindow(window);
+    TTF_CloseFont(scoreFont);
+    TTF_Quit();
+    SDL_Quit();
 
-			// Draw the paddles
-			paddleOne.Draw(renderer);
-			paddleTwo.Draw(renderer);
-
-			// Display the scores
-			playerOneScoreText.Draw();
-			playerTwoScoreText.Draw();
-
-
-			// Present the backbuffer
-			SDL_RenderPresent(renderer);
-
-
-			// Calculate frame time
-			auto stopTime = std::chrono::high_resolution_clock::now();
-			dt = std::chrono::duration<float, std::chrono::milliseconds::period>(stopTime - startTime).count();
-		}
-	}
-
-
-	SDL_DestroyRenderer(renderer);
-	SDL_DestroyWindow(window);
-	TTF_CloseFont(scoreFont);
-	TTF_Quit();
-	SDL_Quit();
-
-	return 0;
+    return 0;
 }

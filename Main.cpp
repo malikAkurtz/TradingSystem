@@ -142,36 +142,39 @@ int main() {
     //labels = normalizeData(labels);
 
     // Neural Network initialization
-    int num_features = features[0].size();
-    int num_labels = labels[0].size();
+    // int num_features = features[0].size();
+    // int num_labels = labels[0].size();
     int num_epochs = 1000; // higher leads to overfitting i.e reduced accuracy on training data but increasing this during training should only decrease overall training loss
 
     NeuralNetwork network(0.001, num_epochs, SQUARRED_ERROR, 32, NEUROEVOLUTION); 
-    network.addInputLayer(num_features);
+    network.addInputLayer(8);
     network.addLayer(4, RELU, RANDOM);
-    network.addLayer(num_labels, NONE, RANDOM);
+    network.addLayer(1, SIGMOID, RANDOM);
 
     // fit the model
     network.fit(features, labels);
 
     //Evaluate the model
-    std::vector<std::vector<double>> predictions = network.getPredictions(features);
+    //std::vector<std::vector<double>> predictions = network.getPredictions(features);
 
-    std::vector<int> epochs(num_epochs);
-    std::vector<double> losses = network.epoch_losses;
-    std::iota(epochs.begin(), epochs.end(), 1); // Fills with 1 to 1000
-    toCSV("training_loss.txt", epochs, network.epoch_losses, network.epoch_gradient_norms);
+    // std::vector<int> epochs(num_epochs);
+    // std::vector<double> losses = network.epoch_losses;
+    // std::iota(epochs.begin(), epochs.end(), 1); // Fills with 1 to 1000
+    // toCSV("training_loss.txt", epochs, network.epoch_losses, network.epoch_gradient_norms);
 
-    printPredictionsVSLabels(predictions, labels);
+    //printPredictionsVSLabels(predictions, labels);
 
-    std::cout << "Trained Model Loss" << std::endl;
-    std::cout << network.model_loss << std::endl;
+    // std::cout << "Trained Model Loss" << std::endl;
+    // std::cout << network.model_loss << std::endl;
 
     // Print the weights of the hidden layers
     printDebug("Final Layer Parameters Starting from First Hidden Layer");
     for (size_t i = 0; i < network.num_hidden_layers; i++) {
         printMatrix(network.layers[i].getWeightsMatrix());
     }
+
+    print("This network encoding");
+    printVector(network.getNetworkEncoding());
 
     return 0;
     }

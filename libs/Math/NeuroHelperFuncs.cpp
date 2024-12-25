@@ -1,5 +1,6 @@
 #include "NeuroHelperFuncs.h"
 
+
 void randomizeEncoding(std::vector<double>& encoding)
 {
     static std::mt19937 generator(std::random_device{}());
@@ -64,4 +65,11 @@ std::vector<double> mutate(std::vector<double>& networkEncoding, const float& mu
     }
 
     return mutated;
+}
+
+int getFitness(const NeuralNetwork& nn)
+{
+    PongSimulator simulator(nn);
+    simulator.play();
+    return simulator.getFitness();
 }

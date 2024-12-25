@@ -1,13 +1,15 @@
 # Compiler
 CXX = g++
 
-CXXFLAGS = -std=c++11 -Wall -Ilibs -Ilibs/Data-Processing -Ilibs/Math -IML-Models
+CXXFLAGS = -std=c++11 -Wall -Ilibs -Ilibs/Data-Processing -Ilibs/Math -IML-Models -I/opt/homebrew/include -I/opt/homebrew/include/SDL2
+
+LDFLAGS = -L/opt/homebrew/lib -lSDL2 -lSDL2_ttf
 
 # Target executable
 TARGET = out
 
 # Automatically detect all .cpp files in the project (including ML-Models)
-SOURCES = $(wildcard Main.cpp libs/*/*.cpp ML-Models/NN/NeuralNetwork.cpp ML-Models/NN/NetworkLayers.cpp ML-Models/NN/Neuron.cpp )
+SOURCES = $(wildcard Games/pong.cpp libs/*/*.cpp ML-Models/NN/NeuralNetwork.cpp ML-Models/NN/NetworkLayers.cpp ML-Models/NN/Neuron.cpp ML-Models/NN/PongSimulation.cpp)
 
 # Generate object files from sources
 OBJECTS = $(SOURCES:.cpp=.o)
