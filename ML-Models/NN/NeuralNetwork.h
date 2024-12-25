@@ -7,9 +7,7 @@
 #include "LinearAlgebra.h"
 #include "OptimizationMethods.h"
 #include "OptimizationTypes.h"
-
-
-
+#include "LossFunctionTypes.h"
 
 class NeuralNetwork {
 public:

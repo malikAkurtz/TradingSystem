@@ -8,11 +8,7 @@
 #include <vector>
 #include "LinearAlgebra.h"
 
-// Enum for Loss Functions
-enum LossFunction {
-    SQUARRED_ERROR,
-    BINARY_CROSS_ENTROPY
-};
+
 
 namespace LossFunctions
 {

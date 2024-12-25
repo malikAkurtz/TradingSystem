@@ -8,5 +8,5 @@ enum OptimizationType
     NEUROCHILD
 };
 
-#endif // OPTIMIZATION_TYPES_H
+#endif 
 
