@@ -8,13 +8,7 @@
 #include "GenFunctions.h"
 #include "ActivationFunctions.h"
 #include "NeuronInitializationType.h"
-
-// Activation Function Enum
-enum ActivationFunction {
-    RELU,
-    SIGMOID,
-    NONE
-};
+#include "ActivationFunctionTypes.h"
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -48,7 +42,7 @@ public:
 class Layer {
     public:
     std::vector<Neuron> neurons;
-    ActivationFunction AFtype;
+    ActivationFunctionType AFtype;
     NeuronInitializationType initalization;
     std::vector<std::vector<double>> pre_activation_outputs;
     std::vector<std::vector<double>> activation_outputs;
@@ -56,7 +50,7 @@ class Layer {
     
 
     // Constructor
-    Layer(int num_neurons, int num_inputs, ActivationFunction AFtype, NeuronInitializationType NItype);
+    Layer(int num_neurons, int num_inputs, ActivationFunctionType AFtype, NeuronInitializationType NItype);
 
     // Calculate outputs for the hidden layer
     void calculateLayerOutputs(std::vector<std::vector<double>> input_vector);
