@@ -2,7 +2,7 @@
 #define OPT_METHODS
 
 
-#include "NeuralNetwork.h"
+#include "../../ML-Models/NN/NetworkLayers.h"
 class NeuralNetwork;
 
 namespace OptimizationMethods

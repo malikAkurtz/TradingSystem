@@ -1,7 +1,7 @@
 #ifndef NEURO_FUNCS
 #define NEURO_FUNCS
 
-#include "NeuralNetwork.h"
+#include "../../ML-Models/NN/NeuralNetwork.h"
 #include <random>
 
 void randomizeEncoding(std::vector<double> &encoding);
