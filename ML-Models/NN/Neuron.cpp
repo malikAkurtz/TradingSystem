@@ -10,7 +10,7 @@ InputNeuron::InputNeuron() {}
 
 
 // Neuron Definitions
-Neuron::Neuron(int num_weights, NeuronInitialization type) {
+Neuron::Neuron(int num_weights, NeuronInitializationType type) {
     if (type == RANDOM) {
         weights.resize(num_weights, static_cast<double>(rand()) / RAND_MAX - 0.5); // 
     }
@@ -29,7 +29,7 @@ void Neuron::setWeights(const std::vector<double>& new_weights) {
     weights = new_weights;
 }
 
-void Neuron::reInitializeWeights(NeuronInitialization type)
+void Neuron::reInitializeWeights(NeuronInitializationType type)
 {
     if (type == RANDOM) {
         weights.resize(weights.size(), static_cast<double>(rand()) / RAND_MAX - 0.5); // 

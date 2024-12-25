@@ -31,7 +31,7 @@ void InputLayer::addNeuron(InputNeuron inputNeuron) {
 
 
 // Layer Constructor
-Layer::Layer(int num_neurons, int num_inputs, ActivationFunction AFtype, NeuronInitialization NItype)
+Layer::Layer(int num_neurons, int num_inputs, ActivationFunction AFtype, NeuronInitializationType NItype)
     : AFtype(AFtype), initalization(NItype) {
     for (int i = 0; i < num_neurons; ++i) {
         Neuron neuron(num_inputs + 1, NItype); // Including bias
