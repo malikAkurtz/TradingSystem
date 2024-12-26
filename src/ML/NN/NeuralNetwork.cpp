@@ -84,24 +84,10 @@ void NeuralNetwork::fit(std::vector<std::vector<double>> featuresMatrix, std::ve
     if (this->optimizationMethod == GRADIENT_DESCENT) 
     {
         batchGradientDescent(*this, featuresMatrix, labels);
-        // now getting predictions of the entire feature matrix, i.e all samples
-        // best_predictions will then consist of a vector of column vectors
-        std::vector<std::vector<double>> best_predictions = this->getPredictions(featuresMatrix);
-        std::vector<std::vector<double>> labels_T = takeTranspose(labels);
-        double accumulated_final_model_loss = 0;
-        // printDebug("best_predictions");
-        // printMatrixDebug(best_predictions);
-        // printDebug("labels_T");
-        // printMatrixDebug(labels_T);
-        for (int i = 0; i < best_predictions.size(); i++)
-        {
-            accumulated_final_model_loss += this->calculateLoss(getColumn(best_predictions, i), getColumn(labels_T, i));
-        }
-        this->model_loss = accumulated_final_model_loss / labels.size();
     }
     else if (this->optimizationMethod == NEUROEVOLUTION)
     {
-        NeuroEvolution(*this);
+        NeuroEvolution(*this, featuresMatrix, labels);
     }
     else if (this->optimizationMethod == NEUROCHILD)
     {
@@ -111,7 +97,20 @@ void NeuralNetwork::fit(std::vector<std::vector<double>> featuresMatrix, std::ve
     {
         throw std::invalid_argument("No Optimization Type Specified!");
     }
-
+    // now getting predictions of the entire feature matrix, i.e all samples
+    // best_predictions will then consist of a vector of column vectors
+    std::vector<std::vector<double>> best_predictions = this->getPredictions(featuresMatrix);
+    std::vector<std::vector<double>> labels_T = takeTranspose(labels);
+    double accumulated_final_model_loss = 0;
+    // printDebug("best_predictions");
+    // printMatrixDebug(best_predictions);
+    // printDebug("labels_T");
+    // printMatrixDebug(labels_T);
+    for (int i = 0; i < best_predictions.size(); i++)
+    {
+        accumulated_final_model_loss += this->calculateLoss(getColumn(best_predictions, i), getColumn(labels_T, i));
+    }
+    this->model_loss = accumulated_final_model_loss / labels_T.size();
 
 }
 

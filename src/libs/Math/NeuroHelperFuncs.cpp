@@ -66,10 +66,3 @@ std::vector<double> mutate(std::vector<double>& networkEncoding, const float& mu
 
     return mutated;
 }
-
-int getFitness(const NeuralNetwork& nn)
-{
-    PongSimulator simulator(nn);
-    simulator.play();
-    return simulator.getFitness();
-}

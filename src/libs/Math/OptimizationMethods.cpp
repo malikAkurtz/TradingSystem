@@ -221,7 +221,7 @@ namespace OptimizationMethods
     }
 
 
-    void NeuroEvolution(NeuralNetwork &network)
+    void NeuroEvolution(NeuralNetwork &network, const std::vector<std::vector<double>> &featuresMatrix, const std::vector<std::vector<double>> &labels)
     {   
         // this is what were looking for
         std::vector<double> bestEncoding; 
@@ -230,6 +230,17 @@ namespace OptimizationMethods
         printDebug("Mutation rate is");
         printDebug(mutation_rate);
 
+        int num_samples = featuresMatrix.size();
+        printDebug("Number of samples is");
+        printDebug(num_samples);
+
+        std::vector<std::vector<double>> labels_T = takeTranspose(labels);
+        std::vector<std::vector<double>> features_T = takeTranspose(featuresMatrix);
+        printDebug("Features tranpose are");
+        printMatrixDebug(features_T);
+
+        printDebug("Labels tranposed are");
+        printMatrixDebug(labels_T);
 
         int population_size = 100;
         int max_generations = 100;
@@ -262,7 +273,7 @@ namespace OptimizationMethods
         // for every generation
         for (int g = 0; g < max_generations; g++)
         {  
-            std::vector<std::pair<double, NeuralNetwork>> population_fitness_map;
+            std::vector<std::pair<double, NeuralNetwork>> population_loss;
             // need to evaluate the population
             // for every network in the population
             for (int i = 0; i < population_size; i++)
@@ -272,27 +283,32 @@ namespace OptimizationMethods
                 // perform a forward pass of the entire dataset through this network
 
                 // A matrix where each column is a prediction for that sample from left to right
-                int thisNNfitness = getFitness(thisNN);
-
-                std::pair<double, NeuralNetwork> NNxFitness(thisNNfitness, thisNN);
+                std::vector<std::vector<double>> thisNNoutputs = thisNN.getPredictions(featuresMatrix);
+                double thisNNloss = 0;
+                for (int j = 0; j < thisNNoutputs[0].size(); j++)
+                {
+                    thisNNloss += network.calculateLoss(getColumn(thisNNoutputs, j), getColumn(labels_T, j));
+                }
+                thisNNloss /= num_samples;
+                std::pair<double, NeuralNetwork> NNxLoss(thisNNloss, thisNN);
                 printDebug("This encodings loss is:");
-                printDebug(thisNNfitness);
-                population_fitness_map.push_back(NNxFitness);
+                printDebug(thisNNloss);
+                population_loss.push_back(NNxLoss);
             }
 
             // sort the dictionary
-            std::sort(population_fitness_map.begin(), population_fitness_map.end(), 
+            std::sort(population_loss.begin(), population_loss.end(), 
             [](const std::pair<double, NeuralNetwork>& a, const std::pair<double, NeuralNetwork>& b) {
                 return a.first < b.first;
             });
 
             
-            bestEncoding = population_fitness_map[0].second.getNetworkEncoding();
+            bestEncoding = population_loss[0].second.getNetworkEncoding();
 
             printDebug("New best encoding");
             printVectorDebug(bestEncoding);
             printDebug("Best encoding loss");
-            printDebug(population_fitness_map[0].first);
+            printDebug(population_loss[0].first);
 
             // Elitism selection, keeping top 20%
             int num_surviving_networks = population_size * 0.2;
@@ -300,7 +316,7 @@ namespace OptimizationMethods
             printDebug("Number of surviving networks will be");
             printDebug(num_surviving_networks);
 
-            std::vector<std::pair<double, NeuralNetwork>> elites(population_fitness_map.begin(), population_fitness_map.begin() + num_surviving_networks + 1);
+            std::vector<std::pair<double, NeuralNetwork>> elites(population_loss.begin(), population_loss.begin() + num_surviving_networks + 1);
 
             population.clear();
 

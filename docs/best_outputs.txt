@@ -84,3 +84,32 @@ Trained Model Loss
   < 1.212 1.79943 4.44543 >
   < 2.50948 3.56937 8.73826 >
 ]
+*************************************************************************************
+Data4
+NeuralNetwork network(0.001, num_epochs, BINARY_CROSS_ENTROPY, 32, NEUROEVOLUTION); 
+network.addInputLayer(num_features);
+network.addLayer(4, RELU, RANDOM);
+network.addLayer(num_labels, SIGMOID, RANDOM);
+
+Prediction-Label Pair 1: <(0.527804, 0)>
+Prediction-Label Pair 2: <(1, 1)>
+Prediction-Label Pair 3: <(1, 1)>
+Prediction-Label Pair 4: <(0.000270374, 0)>
+Prediction-Label Pair 5: <(0.00283362, 0)>
+Prediction-Label Pair 6: <(0.999982, 1)>
+Prediction-Label Pair 7: <(1, 1)>
+Prediction-Label Pair 8: <(6.36944e-06, 0)>
+Prediction-Label Pair 9: <(0.998956, 1)>
+Prediction-Label Pair 10: <(0.997614, 1)>
+Trained Model Loss
+0.0750361
+Final Layer Parameters Starting from First Hidden Layer
+[
+  < 3.39912 49.8148 11.6855 >
+  < 0.964559 -0.381331 -0.310042 >
+  < 24.7664 18.6351 11.5467 >
+  < 26.6505 6.53732 14.0984 >
+]
+[
+  < 0.271426 56.6604 -0.440081 -0.432195 0.111331 >
+]
