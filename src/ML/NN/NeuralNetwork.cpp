@@ -1,31 +1,26 @@
 #include "NeuralNetwork.h"
-#include "OptimizationTypes.h"
+#include "Optimizer.h"
 
 using namespace LinearAlgebra;
 using namespace LossFunctions;
-using namespace OptimizationMethods;
 
-NeuralNetwork::NeuralNetwork() {}
-
-NeuralNetwork::NeuralNetwork(float learningrate, int num_epochs, LossFunction lossFunction, int batchSize, OptimizationType optimizationMethod) 
+NeuralNetwork::NeuralNetwork() : optimizer(nullptr)
 {
-    this->LR = learningrate;
     this->num_hidden_layers = 0;
-    this->num_epochs = num_epochs;
-    this->selectedLoss = lossFunction;
-    this->batch_size = batchSize;
-    this->optimizationMethod = optimizationMethod;
+    this->model_loss = INFINITY;
 }
+
+NeuralNetwork::NeuralNetwork(Optimizer* optimizer) : optimizer(optimizer)
+{
+    this->num_hidden_layers = 0;
+    this->model_loss = INFINITY;
+}
+
 
 // takes in a template base neural net, and an encoding of weights and parameters and constructs a new neural network
 NeuralNetwork::NeuralNetwork(const NeuralNetwork& baseNN, const std::vector<double>& encoding)
 {
-    this->LR = baseNN.LR;
     this->num_hidden_layers = 0;
-    this->num_epochs = baseNN.num_epochs;
-    this->selectedLoss = baseNN.selectedLoss;
-    this->batch_size = baseNN.batch_size;
-    this->optimizationMethod = NEUROCHILD;
     this->layers.clear();
 
     int num_neurons_input_layer = baseNN.inputLayer.inputNeurons.size();
@@ -55,24 +50,8 @@ NeuralNetwork::NeuralNetwork(const NeuralNetwork& baseNN, const std::vector<doub
     }
 }
 
-void NeuralNetwork::fit(std::vector<std::vector<double>> featuresMatrix, std::vector<std::vector<double>>  labels) 
+double NeuralNetwork::calculateFinalModelLoss(std::vector<std::vector<double>> featuresMatrix, std::vector<std::vector<double>>  labels) 
 {
-    if (this->optimizationMethod == GRADIENT_DESCENT) 
-    {
-        batchGradientDescent(*this, featuresMatrix, labels);
-    }
-    else if (this->optimizationMethod == NEUROEVOLUTION)
-    {
-        NeuroEvolution(*this, featuresMatrix, labels);
-    }
-    else if (this->optimizationMethod == NEUROCHILD)
-    {
-        throw std::invalid_argument("This is a child network, can't call fit!");
-    }
-    else
-    {
-        throw std::invalid_argument("No Optimization Type Specified!");
-    }
     // now getting predictions of the entire feature matrix, i.e all samples
     // best_predictions will then consist of a vector of column vectors
     std::vector<std::vector<double>> best_predictions = this->getPredictions(featuresMatrix);
@@ -97,7 +76,16 @@ void NeuralNetwork::fit(std::vector<std::vector<double>> featuresMatrix, std::ve
         // printDebug(this->calculateLoss(getColumn(best_predictions, i), getColumn(labels_T, i)));
     }
     this->model_loss = accumulated_final_model_loss / labels_T.size();
+    return this->model_loss;
+}
 
+void NeuralNetwork::fit(const std::vector<std::vector<double>>& featuresMatrix, const std::vector<std::vector<double>>& labels)
+{
+    if (!optimizer) 
+    {
+        throw std::invalid_argument("No Optimizer Selected!");
+    }
+    optimizer->fit(*this, featuresMatrix, labels);
 }
 
 // takes in a features matrix and returns a matrix where each column is a vector of 
@@ -134,9 +122,9 @@ std::vector<std::vector<double>> NeuralNetwork::getPredictions(std::vector<std::
 
 double NeuralNetwork::calculateLoss(const std::vector<double>& predictions, const std::vector<double>&  labels) 
 {
-    if (this->selectedLoss == SQUARRED_ERROR) {
+    if (this->lossFunction == SQUARRED_ERROR) {
         return vectorizedModifiedSquarredError(predictions, labels);
-    } else if (this->selectedLoss == BINARY_CROSS_ENTROPY) {
+    } else if (this->lossFunction == BINARY_CROSS_ENTROPY) {
         return vectorizedLogLoss(predictions, labels);
     } else {
         throw std::invalid_argument("NO LOSS FUNCTION SELECTED");

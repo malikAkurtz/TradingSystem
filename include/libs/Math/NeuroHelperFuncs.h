@@ -5,6 +5,7 @@
 #include <random>
 #include "ML/NN/NeuralNetwork.h"
 
+class NeuralNetwork;
 
 void randomizeEncoding(std::vector<double> &encoding);
 std::vector<double> uniformCrossover(const NeuralNetwork &p1, const NeuralNetwork &p2);

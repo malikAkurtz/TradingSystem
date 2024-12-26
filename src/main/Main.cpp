@@ -2,6 +2,7 @@
 #include <numeric>
 #include "ReadCSV.h"
 #include "BestEncoding.h"
+#include "Optimizer.h"
 
 using namespace LinearAlgebra;
 
@@ -135,7 +136,7 @@ int main() {
 
 
     // Select dataset (change this to switch datasets)
-    auto& selected_data = data_test; // Use data1, data2, or data3
+    auto& selected_data = data2; // Use data1, data2, or data3
     auto& features = selected_data.first;
     auto& labels = selected_data.second;
 
@@ -145,9 +146,12 @@ int main() {
     // Neural Network initialization
     int num_features = features[0].size();
     int num_labels = labels[0].size();
-    int num_epochs = 1000; // higher leads to overfitting i.e reduced accuracy on training data but increasing this during training should only decrease overall training loss
 
-    NeuralNetwork network(0.01, num_epochs, SQUARRED_ERROR, 32, NEUROEVOLUTION); 
+
+    
+    GradientDescentOptimizer GD(0.001, 1000, SQUARRED_ERROR, 32);
+    NeuralNetwork network(&GD);
+
     network.addInputLayer(num_features);
     network.addLayer(8, RELU, RANDOM);
     network.addLayer(num_labels, NONE, RANDOM);
@@ -159,10 +163,10 @@ int main() {
     //Evaluate the model
     std::vector<std::vector<double>> predictions = network.getPredictions(features);
 
-    std::vector<int> epochs(num_epochs);
-    std::vector<double> losses = network.epoch_losses;
+    std::vector<int> epochs(GD.numEpochs);
+    std::vector<double> losses = GD.epochLosses;
     std::iota(epochs.begin(), epochs.end(), 1); // Fills with 1 to 1000
-    toCSV("training_loss.txt", epochs, network.epoch_losses, network.epoch_gradient_norms);
+    toCSV("training_loss.txt", epochs, GD.epochLosses, GD.gradientNorms);
 
     printPredictionsVSLabels(predictions, labels);
 
