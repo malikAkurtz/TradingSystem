@@ -153,7 +153,7 @@ int main() {
 
     
     GradientDescentOptimizer GD(0.001, 1000, 32, SQUARRED_ERROR);
-    NeuroEvolutionOptimizer NE(0.3, 5, 1, SQUARRED_ERROR);
+    NeuroEvolutionOptimizer NE(0.3, 100, 1000, SQUARRED_ERROR);
 
 
     NeuralNetwork network(&NE);
@@ -168,7 +168,7 @@ int main() {
     //Evaluate the model
     std::vector<std::vector<double>> predictions = network.feedForward(features);
 
-    std::vector<int> epochs(GD.numEpochs);
+    std::vector<int> epochs(GD.getNumEpochs());
     std::iota(epochs.begin(), epochs.end(), 1); // Fills with 1 to 1000
     toCSV("training_loss.txt", epochs, GD.epochLosses, GD.gradientNorms);
 

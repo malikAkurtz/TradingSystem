@@ -41,7 +41,7 @@ void NeuroEvolutionOptimizer::fit(NeuralNetwork &thisNetwork, const std::vector<
     std::vector<NeuralNetwork> population;
     population.reserve(this->populationSize);
 
-    for (int i = 0; i < this->; i++)
+    for (int i = 0; i < this->getPopulationSize(); i++)
     {
         
         std::vector<double> new_member_encoding = baseEncoding;
@@ -59,12 +59,12 @@ void NeuroEvolutionOptimizer::fit(NeuralNetwork &thisNetwork, const std::vector<
     }
 
     // for every generation
-    for (int g = 0; g < max_generations; g++)
+    for (int g = 0; g < this->getMaxGenerations(); g++)
     {  
         std::vector<std::pair<double, NeuralNetwork>> population_loss;
         // need to evaluate the population
         // for every network in the population
-        for (int i = 0; i < population_size; i++)
+        for (int i = 0; i < this->getPopulationSize(); i++)
         {
             NeuralNetwork &thisNN = population[i];
             
@@ -75,7 +75,7 @@ void NeuroEvolutionOptimizer::fit(NeuralNetwork &thisNetwork, const std::vector<
             double thisNNloss = 0;
             for (int j = 0; j < thisNNoutputs[0].size(); j++)
             {
-                thisNNloss += calculateLoss(getColumn(thisNNoutputs, j), getColumn(labels_T, j));
+                thisNNloss += this->calculateLoss(getColumn(thisNNoutputs, j), getColumn(labels_T, j));
             }
             thisNNloss /= num_samples;
             std::pair<double, NeuralNetwork> NNxLoss(thisNNloss, thisNN);
@@ -99,7 +99,7 @@ void NeuroEvolutionOptimizer::fit(NeuralNetwork &thisNetwork, const std::vector<
         printDebug(population_loss[0].first);
 
         // Elitism selection, keeping top 20%
-        int num_surviving_networks = population_size * 0.2;
+        int num_surviving_networks = this->getPopulationSize() * 0.2;
 
         printDebug("Number of surviving networks will be");
         printDebug(num_surviving_networks);
@@ -122,7 +122,7 @@ void NeuroEvolutionOptimizer::fit(NeuralNetwork &thisNetwork, const std::vector<
         // crossover/breeding
         
         
-        int children_needed = population_size - num_surviving_networks;
+        int children_needed = this->getPopulationSize() - num_surviving_networks;
 
         printDebug("Number of children needed is");
         printDebug(children_needed);
@@ -139,7 +139,7 @@ void NeuroEvolutionOptimizer::fit(NeuralNetwork &thisNetwork, const std::vector<
             std::vector<double> childEncoding = uniformCrossover(parent1, parent2);
 
             // mutate
-            childEncoding = mutate(childEncoding, mutation_rate);
+            childEncoding = mutate(childEncoding, this->getMutationRate());
             population.emplace_back(thisNetwork, childEncoding);
         }
     }
@@ -152,13 +152,53 @@ void NeuroEvolutionOptimizer::fit(NeuralNetwork &thisNetwork, const std::vector<
 
 double NeuroEvolutionOptimizer::calculateLoss(const std::vector<double> &predictions, const std::vector<double> &labels)
 {
-    if (this->lossFunction == SQUARRED_ERROR) {
+    if (this->getLossFunction() == SQUARRED_ERROR) {
         return LossFunctions::vectorizedModifiedSquarredError(predictions, labels);
-    } else if (this->lossFunction == BINARY_CROSS_ENTROPY) {
+    } else if (this->getLossFunction() == BINARY_CROSS_ENTROPY) {
         return LossFunctions::vectorizedLogLoss(predictions, labels);
     } else {
         throw std::invalid_argument("NO LOSS FUNCTION SELECTED");
     }
+}
+
+float NeuroEvolutionOptimizer::getMutationRate() const
+{
+    return this->mutationRate;
+}
+
+void NeuroEvolutionOptimizer::setMutationRate(float mutationRate)
+{
+    this->mutationRate = mutationRate;
+}
+
+int NeuroEvolutionOptimizer::getPopulationSize() const
+{
+    return this->populationSize;
+}
+
+void NeuroEvolutionOptimizer::setPopulationSize(int populationSize)
+{
+    this->populationSize = populationSize;
+}
+
+int NeuroEvolutionOptimizer::getMaxGenerations() const
+{
+    return this->maxGenerations;
+}
+
+void NeuroEvolutionOptimizer::setMaxGenerations(int maxGenerations)
+{
+    this->maxGenerations = maxGenerations;
+}
+
+LossFunction NeuroEvolutionOptimizer::getLossFunction() const
+{
+    return this->lossFunction;
+}
+
+void NeuroEvolutionOptimizer::setLossFunction(LossFunction lossFunction)
+{
+    this->lossFunction = lossFunction;
 }
 
 
@@ -176,7 +216,7 @@ GradientDescentOptimizer::GradientDescentOptimizer(float learningRate, int numEp
 void GradientDescentOptimizer::fit(NeuralNetwork &thisNetwork, const std::vector<std::vector<double>>& featuresMatrix, const std::vector<std::vector<double>>& labels)
 {
     int num_samples = featuresMatrix.size();
-    int num_batches = (num_samples + batchSize - 1) / batchSize;
+    int num_batches = (num_samples + this->getBatchSize() - 1) / this->getBatchSize();
     
 
     std::vector<std::vector<std::vector<double>>> batches_of_features = createBatches(featuresMatrix, batchSize);
@@ -185,7 +225,7 @@ void GradientDescentOptimizer::fit(NeuralNetwork &thisNetwork, const std::vector
     std::vector<std::vector<std::vector<double>>> gradient_J; 
     
     // for every epoc h
-    for (int e = 0; e < numEpochs; e++) {
+    for (int e = 0; e < this->getNumEpochs(); e++) {
         printDebug("--------------------NEW EPOCH--------------------");
         double epoch_accumulated_loss = 0;
         double epoch_accumulated_gradient = 0;
@@ -364,7 +404,7 @@ void GradientDescentOptimizer::fit(NeuralNetwork &thisNetwork, const std::vector
             for (int m = 0; m < thisNetwork.num_hidden_layers; m++) 
             {
                 int gradient_index = gradient_J.size() - 1 - m;
-                thisNetwork.layers[m].updateNeuronWeights(gradient_J[gradient_index], learningRate);
+                thisNetwork.layers[m].updateNeuronWeights(gradient_J[gradient_index], this->getLearningRate());
             }
 
             // norm of gradient for this particular sample
@@ -397,4 +437,44 @@ double GradientDescentOptimizer::calculateLoss(const std::vector<double> &predic
     } else {
         throw std::invalid_argument("NO LOSS FUNCTION SELECTED");
     }
+}
+
+float GradientDescentOptimizer::getLearningRate() const
+{
+    return this->learningRate;
+}
+
+void GradientDescentOptimizer::setLearningRate(float learningRate)
+{
+    this->learningRate = learningRate;
+}
+
+int GradientDescentOptimizer::getNumEpochs() const
+{
+    return this->numEpochs;
+}
+
+void GradientDescentOptimizer::setNumEpochs(int numEpochs)
+{
+    this->numEpochs = numEpochs;
+}
+
+int GradientDescentOptimizer::getBatchSize() const
+{
+    return this->batchSize;
+}
+
+void GradientDescentOptimizer::setBatchSize(int batchSize)
+{
+    this->batchSize = batchSize;
+}
+
+LossFunction GradientDescentOptimizer::getLossFunction() const
+{
+    return this->lossFunction;
+}
+
+void GradientDescentOptimizer::setLossFunction(LossFunction lossFunction)
+{
+    this->lossFunction = lossFunction;
 }

@@ -37,55 +37,33 @@ public:
 
     double calculateLoss(const std::vector<double> &predictions, const std::vector<double> &labels) override;
 
-    float getMutationRate() const
-    {
-        return this->mutationRate;
-    }
+    float getMutationRate() const;
 
-    void setMutationRate(float mutationRate)
-    {
-        this->mutationRate = mutationRate;
-    }
+    void setMutationRate(float mutationRate);
 
-    int getPopulationSize() const
-    {
-        return this->populationSize;
-    }
+    int getPopulationSize() const;
 
-    void setPopulationSize(int populationSize)
-    {
-        this->populationSize = populationSize;
-    }
+    void setPopulationSize(int populationSize);
 
-    int getMaxGenerations() const
-    {
-        return this->maxGenerations;
-    }
+    int getMaxGenerations() const;
 
-    void setMaxGenerations(int maxGenerations)
-    {
-        this->maxGenerations = maxGenerations;
-    }
+    void setMaxGenerations(int maxGenerations);
 
-    LossFunction getLossFunction() const
-    {
-        return this->lossFunction;
-    }
+    LossFunction getLossFunction() const;
 
-    void setLossFunction(LossFunction lossFunction)
-    {
-        this->lossFunction = lossFunction;
-    }
+    void setLossFunction(LossFunction lossFunction);
 };
 
 class GradientDescentOptimizer : public Optimizer
 {
-public:
+private:
     float learningRate;
     int numEpochs;
     int batchSize;
     LossFunction lossFunction;
 
+
+public:
     std::vector<double> epochLosses;
     std::vector<double> gradientNorms;
 
@@ -97,6 +75,21 @@ public:
 
     double calculateLoss(const std::vector<double> &predictions, const std::vector<double> &labels) override;
 
+    float getLearningRate() const;
+
+    void setLearningRate(float learningRate);
+
+    int getNumEpochs() const;
+
+    void setNumEpochs(int numEpochs);
+
+    int getBatchSize() const;
+
+    void setBatchSize(int batchSize);
+
+    LossFunction getLossFunction() const;
+
+    void setLossFunction(LossFunction lossFunction);
 };
 
 
