@@ -135,11 +135,11 @@ int main() {
 
 
     // Select dataset (change this to switch datasets)
-    auto& selected_data = data4; // Use data1, data2, or data3
+    auto& selected_data = data_test; // Use data1, data2, or data3
     auto& features = selected_data.first;
     auto& labels = selected_data.second;
 
-    //features = normalizeData(features); //******** UNCOMMENT THIS YOU FUCKING RETARD **************
+    features = normalizeData(features); //******** UNCOMMENT THIS YOU FUCKING RETARD **************
     //labels = normalizeData(labels);
 
     // Neural Network initialization
@@ -147,10 +147,10 @@ int main() {
     int num_labels = labels[0].size();
     int num_epochs = 1000; // higher leads to overfitting i.e reduced accuracy on training data but increasing this during training should only decrease overall training loss
 
-    NeuralNetwork network(0.001, num_epochs, BINARY_CROSS_ENTROPY, 32, GRADIENT_DESCENT); 
+    NeuralNetwork network(0.01, num_epochs, SQUARRED_ERROR, 32, NEUROEVOLUTION); 
     network.addInputLayer(num_features);
-    network.addLayer(4, RELU, RANDOM);
-    network.addLayer(num_labels, SIGMOID, RANDOM);
+    network.addLayer(8, RELU, RANDOM);
+    network.addLayer(num_labels, NONE, RANDOM);
 
     // fit the model
     network.fit(features, labels);

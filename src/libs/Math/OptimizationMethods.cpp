@@ -242,8 +242,8 @@ namespace OptimizationMethods
         printDebug("Labels tranposed are");
         printMatrixDebug(labels_T);
 
-        int population_size = 100;
-        int max_generations = 100;
+        int population_size = 5;
+        int max_generations = 10;
 
         std::vector<double> baseEncoding = network.getNetworkEncoding();
         printDebug("Base network encoding is");
