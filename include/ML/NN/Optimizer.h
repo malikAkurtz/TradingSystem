@@ -22,12 +22,13 @@ public:
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 class NeuroEvolutionOptimizer : public Optimizer
 {
-public:
+private:
     float mutationRate;
     int populationSize;
     int maxGenerations;
     LossFunction lossFunction;
 
+public:
     NeuroEvolutionOptimizer();
 
     NeuroEvolutionOptimizer(float mutationRate, int populationSize, int maxGenerations, LossFunction lossFunction);
@@ -35,6 +36,46 @@ public:
     void fit(NeuralNetwork &thisNetwork, const std::vector<std::vector<double>>& featuresMatrix, const std::vector<std::vector<double>>& labels) override;
 
     double calculateLoss(const std::vector<double> &predictions, const std::vector<double> &labels) override;
+
+    float getMutationRate() const
+    {
+        return this->mutationRate;
+    }
+
+    void setMutationRate(float mutationRate)
+    {
+        this->mutationRate = mutationRate;
+    }
+
+    int getPopulationSize() const
+    {
+        return this->populationSize;
+    }
+
+    void setPopulationSize(int populationSize)
+    {
+        this->populationSize = populationSize;
+    }
+
+    int getMaxGenerations() const
+    {
+        return this->maxGenerations;
+    }
+
+    void setMaxGenerations(int maxGenerations)
+    {
+        this->maxGenerations = maxGenerations;
+    }
+
+    LossFunction getLossFunction() const
+    {
+        return this->lossFunction;
+    }
+
+    void setLossFunction(LossFunction lossFunction)
+    {
+        this->lossFunction = lossFunction;
+    }
 };
 
 class GradientDescentOptimizer : public Optimizer

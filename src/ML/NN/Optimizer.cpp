@@ -18,9 +18,8 @@ void NeuroEvolutionOptimizer::fit(NeuralNetwork &thisNetwork, const std::vector<
     // this is what were looking for
     std::vector<double> bestEncoding; 
 
-    float mutation_rate = 0.2;
     printDebug("Mutation rate is");
-    printDebug(mutation_rate);
+    printDebug(this->mutationRate);
 
     int num_samples = featuresMatrix.size();
     printDebug("Number of samples is");
@@ -34,18 +33,15 @@ void NeuroEvolutionOptimizer::fit(NeuralNetwork &thisNetwork, const std::vector<
     printDebug("Labels tranposed are");
     printMatrixDebug(labels_T);
 
-    int population_size = 100;
-    int max_generations = 100;
-
     std::vector<double> baseEncoding = thisNetwork.getNetworkEncoding();
     printDebug("Base network encoding is");
     printVectorDebug(baseEncoding);
 
     // Initialize Population
     std::vector<NeuralNetwork> population;
-    population.reserve(population_size);
+    population.reserve(this->populationSize);
 
-    for (int i = 0; i < population_size; i++)
+    for (int i = 0; i < this->; i++)
     {
         
         std::vector<double> new_member_encoding = baseEncoding;
@@ -75,7 +71,7 @@ void NeuroEvolutionOptimizer::fit(NeuralNetwork &thisNetwork, const std::vector<
             // perform a forward pass of the entire dataset through this network
 
             // A matrix where each column is a prediction for that sample from left to right
-            std::vector<std::vector<double>> thisNNoutputs = thisNN.getPredictions(featuresMatrix);
+            std::vector<std::vector<double>> thisNNoutputs = thisNN.feedForward(featuresMatrix);
             double thisNNloss = 0;
             for (int j = 0; j < thisNNoutputs[0].size(); j++)
             {
@@ -216,7 +212,7 @@ void GradientDescentOptimizer::fit(NeuralNetwork &thisNetwork, const std::vector
             /* 
             The output of the last hidden layer for this sample, Aᴸ, will be the result of indexing the first and only output of the getPredictions method, which takes in a matrix of features, and returns a vector of column vectors representing Aᴸ outputs for each sample, which in this case is only one. Hence why we wrap featuresMatrix[i] in a vector, since were essentially getting predictions on an entire dataset that consists of only one sample)
             */
-            std::vector<std::vector<double>> A_L = thisNetwork.getPredictions(cur_X_batch_matrix);
+            std::vector<std::vector<double>> A_L = thisNetwork.feedForward(cur_X_batch_matrix);
             // since A_L was tranpose in the prediction process to make it a vector of column vectors
             std::vector<std::vector<double>> cur_Y_batch_matrix_T = takeTranspose(cur_Y_batch_matrix);
 

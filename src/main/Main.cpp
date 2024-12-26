@@ -130,13 +130,16 @@ int main() {
     }};
 
 
-    std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>> data_test =
+    std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>> data_test1 =
     {{{2}, {3}}, // 2 samples, 1 feature
     {{7}, {9}}}; // 2 samples, 1 label
 
+    std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>> data_test2 = 
+    {{{2}, {3}}, // 2 samples, 1 feature
+    {{7}, {9}}}; // 2 samples, 1 label
 
     // Select dataset (change this to switch datasets)
-    auto& selected_data = data3; // Use data1, data2, or data3
+    auto& selected_data = data_test1; // Use data1, data2, or data3
     auto& features = selected_data.first;
     auto& labels = selected_data.second;
 
@@ -150,11 +153,12 @@ int main() {
 
     
     GradientDescentOptimizer GD(0.001, 1000, 32, SQUARRED_ERROR);
-    NeuroEvolutionOptimizer NE(0.3, 100, 1000, SQUARRED_ERROR);
+    NeuroEvolutionOptimizer NE(0.3, 5, 1, SQUARRED_ERROR);
 
 
     NeuralNetwork network(&NE);
     network.addInputLayer(num_features);
+    network.addLayer(3, RELU, RANDOM);
     network.addLayer(num_labels, NONE, RANDOM);
 
     // fit the model
@@ -162,7 +166,7 @@ int main() {
 
     std::vector<double> bestNetworkEncoding = network.getNetworkEncoding();
     //Evaluate the model
-    std::vector<std::vector<double>> predictions = network.getPredictions(features);
+    std::vector<std::vector<double>> predictions = network.feedForward(features);
 
     std::vector<int> epochs(GD.numEpochs);
     std::iota(epochs.begin(), epochs.end(), 1); // Fills with 1 to 1000

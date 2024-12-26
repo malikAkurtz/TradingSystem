@@ -54,7 +54,7 @@ double NeuralNetwork::calculateFinalModelLoss(std::vector<std::vector<double>> f
 {
     // now getting predictions of the entire feature matrix, i.e all samples
     // best_predictions will then consist of a vector of column vectors
-    std::vector<std::vector<double>> best_predictions = this->getPredictions(featuresMatrix);
+    std::vector<std::vector<double>> best_predictions = this->feedForward(featuresMatrix);
     // printDebug("Number of predictions");
     // printDebug(best_predictions.size());
     // printDebug("looks like");
@@ -91,7 +91,7 @@ void NeuralNetwork::fit(const std::vector<std::vector<double>>& featuresMatrix, 
 
 // takes in a features matrix and returns a matrix where each column is a vector of 
 // predictions for that sample
-std::vector<std::vector<double>> NeuralNetwork::getPredictions(std::vector<std::vector<double>> featuresMatrix) 
+std::vector<std::vector<double>> NeuralNetwork::feedForward(std::vector<std::vector<double>> featuresMatrix) 
 {
     std::vector<std::vector<double>> features_T = takeTranspose(featuresMatrix);
 
@@ -132,7 +132,6 @@ void NeuralNetwork::addLayer(int num_neurons, ActivationFunctionType AFtype, Neu
     this->layer_sizes.push_back(num_neurons);
     this->num_hidden_layers += 1;
 }
-
 
 
 void NeuralNetwork::reInitializeLayers()
