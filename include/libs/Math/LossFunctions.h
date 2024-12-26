@@ -5,10 +5,6 @@
 #include "LinearAlgebra.h"
 #include "LossFunctions.h"
 
-#include <vector>
-#include "LinearAlgebra.h"
-
-
 
 namespace LossFunctions
 {

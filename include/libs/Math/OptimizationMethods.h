@@ -1,8 +1,7 @@
 #ifndef OPT_METHODS
 #define OPT_METHODS
 
-
-#include "../../ML-Models/NN/NetworkLayers.h"
+#include "ML/NN/NetworkLayers.h"
 #include "Output.h"
 class NeuralNetwork;
 

@@ -3,7 +3,7 @@
 #include <SDL2/SDL_ttf.h>
 #include <string>
 #include <iostream>
-#include "/Users/malikkurtz/Coding/TradingSystem/ML-Models/NN/NeuralNetwork.h"
+#include "ML/NN/NeuralNetwork.h"
 #include "Output.h"
 
 bool DEBUG = false;

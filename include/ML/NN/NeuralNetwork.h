@@ -5,7 +5,7 @@
 #include "NetworkLayers.h"
 #include "LossFunctions.h"
 #include "LinearAlgebra.h"
-#include "OptimizationMethods.h"
+#include "libs/Math/OptimizationMethods.h"
 #include "OptimizationTypes.h"
 #include "LossFunctionTypes.h"
 

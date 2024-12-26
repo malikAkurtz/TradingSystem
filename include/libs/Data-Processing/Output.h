@@ -3,7 +3,7 @@
 
 #include <vector>
 #include <iostream>
-#include "LinearAlgebra.h"
+#include "../Math/LinearAlgebra.h"
 
 extern bool DEBUG;
 
