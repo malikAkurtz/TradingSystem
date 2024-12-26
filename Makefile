@@ -1,30 +1,38 @@
-# Compiler
+# Compiler and Flags
 CXX = g++
+CXXFLAGS = -std=c++17 -Wall -Iinclude -Iinclude/libs -Iinclude/libs/Math -Iinclude/libs/Data-Processing -Iinclude/ML -Iinclude/ML/NN -I/opt/homebrew/include -I/opt/homebrew/include/SDL2
 
-CXXFLAGS = -std=c++11 -Wall -Ilibs -Ilibs/Data-Processing -Ilibs/Math -IML-Models -I/opt/homebrew/include -I/opt/homebrew/include/SDL2
 
 LDFLAGS = -L/opt/homebrew/lib -lSDL2 -lSDL2_ttf
 
+# Directories
+SRC_DIR = src
+BUILD_DIR = build
+BIN_DIR = bin
+
+# Source files
+SOURCES = $(wildcard $(SRC_DIR)/main/*.cpp) $(wildcard $(SRC_DIR)/ML/NN/*.cpp) $(wildcard $(SRC_DIR)/libs/Math/*.cpp) $(wildcard $(SRC_DIR)/libs/Data-Processing/*.cpp)
+
+# Object files
+OBJECTS = $(patsubst $(SRC_DIR)/%.cpp, $(BUILD_DIR)/%.o, $(SOURCES))
+
 # Target executable
-TARGET = out
+TARGET = $(BIN_DIR)/trading_system
 
-# Automatically detect all .cpp files in the project (including ML-Models)
-SOURCES = $(wildcard pong.cpp libs/*/*.cpp ML-Models/NN/NeuralNetwork.cpp ML-Models/NN/NetworkLayers.cpp ML-Models/NN/Neuron.cpp ML-Models/NN/PongSimulation.cpp)
-
-# Generate object files from sources
-OBJECTS = $(SOURCES:.cpp=.o)
-
-# Default rule to build the target
+# Default rule
 all: $(TARGET)
 
-# Rule to link all object files into the executable
+# Linking
 $(TARGET): $(OBJECTS)
-	$(CXX) $(CXXFLAGS) -o $(TARGET) $(OBJECTS) $(LDFLAGS)
+	@mkdir -p $(BIN_DIR)
+	$(CXX) $(CXXFLAGS) -o $@ $^ $(LDFLAGS)
 
-# Rule to compile each .cpp file into a .o file
-%.o: %.cpp
+# Compilation
+$(BUILD_DIR)/%.o: $(SRC_DIR)/%.cpp
+	@mkdir -p $(dir $@)
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
-# Clean up object files and the executable
+# Clean
+.PHONY: clean
 clean:
-	rm -f $(OBJECTS) $(TARGET) results.csv out
+	rm -rf $(BUILD_DIR) $(BIN_DIR)

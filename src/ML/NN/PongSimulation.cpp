@@ -21,7 +21,7 @@ void PongSimulator::reset()
 
     paddle_opp.first = WINDOW_WIDTH * 0.1;
     paddle_opp.second = WINDOW_HEIGHT / 2;
-    num_steps = 1000;
+    num_steps = 10000;
     NN_score = 0;
     opp_score = 0;
     NN_fitness = 0;

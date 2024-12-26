@@ -1,4 +1,4 @@
-#include "ML-Models/NN/NeuralNetwork.h"
+#include "NeuralNetwork.h"
 #include <numeric>
 #include "ReadCSV.h"
 

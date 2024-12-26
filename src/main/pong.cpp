@@ -441,8 +441,8 @@ int main()
             ball.Update(dt);
 
             // Check collisions
-            if (Contact contact = CheckPaddleCollision(ball, paddleOne);
-                contact.type != CollisionType::None)
+			Contact contact = CheckPaddleCollision(ball, paddleOne);
+            if (contact.type != CollisionType::None)
             {
                 ball.CollideWithPaddle(contact);
             }
