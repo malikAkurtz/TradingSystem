@@ -150,7 +150,8 @@ int main() {
 
     
     GradientDescentOptimizer GD(0.001, 1000, SQUARRED_ERROR, 32);
-    NeuralNetwork network(&GD);
+    NeuroEvolutionOptimizer NE(0.3, 100, 1000, SQUARRED_ERROR);
+    NeuralNetwork network(&NE);
 
     network.addInputLayer(num_features);
     network.addLayer(8, RELU, RANDOM);

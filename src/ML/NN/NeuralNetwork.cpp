@@ -86,6 +86,7 @@ void NeuralNetwork::fit(const std::vector<std::vector<double>>& featuresMatrix, 
         throw std::invalid_argument("No Optimizer Selected!");
     }
     optimizer->fit(*this, featuresMatrix, labels);
+    calculateFinalModelLoss(featuresMatrix, labels);
 }
 
 // takes in a features matrix and returns a matrix where each column is a vector of 
