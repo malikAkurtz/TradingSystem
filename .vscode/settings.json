@@ -77,7 +77,7 @@
     "queue": "cpp"
   },
   "editor.wordWrap": "wordWrapColumn",
-  "editor.wordWrapColumn": 130,
+  "editor.wordWrapColumn": 100,
   "editor.formatOnSave": true,
   "editor.formatOnType": true,
   "C_Cpp.default.compilerPath": "/usr/bin/g++"

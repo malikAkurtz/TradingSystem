@@ -18,7 +18,6 @@ public:
     std::vector<Layer> layers;
     double model_loss;
     std::vector<int> layer_sizes;
-    LossFunction lossFunction;
 
     // Constructor
     NeuralNetwork();
@@ -29,7 +28,6 @@ public:
     double calculateFinalModelLoss(std::vector<std::vector<double>> featuresMatrix, std::vector<std::vector<double>> labels);
     void fit(const std::vector<std::vector<double>>& featuresMatrix, const std::vector<std::vector<double>>& labels);
     std::vector<std::vector<double>> getPredictions(std::vector<std::vector<double>> featuresMatrix);
-    double calculateLoss(const std::vector<double>& predictions, const std::vector<double>& labels);
     void addInputLayer(int num_features);
     void addLayer(int num_neurons, ActivationFunctionType AFtype, NeuronInitializationType NItype);
     void reInitializeLayers();

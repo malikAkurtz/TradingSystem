@@ -136,7 +136,7 @@ int main() {
 
 
     // Select dataset (change this to switch datasets)
-    auto& selected_data = data2; // Use data1, data2, or data3
+    auto& selected_data = data3; // Use data1, data2, or data3
     auto& features = selected_data.first;
     auto& labels = selected_data.second;
 
@@ -149,12 +149,12 @@ int main() {
 
 
     
-    GradientDescentOptimizer GD(0.001, 1000, SQUARRED_ERROR, 32);
+    GradientDescentOptimizer GD(0.001, 1000, 32, SQUARRED_ERROR);
     NeuroEvolutionOptimizer NE(0.3, 100, 1000, SQUARRED_ERROR);
-    NeuralNetwork network(&NE);
 
+
+    NeuralNetwork network(&NE);
     network.addInputLayer(num_features);
-    network.addLayer(8, RELU, RANDOM);
     network.addLayer(num_labels, NONE, RANDOM);
 
     // fit the model
@@ -165,7 +165,6 @@ int main() {
     std::vector<std::vector<double>> predictions = network.getPredictions(features);
 
     std::vector<int> epochs(GD.numEpochs);
-    std::vector<double> losses = GD.epochLosses;
     std::iota(epochs.begin(), epochs.end(), 1); // Fills with 1 to 1000
     toCSV("training_loss.txt", epochs, GD.epochLosses, GD.gradientNorms);
 
@@ -182,7 +181,7 @@ int main() {
 
 
     return 0;
-    }
+}
 
 int main1(){
     std::vector<std::vector<double>> m1 = {

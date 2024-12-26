@@ -2,7 +2,7 @@
 
 using namespace LinearAlgebra;
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 NeuroEvolutionOptimizer::NeuroEvolutionOptimizer()
 {
     this->mutationRate = 0.01;
@@ -79,7 +79,7 @@ void NeuroEvolutionOptimizer::fit(NeuralNetwork &thisNetwork, const std::vector<
             double thisNNloss = 0;
             for (int j = 0; j < thisNNoutputs[0].size(); j++)
             {
-                thisNNloss += thisNetwork.calculateLoss(getColumn(thisNNoutputs, j), getColumn(labels_T, j));
+                thisNNloss += calculateLoss(getColumn(thisNNoutputs, j), getColumn(labels_T, j));
             }
             thisNNloss /= num_samples;
             std::pair<double, NeuralNetwork> NNxLoss(thisNNloss, thisNN);
@@ -153,7 +153,20 @@ void NeuroEvolutionOptimizer::fit(NeuralNetwork &thisNetwork, const std::vector<
     thisNetwork.setEncoding(bestEncoding);
 }
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+double NeuroEvolutionOptimizer::calculateLoss(const std::vector<double> &predictions, const std::vector<double> &labels)
+{
+    if (this->lossFunction == SQUARRED_ERROR) {
+        return LossFunctions::vectorizedModifiedSquarredError(predictions, labels);
+    } else if (this->lossFunction == BINARY_CROSS_ENTROPY) {
+        return LossFunctions::vectorizedLogLoss(predictions, labels);
+    } else {
+        throw std::invalid_argument("NO LOSS FUNCTION SELECTED");
+    }
+}
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
 GradientDescentOptimizer::GradientDescentOptimizer()
 {
     this->learningRate = 0.01;
@@ -162,7 +175,7 @@ GradientDescentOptimizer::GradientDescentOptimizer()
     this->batchSize = 32;
 }
 
-GradientDescentOptimizer::GradientDescentOptimizer(float learningRate, int numEpochs, LossFunction lossFunction, int batchSize) : learningRate(learningRate), numEpochs(numEpochs), lossFunction(lossFunction), batchSize(batchSize) {};
+GradientDescentOptimizer::GradientDescentOptimizer(float learningRate, int numEpochs, int batchSize, LossFunction lossFunction) : learningRate(learningRate), numEpochs(numEpochs), batchSize(batchSize), lossFunction(lossFunction) {};
 
 void GradientDescentOptimizer::fit(NeuralNetwork &thisNetwork, const std::vector<std::vector<double>>& featuresMatrix, const std::vector<std::vector<double>>& labels)
 {
@@ -220,7 +233,7 @@ void GradientDescentOptimizer::fit(NeuralNetwork &thisNetwork, const std::vector
 
             for (int j = 0; j < num_colums_of_A_L; j++)
             {
-                batch_loss += thisNetwork.calculateLoss(getColumn(A_L, j), getColumn(cur_Y_batch_matrix_T, j));
+                batch_loss += calculateLoss(getColumn(A_L, j), getColumn(cur_Y_batch_matrix_T, j));
             }
             batch_loss = batch_loss / num_samples_in_batch;
             printDebug("Loss for Batch");
@@ -376,5 +389,16 @@ void GradientDescentOptimizer::fit(NeuralNetwork &thisNetwork, const std::vector
         gradientNorms.push_back(average_gradient);
 
         std::cout << "Epoch: " << e << " Loss: " << epoch_Loss << " | Average Gradient: " << average_gradient << std::endl;
+    }
+}
+
+double GradientDescentOptimizer::calculateLoss(const std::vector<double> &predictions, const std::vector<double> &labels)
+{
+    if (this->lossFunction == SQUARRED_ERROR) {
+        return LossFunctions::vectorizedModifiedSquarredError(predictions, labels);
+    } else if (this->lossFunction == BINARY_CROSS_ENTROPY) {
+        return LossFunctions::vectorizedLogLoss(predictions, labels);
+    } else {
+        throw std::invalid_argument("NO LOSS FUNCTION SELECTED");
     }
 }

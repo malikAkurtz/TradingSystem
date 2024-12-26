@@ -71,7 +71,7 @@ double NeuralNetwork::calculateFinalModelLoss(std::vector<std::vector<double>> f
     // printMatrixDebug(labels_T);
     for (int i = 0; i < best_predictions[0].size(); i++)
     {
-        accumulated_final_model_loss += this->calculateLoss(getColumn(best_predictions, i), getColumn(labels_T, i));
+        accumulated_final_model_loss += this->optimizer->calculateLoss(getColumn(best_predictions, i), getColumn(labels_T, i));
         // printDebug("Loss for these samples");
         // printDebug(this->calculateLoss(getColumn(best_predictions, i), getColumn(labels_T, i)));
     }
@@ -119,17 +119,6 @@ std::vector<std::vector<double>> NeuralNetwork::getPredictions(std::vector<std::
     predictions = this->layers[num_hidden_layers - 1].getActivationOutputs();
     printDebug("-------------------Got Predictions------------------------------");
     return predictions;
-}
-
-double NeuralNetwork::calculateLoss(const std::vector<double>& predictions, const std::vector<double>&  labels) 
-{
-    if (this->lossFunction == SQUARRED_ERROR) {
-        return vectorizedModifiedSquarredError(predictions, labels);
-    } else if (this->lossFunction == BINARY_CROSS_ENTROPY) {
-        return vectorizedLogLoss(predictions, labels);
-    } else {
-        throw std::invalid_argument("NO LOSS FUNCTION SELECTED");
-    }
 }
 
 void NeuralNetwork::addInputLayer(int num_features) {
