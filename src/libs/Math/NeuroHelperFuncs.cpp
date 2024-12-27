@@ -28,25 +28,25 @@ std::vector<double> uniformCrossover(const NeuralNetwork& p1, const NeuralNetwor
     }
     int sequence_length = p1_encoding.size();
 
-    std::vector<double> childEncoding(sequence_length);
+    std::vector<double> child_encoding(sequence_length);
 
     for (int i = 0; i < sequence_length; i++)
     {
         if (std::rand() % 2)
         {
-            childEncoding[i] = p1_encoding[i];
+            child_encoding[i] = p1_encoding[i];
         }
         else {
-            childEncoding[i] = p2_encoding[i];
+            child_encoding[i] = p2_encoding[i];
         }
     }
 
-    return childEncoding;
+    return child_encoding;
 }
 
-std::vector<double> mutate(std::vector<double>& networkEncoding, const float& mutation_rate)
+std::vector<double> mutate(std::vector<double>& network_encoding, const float& mutation_rate)
 {
-    std::vector<double> mutated = networkEncoding;
+    std::vector<double> mutated = network_encoding;
     std::random_device rd;
     std::mt19937 gen(rd());
 
@@ -54,7 +54,7 @@ std::vector<double> mutate(std::vector<double>& networkEncoding, const float& mu
     std::uniform_real_distribution<> offset_dist(1, 5);
     std::bernoulli_distribution bernoulli_dist(mutation_rate); 
 
-    for (int i = 0; i < networkEncoding.size(); i++)
+    for (int i = 0; i < network_encoding.size(); i++)
     {
         if (bernoulli_dist(gen))
         {

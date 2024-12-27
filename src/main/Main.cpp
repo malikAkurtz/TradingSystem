@@ -3,6 +3,8 @@
 #include "ReadCSV.h"
 #include "BestEncoding.h"
 #include "Optimizer.h"
+#include "GradientDescentOptimizer.h"
+#include "NeuroEvolutionOptimizer.h"
 
 using namespace LinearAlgebra;
 
@@ -139,7 +141,7 @@ int main() {
     {{7}, {9}}}; // 2 samples, 1 label
 
     // Select dataset (change this to switch datasets)
-    auto& selected_data = data1; // Use data1, data2, or data3
+    auto& selected_data = data4; // Use data1, data2, or data3
     auto& features = selected_data.first;
     auto& labels = selected_data.second;
 
@@ -152,18 +154,18 @@ int main() {
 
 
     
-    GradientDescentOptimizer GD(0.001, 1000, 32, SQUARRED_ERROR);
+    GradientDescentOptimizer GD(0.01, 1000, 32, BINARY_CROSS_ENTROPY);
     NeuralNetwork network1(&GD);
     network1.addInputLayer(num_features);
     network1.addLayer(3, RELU, RANDOM);
-    network1.addLayer(num_labels, NONE, RANDOM);
+    network1.addLayer(num_labels, SIGMOID, RANDOM);
 
-    NeuroEvolutionOptimizer NE(0.3, 100, 1000, SQUARRED_ERROR);
+    NeuroEvolutionOptimizer NE(0.3, 100, 1000, BINARY_CROSS_ENTROPY);
 
     NeuralNetwork network2(&NE);
     network2.addInputLayer(num_features);
     network2.addLayer(3, RELU, RANDOM);
-    network2.addLayer(num_labels, NONE, RANDOM);
+    network2.addLayer(num_labels, SIGMOID, RANDOM);
 
     // fit the model
     network1.fit(features, labels);
