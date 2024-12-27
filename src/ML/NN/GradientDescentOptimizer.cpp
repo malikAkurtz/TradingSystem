@@ -225,10 +225,10 @@ void GradientDescentOptimizer::fit(NeuralNetwork &thisNetwork, const std::vector
             printDebug("------------------------END EPOCH-------------------------------");
         }
         // mean squarred error for this epoch
-        double epoch_Loss = epoch_accumulated_loss / num_samples; 
+        double epoch_Loss = epoch_accumulated_loss / num_batches; 
         epoch_losses.push_back(epoch_Loss);
         // calcuate the average gradient over this epoch as well
-        double average_gradient = epoch_accumulated_gradient / num_samples;
+        double average_gradient = epoch_accumulated_gradient / num_batches;
         gradient_norms.push_back(average_gradient);
 
         std::cout << "Epoch: " << e << " Loss: " << epoch_Loss << " | Average Gradient: " << average_gradient << std::endl;

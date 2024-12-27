@@ -4,6 +4,7 @@ using namespace LinearAlgebra;
 
 namespace LossFunctions
 {
+    // represents loss for a single sample
     double vectorizedModifiedSquarredError(const std::vector<double> &predictions, const std::vector<double> &labels)
     {
         if (predictions.size() != labels.size())
@@ -14,7 +15,7 @@ namespace LossFunctions
         return (innerProduct(error, error) / 2);
     }
 
-
+    // represents loss for a single sample
     double vectorizedLogLoss(const std::vector<double> &predictions, const std::vector<double> &labels)
     {
         if (predictions.size() != labels.size())

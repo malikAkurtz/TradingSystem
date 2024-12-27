@@ -8,7 +8,7 @@
 
 using namespace LinearAlgebra;
 
-bool DEBUG = false;
+bool DEBUG = true;
 
 int main() {
     // seed for random

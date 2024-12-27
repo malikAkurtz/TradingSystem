@@ -75,7 +75,7 @@ double NeuralNetwork::calculateFinalModelLoss(std::vector<std::vector<double>> f
         // printDebug("Loss for these samples");
         // printDebug(this->calculateLoss(getColumn(best_predictions, i), getColumn(labels_T, i)));
     }
-    this->model_loss = accumulated_final_model_loss / labels_T.size();
+    this->model_loss = accumulated_final_model_loss / labels_T[0].size();
     return this->model_loss;
 }
 
