@@ -288,7 +288,7 @@ void GradientDescentOptimizer::fit(NeuralNetwork &thisNetwork, const std::vector
             {
                 // this would just be 1 input layer, 1 output layer NN
                 // otherwise we just retreive the input layers activations which were just the inputs into the network
-                A_prev_activation_with_bias = thisNetwork.inputLayer.getInputs();
+                A_prev_activation_with_bias = thisNetwork.input_layer.getInputs();
             }
             std::vector<double> ones_to_append(A_prev_activation_with_bias[0].size(), 1);
 
@@ -345,7 +345,7 @@ void GradientDescentOptimizer::fit(NeuralNetwork &thisNetwork, const std::vector
 
                 if (j == 0) 
                 { // need to get input layer outputs
-                    A_prev_activation_with_bias = thisNetwork.inputLayer.getInputs();
+                    A_prev_activation_with_bias = thisNetwork.input_layer.getInputs();
                 } 
                 else 
                 {
