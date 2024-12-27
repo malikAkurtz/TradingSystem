@@ -12,7 +12,7 @@ class Optimizer
 {
 public:
 
-    virtual void fit(NeuralNetwork &thisNetwork, const std::vector<std::vector<double>>& featuresMatrix, const std::vector<std::vector<double>>& labels) = 0;
+    virtual void fit(NeuralNetwork &this_network, const std::vector<std::vector<double>>& features_matrix, const std::vector<std::vector<double>>& labels) = 0;
 
     virtual double calculateLoss(const std::vector<double> &predictions, const std::vector<double> &labels) = 0;
 
@@ -22,74 +22,40 @@ public:
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 class NeuroEvolutionOptimizer : public Optimizer
 {
-private:
-    float mutationRate;
-    int populationSize;
-    int maxGenerations;
-    LossFunction lossFunction;
-
 public:
+    float mutation_rate;
+    int population_size;
+    int max_generations;
+    LossFunction loss_function;
+
     NeuroEvolutionOptimizer();
 
-    NeuroEvolutionOptimizer(float mutationRate, int populationSize, int maxGenerations, LossFunction lossFunction);
+    NeuroEvolutionOptimizer(float mutation_rate, int population_size, int max_generations, LossFunction loss_function);
 
-    void fit(NeuralNetwork &thisNetwork, const std::vector<std::vector<double>>& featuresMatrix, const std::vector<std::vector<double>>& labels) override;
+    void fit(NeuralNetwork &this_network, const std::vector<std::vector<double>>& features_matrix, const std::vector<std::vector<double>>& labels) override;
 
     double calculateLoss(const std::vector<double> &predictions, const std::vector<double> &labels) override;
 
-    float getMutationRate() const;
-
-    void setMutationRate(float mutationRate);
-
-    int getPopulationSize() const;
-
-    void setPopulationSize(int populationSize);
-
-    int getMaxGenerations() const;
-
-    void setMaxGenerations(int maxGenerations);
-
-    LossFunction getLossFunction() const;
-
-    void setLossFunction(LossFunction lossFunction);
 };
 
 class GradientDescentOptimizer : public Optimizer
 {
-private:
-    float learningRate;
-    int numEpochs;
-    int batchSize;
-    LossFunction lossFunction;
-
-
 public:
-    std::vector<double> epochLosses;
-    std::vector<double> gradientNorms;
+    float learning_rate;
+    int num_epochs;
+    int batch_size;
+    LossFunction loss_function;
+    std::vector<double> epoch_losses;
+    std::vector<double> gradient_norms;
 
     GradientDescentOptimizer();
 
-    GradientDescentOptimizer(float learningRate, int numEpochs, int batchSize, LossFunction lossFunction);
+    GradientDescentOptimizer(float learning_rate, int num_epochs, int batch_size, LossFunction loss_function);
 
-    void fit(NeuralNetwork &thisNetwork, const std::vector<std::vector<double>>& featuresMatrix, const std::vector<std::vector<double>>& labels) override;
+    void fit(NeuralNetwork &thisNetwork, const std::vector<std::vector<double>>& features_matrix, const std::vector<std::vector<double>>& labels) override;
 
     double calculateLoss(const std::vector<double> &predictions, const std::vector<double> &labels) override;
 
-    float getLearningRate() const;
-
-    void setLearningRate(float learningRate);
-
-    int getNumEpochs() const;
-
-    void setNumEpochs(int numEpochs);
-
-    int getBatchSize() const;
-
-    void setBatchSize(int batchSize);
-
-    LossFunction getLossFunction() const;
-
-    void setLossFunction(LossFunction lossFunction);
 };
 
 

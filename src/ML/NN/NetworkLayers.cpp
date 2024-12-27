@@ -23,7 +23,7 @@ void InputLayer::storeInputs(std::vector<std::vector<double>> input_matrix) {
 }
 
 void InputLayer::addNeuron(InputNeuron inputNeuron) {
-    inputNeurons.push_back(inputNeuron);
+    this->inputNeurons.push_back(inputNeuron);
 }
 
 
@@ -33,8 +33,7 @@ void InputLayer::addNeuron(InputNeuron inputNeuron) {
 
 
 // Layer Constructor
-Layer::Layer(int num_neurons, int num_inputs, ActivationFunctionType AFtype, NeuronInitializationType NItype)
-    : AFtype(AFtype), initalization(NItype) {
+Layer::Layer(int num_neurons, int num_inputs, ActivationFunctionType AFtype, NeuronInitializationType NItype) : AFtype(AFtype), initalization(NItype) {
     for (int i = 0; i < num_neurons; ++i) {
         Neuron neuron(num_inputs + 1, NItype); // Including bias
         this->addNeuron(neuron);
@@ -76,7 +75,7 @@ std::vector<std::vector<double>> Layer::getDerivativeActivationOutputs() {
 std::vector<std::vector<double>> Layer::getWeightsMatrix() {
     // printDebug("Number of Neurons in layer");
     // printDebug(neurons.size());
-    std::vector<std::vector<double>> weightsMatrix;
+    std::vector<std::vector<double>> weights_matrix;
     for (int i = 0; i < neurons.size(); i++) {
         // printDebug("This Neurons Weights");
         // std::vector<double> theweights = neurons[i].getWeights();
@@ -84,12 +83,12 @@ std::vector<std::vector<double>> Layer::getWeightsMatrix() {
         // {
         //     printDebug(theweights[i]);
         // }
-        weightsMatrix.push_back(neurons[i].getWeights());
+        weights_matrix.push_back(neurons[i].getWeights());
     }
 
     // print("SO weights matrix is");
     // printMatrixDebug(weightsMatrix);
-    return weightsMatrix;
+    return weights_matrix;
 }
 
 void Layer::addNeuron(Neuron neuron) {

@@ -5,50 +5,50 @@ using namespace LinearAlgebra;
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 NeuroEvolutionOptimizer::NeuroEvolutionOptimizer()
 {
-    this->mutationRate = 0.01;
-    this->populationSize = 100;
-    this->maxGenerations = 1000;
-    this->lossFunction = SQUARRED_ERROR;
+    this->mutation_rate = 0.01;
+    this->population_size = 100;
+    this->max_generations = 1000;
+    this->loss_function = SQUARRED_ERROR;
 }
 
-NeuroEvolutionOptimizer::NeuroEvolutionOptimizer(float mutationRate, int populationSize, int maxGenerations, LossFunction lossFunction) : mutationRate(mutationRate), populationSize(populationSize), maxGenerations(maxGenerations), lossFunction(lossFunction) {};
+NeuroEvolutionOptimizer::NeuroEvolutionOptimizer(float mutation_rate, int population_size, int max_generations, LossFunction loss_function) : mutation_rate(mutation_rate), population_size(population_size), max_generations(max_generations), loss_function(loss_function) {};
 
-void NeuroEvolutionOptimizer::fit(NeuralNetwork &thisNetwork, const std::vector<std::vector<double>>& featuresMatrix, const std::vector<std::vector<double>>& labels)
+void NeuroEvolutionOptimizer::fit(NeuralNetwork &this_network, const std::vector<std::vector<double>>& features_matrix, const std::vector<std::vector<double>>& labels)
 {
     // this is what were looking for
-    std::vector<double> bestEncoding; 
+    std::vector<double> best_encoding; 
 
     printDebug("Mutation rate is");
-    printDebug(this->mutationRate);
+    printDebug(this->mutation_rate);
 
-    int num_samples = featuresMatrix.size();
+    int num_samples = features_matrix.size();
     printDebug("Number of samples is");
     printDebug(num_samples);
 
     std::vector<std::vector<double>> labels_T = takeTranspose(labels);
-    std::vector<std::vector<double>> features_T = takeTranspose(featuresMatrix);
+    std::vector<std::vector<double>> features_matrix_T = takeTranspose(features_matrix);
     printDebug("Features tranpose are");
-    printMatrixDebug(features_T);
+    printMatrixDebug(features_matrix_T);
 
     printDebug("Labels tranposed are");
     printMatrixDebug(labels_T);
 
-    std::vector<double> baseEncoding = thisNetwork.getNetworkEncoding();
+    std::vector<double> base_encoding = this_network.getNetworkEncoding();
     printDebug("Base network encoding is");
-    printVectorDebug(baseEncoding);
+    printVectorDebug(base_encoding);
 
     // Initialize Population
     std::vector<NeuralNetwork> population;
-    population.reserve(this->populationSize);
+    population.reserve(this->population_size);
 
-    for (int i = 0; i < this->getPopulationSize(); i++)
+    for (int i = 0; i < this->population_size; i++)
     {
         
-        std::vector<double> new_member_encoding = baseEncoding;
+        std::vector<double> new_member_encoding = base_encoding;
         randomizeEncoding(new_member_encoding);
         printDebug("New member encoding after mutation is:");
         printVectorDebug(new_member_encoding);
-        population.emplace_back(thisNetwork, new_member_encoding);
+        population.emplace_back(this_network, new_member_encoding);
 
     }
 
@@ -59,29 +59,29 @@ void NeuroEvolutionOptimizer::fit(NeuralNetwork &thisNetwork, const std::vector<
     }
 
     // for every generation
-    for (int g = 0; g < this->getMaxGenerations(); g++)
+    for (int g = 0; g < this->max_generations; g++)
     {  
         std::vector<std::pair<double, NeuralNetwork>> population_loss;
         // need to evaluate the population
         // for every network in the population
-        for (int i = 0; i < this->getPopulationSize(); i++)
+        for (int i = 0; i < population_size; i++)
         {
-            NeuralNetwork &thisNN = population[i];
+            NeuralNetwork &this_NN = population[i];
             
             // perform a forward pass of the entire dataset through this network
 
             // A matrix where each column is a prediction for that sample from left to right
-            std::vector<std::vector<double>> thisNNoutputs = thisNN.feedForward(featuresMatrix);
-            double thisNNloss = 0;
-            for (int j = 0; j < thisNNoutputs[0].size(); j++)
+            std::vector<std::vector<double>> this_NN_outputs = this_NN.feedForward(features_matrix);
+            double this_NN_loss = 0;
+            for (int j = 0; j < this_NN_outputs[0].size(); j++)
             {
-                thisNNloss += this->calculateLoss(getColumn(thisNNoutputs, j), getColumn(labels_T, j));
+                this_NN_loss += this->calculateLoss(getColumn(this_NN_outputs, j), getColumn(labels_T, j));
             }
-            thisNNloss /= num_samples;
-            std::pair<double, NeuralNetwork> NNxLoss(thisNNloss, thisNN);
+            this_NN_loss /= num_samples;
+            std::pair<double, NeuralNetwork> NN_x_Loss(this_NN_loss, this_NN);
             printDebug("This encodings loss is:");
-            printDebug(thisNNloss);
-            population_loss.push_back(NNxLoss);
+            printDebug(this_NN_loss);
+            population_loss.push_back(NN_x_Loss);
         }
 
         // sort the dictionary
@@ -91,15 +91,15 @@ void NeuroEvolutionOptimizer::fit(NeuralNetwork &thisNetwork, const std::vector<
         });
 
         
-        bestEncoding = population_loss[0].second.getNetworkEncoding();
+        best_encoding = population_loss[0].second.getNetworkEncoding();
 
         printDebug("New best encoding");
-        printVectorDebug(bestEncoding);
+        printVectorDebug(best_encoding);
         printDebug("Best encoding loss");
         printDebug(population_loss[0].first);
 
         // Elitism selection, keeping top 20%
-        int num_surviving_networks = this->getPopulationSize() * 0.2;
+        int num_surviving_networks = this->population_size * 0.2;
 
         printDebug("Number of surviving networks will be");
         printDebug(num_surviving_networks);
@@ -122,7 +122,7 @@ void NeuroEvolutionOptimizer::fit(NeuralNetwork &thisNetwork, const std::vector<
         // crossover/breeding
         
         
-        int children_needed = this->getPopulationSize() - num_surviving_networks;
+        int children_needed = this->population_size - num_surviving_networks;
 
         printDebug("Number of children needed is");
         printDebug(children_needed);
@@ -136,96 +136,57 @@ void NeuroEvolutionOptimizer::fit(NeuralNetwork &thisNetwork, const std::vector<
             NeuralNetwork& parent2 = population[rand() % num_surviving_networks];
             // printDebug("random index for parent 2");
             // printDebug(rand() % population_size);
-            std::vector<double> childEncoding = uniformCrossover(parent1, parent2);
+            std::vector<double> child_encoding = uniformCrossover(parent1, parent2);
 
             // mutate
-            childEncoding = mutate(childEncoding, this->getMutationRate());
-            population.emplace_back(thisNetwork, childEncoding);
+            child_encoding = mutate(child_encoding, this->mutation_rate);
+            population.emplace_back(this_network, child_encoding);
         }
     }
 
     printDebug("Best Encoding is");
-    printVectorDebug(bestEncoding);
-    thisNetwork.setEncoding(bestEncoding);
+    printVectorDebug(best_encoding);
+    this_network.setEncoding(best_encoding);
 }
 
 
 double NeuroEvolutionOptimizer::calculateLoss(const std::vector<double> &predictions, const std::vector<double> &labels)
 {
-    if (this->getLossFunction() == SQUARRED_ERROR) {
+    if (this->loss_function == SQUARRED_ERROR) {
         return LossFunctions::vectorizedModifiedSquarredError(predictions, labels);
-    } else if (this->getLossFunction() == BINARY_CROSS_ENTROPY) {
+    } else if (this->loss_function == BINARY_CROSS_ENTROPY) {
         return LossFunctions::vectorizedLogLoss(predictions, labels);
     } else {
         throw std::invalid_argument("NO LOSS FUNCTION SELECTED");
     }
 }
 
-float NeuroEvolutionOptimizer::getMutationRate() const
-{
-    return this->mutationRate;
-}
-
-void NeuroEvolutionOptimizer::setMutationRate(float mutationRate)
-{
-    this->mutationRate = mutationRate;
-}
-
-int NeuroEvolutionOptimizer::getPopulationSize() const
-{
-    return this->populationSize;
-}
-
-void NeuroEvolutionOptimizer::setPopulationSize(int populationSize)
-{
-    this->populationSize = populationSize;
-}
-
-int NeuroEvolutionOptimizer::getMaxGenerations() const
-{
-    return this->maxGenerations;
-}
-
-void NeuroEvolutionOptimizer::setMaxGenerations(int maxGenerations)
-{
-    this->maxGenerations = maxGenerations;
-}
-
-LossFunction NeuroEvolutionOptimizer::getLossFunction() const
-{
-    return this->lossFunction;
-}
-
-void NeuroEvolutionOptimizer::setLossFunction(LossFunction lossFunction)
-{
-    this->lossFunction = lossFunction;
-}
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 GradientDescentOptimizer::GradientDescentOptimizer()
 {
-    this->learningRate = 0.01;
-    this->numEpochs = 1000;
-    this->lossFunction = SQUARRED_ERROR;
-    this->batchSize = 32;
+    this->learning_rate = 0.01;
+    this->num_epochs = 1000;
+    this->loss_function = SQUARRED_ERROR;
+    this->batch_size = 32;
 }
 
-GradientDescentOptimizer::GradientDescentOptimizer(float learningRate, int numEpochs, int batchSize, LossFunction lossFunction) : learningRate(learningRate), numEpochs(numEpochs), batchSize(batchSize), lossFunction(lossFunction) {};
+GradientDescentOptimizer::GradientDescentOptimizer(float learning_rate, int num_epochs, int batch_size, LossFunction loss_function) : learning_rate(learning_rate), num_epochs(num_epochs), batch_size(batch_size), loss_function(loss_function) {};
 
 void GradientDescentOptimizer::fit(NeuralNetwork &thisNetwork, const std::vector<std::vector<double>>& featuresMatrix, const std::vector<std::vector<double>>& labels)
 {
     int num_samples = featuresMatrix.size();
-    int num_batches = (num_samples + this->getBatchSize() - 1) / this->getBatchSize();
+    int num_batches = (num_samples + this->batch_size - 1) / this->batch_size;
     
 
-    std::vector<std::vector<std::vector<double>>> batches_of_features = createBatches(featuresMatrix, batchSize);
-    std::vector<std::vector<std::vector<double>>> batches_of_labels = createBatches(labels, batchSize);
+    std::vector<std::vector<std::vector<double>>> batches_of_features = createBatches(featuresMatrix, this->batch_size);
+    std::vector<std::vector<std::vector<double>>> batches_of_labels = createBatches(labels, this->batch_size);
     // ΔJ, vector of matrices representing partial derivatives of cost with respect to each of the layers weights for a single batch
     std::vector<std::vector<std::vector<double>>> gradient_J; 
     
     // for every epoc h
-    for (int e = 0; e < this->getNumEpochs(); e++) {
+    for (int e = 0; e < this->num_epochs; e++) {
         printDebug("--------------------NEW EPOCH--------------------");
         double epoch_accumulated_loss = 0;
         double epoch_accumulated_gradient = 0;
@@ -404,7 +365,7 @@ void GradientDescentOptimizer::fit(NeuralNetwork &thisNetwork, const std::vector
             for (int m = 0; m < thisNetwork.num_hidden_layers; m++) 
             {
                 int gradient_index = gradient_J.size() - 1 - m;
-                thisNetwork.layers[m].updateNeuronWeights(gradient_J[gradient_index], this->getLearningRate());
+                thisNetwork.layers[m].updateNeuronWeights(gradient_J[gradient_index], this->learning_rate);
             }
 
             // norm of gradient for this particular sample
@@ -419,10 +380,10 @@ void GradientDescentOptimizer::fit(NeuralNetwork &thisNetwork, const std::vector
                     }
         // mean squarred error for this epoch
         double epoch_Loss = epoch_accumulated_loss / num_samples; 
-        epochLosses.push_back(epoch_Loss);
+        epoch_losses.push_back(epoch_Loss);
         // calcuate the average gradient over this epoch as well
         double average_gradient = epoch_accumulated_gradient / num_samples;
-        gradientNorms.push_back(average_gradient);
+        gradient_norms.push_back(average_gradient);
 
         std::cout << "Epoch: " << e << " Loss: " << epoch_Loss << " | Average Gradient: " << average_gradient << std::endl;
     }
@@ -430,51 +391,11 @@ void GradientDescentOptimizer::fit(NeuralNetwork &thisNetwork, const std::vector
 
 double GradientDescentOptimizer::calculateLoss(const std::vector<double> &predictions, const std::vector<double> &labels)
 {
-    if (this->lossFunction == SQUARRED_ERROR) {
+    if (this->loss_function == SQUARRED_ERROR) {
         return LossFunctions::vectorizedModifiedSquarredError(predictions, labels);
-    } else if (this->lossFunction == BINARY_CROSS_ENTROPY) {
+    } else if (this->loss_function == BINARY_CROSS_ENTROPY) {
         return LossFunctions::vectorizedLogLoss(predictions, labels);
     } else {
         throw std::invalid_argument("NO LOSS FUNCTION SELECTED");
     }
-}
-
-float GradientDescentOptimizer::getLearningRate() const
-{
-    return this->learningRate;
-}
-
-void GradientDescentOptimizer::setLearningRate(float learningRate)
-{
-    this->learningRate = learningRate;
-}
-
-int GradientDescentOptimizer::getNumEpochs() const
-{
-    return this->numEpochs;
-}
-
-void GradientDescentOptimizer::setNumEpochs(int numEpochs)
-{
-    this->numEpochs = numEpochs;
-}
-
-int GradientDescentOptimizer::getBatchSize() const
-{
-    return this->batchSize;
-}
-
-void GradientDescentOptimizer::setBatchSize(int batchSize)
-{
-    this->batchSize = batchSize;
-}
-
-LossFunction GradientDescentOptimizer::getLossFunction() const
-{
-    return this->lossFunction;
-}
-
-void GradientDescentOptimizer::setLossFunction(LossFunction lossFunction)
-{
-    this->lossFunction = lossFunction;
 }

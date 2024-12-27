@@ -139,7 +139,7 @@ int main() {
     {{7}, {9}}}; // 2 samples, 1 label
 
     // Select dataset (change this to switch datasets)
-    auto& selected_data = data_test1; // Use data1, data2, or data3
+    auto& selected_data = data1; // Use data1, data2, or data3
     auto& features = selected_data.first;
     auto& labels = selected_data.second;
 
@@ -153,53 +153,54 @@ int main() {
 
     
     GradientDescentOptimizer GD(0.001, 1000, 32, SQUARRED_ERROR);
+    NeuralNetwork network1(&GD);
+    network1.addInputLayer(num_features);
+    network1.addLayer(3, RELU, RANDOM);
+    network1.addLayer(num_labels, NONE, RANDOM);
+
     NeuroEvolutionOptimizer NE(0.3, 100, 1000, SQUARRED_ERROR);
 
-
-    NeuralNetwork network(&NE);
-    network.addInputLayer(num_features);
-    network.addLayer(3, RELU, RANDOM);
-    network.addLayer(num_labels, NONE, RANDOM);
+    NeuralNetwork network2(&NE);
+    network2.addInputLayer(num_features);
+    network2.addLayer(3, RELU, RANDOM);
+    network2.addLayer(num_labels, NONE, RANDOM);
 
     // fit the model
-    network.fit(features, labels);
+    network1.fit(features, labels);
 
-    std::vector<double> bestNetworkEncoding = network.getNetworkEncoding();
-    //Evaluate the model
-    std::vector<std::vector<double>> predictions = network.feedForward(features);
-
-    std::vector<int> epochs(GD.getNumEpochs());
+    std::vector<int> epochs(GD.num_epochs);
     std::iota(epochs.begin(), epochs.end(), 1); // Fills with 1 to 1000
-    toCSV("training_loss.txt", epochs, GD.epochLosses, GD.gradientNorms);
+    toCSV("training_loss.txt", epochs, GD.epoch_losses, GD.gradient_norms);
+
+    //Evaluate the model
+    std::vector<std::vector<double>> predictions = network1.feedForward(features);
 
     printPredictionsVSLabels(predictions, labels);
 
     std::cout << "Trained Model Loss" << std::endl;
-    std::cout << network.model_loss << std::endl;
+    std::cout << network1.model_loss << std::endl;
 
     // Print the weights of the hidden layers
     print("Final Layer Parameters Starting from First Hidden Layer");
-    for (size_t i = 0; i < network.num_hidden_layers; i++) {
-        printMatrix(network.layers[i].getWeightsMatrix());
+    for (size_t i = 0; i < network1.num_hidden_layers; i++) {
+        printMatrix(network1.layers[i].getWeightsMatrix());
     }
 
+    // fit the model
+    network2.fit(features, labels);
 
-    return 0;
-}
+    //Evaluate the model
+    predictions = network2.feedForward(features);
 
-int main1(){
-    std::vector<std::vector<double>> m1 = {
-        {1, 2},
-        {3, 4}};
-    std::vector<std::vector<double>> m2 = {
-        {1, 2, 4},
-        {3, 4, 6},
-        {1, 2, 3}};
+    printPredictionsVSLabels(predictions, labels);
 
-    std::vector<double> vector = flattenMatrix(m2);
-    for (double d : vector)
-    {
-        std::cout << d << std::endl;
+    std::cout << "Trained Model Loss" << std::endl;
+    std::cout << network2.model_loss << std::endl;
+
+    // Print the weights of the hidden layers
+    print("Final Layer Parameters Starting from First Hidden Layer");
+    for (size_t i = 0; i < network2.num_hidden_layers; i++) {
+        printMatrix(network2.layers[i].getWeightsMatrix());
     }
 
     return 0;
