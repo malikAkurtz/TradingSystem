@@ -186,12 +186,14 @@ void GradientDescentOptimizer::fit(NeuralNetwork &thisNetwork, const std::vector
     std::vector<std::vector<std::vector<double>>> gradient_J; 
     
     // for every epoc h
-    for (int e = 0; e < this->num_epochs; e++) {
+    for (int e = 0; e < this->num_epochs; e++) 
+    {
         printDebug("--------------------NEW EPOCH--------------------");
         double epoch_accumulated_loss = 0;
         double epoch_accumulated_gradient = 0;
         // for every sample in the data set
-        for (int i = 0; i < num_batches; i++) {
+        for (int i = 0; i < num_batches; i++) 
+        {
             // we are going to find the gradient of the loss of this particular sample with each layers weights
             gradient_J.clear();
 
@@ -281,7 +283,9 @@ void GradientDescentOptimizer::fit(NeuralNetwork &thisNetwork, const std::vector
             if (prev_hidden_layer_index >= 0) {
                 // get the previous layers activations
                 A_prev_activation_with_bias = thisNetwork.layers[prev_hidden_layer_index].getActivationOutputs();
-            } else{
+            } 
+            else
+            {
                 // this would just be 1 input layer, 1 output layer NN
                 // otherwise we just retreive the input layers activations which were just the inputs into the network
                 A_prev_activation_with_bias = thisNetwork.inputLayer.getInputs();
@@ -310,7 +314,8 @@ void GradientDescentOptimizer::fit(NeuralNetwork &thisNetwork, const std::vector
 
             // for every hidden layer
             // if this is negative this means that there arent layers to propogate through (i.e a two layer network)
-            for (int j = prev_hidden_layer_index; j >= 0; j--) {
+            for (int j = prev_hidden_layer_index; j >= 0; j--) 
+            {
                 /*
                 For any hidden layer l, 
                 ∂J/∂Wˡ = δˡ * (Aˡ⁻¹)ᵀ,
@@ -338,11 +343,13 @@ void GradientDescentOptimizer::fit(NeuralNetwork &thisNetwork, const std::vector
                 printDebug("δˡ");
                 printMatrixDebug(error_term);
 
-                if (j == 0) { // need to get input layer outputs
+                if (j == 0) 
+                { // need to get input layer outputs
                     A_prev_activation_with_bias = thisNetwork.inputLayer.getInputs();
-                } else {
+                } 
+                else 
+                {
                     A_prev_activation_with_bias = thisNetwork.layers[j-1].getActivationOutputs();
-                    
                 }
 
                 std::vector<double> ones_to_append(A_prev_activation_with_bias[0].size(), 1);
@@ -371,13 +378,14 @@ void GradientDescentOptimizer::fit(NeuralNetwork &thisNetwork, const std::vector
             // norm of gradient for this particular sample
             double gradient_sum_of_sub_gradients = 0;
             // for every gradient matrix in the vector of gradients
-            for (int i = 0; i < gradient_J.size(); i++) {
+            for (int i = 0; i < gradient_J.size(); i++) 
+            {
                 gradient_sum_of_sub_gradients += calculateMatrixEuclideanNorm(gradient_J[i]);
             }
             epoch_accumulated_gradient += gradient_sum_of_sub_gradients;
 
             printDebug("------------------------END EPOCH-------------------------------");
-                    }
+        }
         // mean squarred error for this epoch
         double epoch_Loss = epoch_accumulated_loss / num_samples; 
         epoch_losses.push_back(epoch_Loss);
@@ -391,11 +399,16 @@ void GradientDescentOptimizer::fit(NeuralNetwork &thisNetwork, const std::vector
 
 double GradientDescentOptimizer::calculateLoss(const std::vector<double> &predictions, const std::vector<double> &labels)
 {
-    if (this->loss_function == SQUARRED_ERROR) {
+    if (this->loss_function == SQUARRED_ERROR) 
+    {
         return LossFunctions::vectorizedModifiedSquarredError(predictions, labels);
-    } else if (this->loss_function == BINARY_CROSS_ENTROPY) {
+    } 
+    else if (this->loss_function == BINARY_CROSS_ENTROPY) 
+    {
         return LossFunctions::vectorizedLogLoss(predictions, labels);
-    } else {
+    } 
+    else 
+    {
         throw std::invalid_argument("NO LOSS FUNCTION SELECTED");
     }
 }

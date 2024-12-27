@@ -23,7 +23,7 @@ NeuralNetwork::NeuralNetwork(const NeuralNetwork& baseNN, const std::vector<doub
     this->num_hidden_layers = 0;
     this->layers.clear();
 
-    int num_neurons_input_layer = baseNN.inputLayer.inputNeurons.size();
+    int num_neurons_input_layer = baseNN.inputLayer.input_neurons.size();
 
     this->inputLayer = InputLayer(num_neurons_input_layer);
 
@@ -33,7 +33,7 @@ NeuralNetwork::NeuralNetwork(const NeuralNetwork& baseNN, const std::vector<doub
     {   
         int num_neurons_in_this_layer = base_layer.neurons.size();
 
-        Layer new_layer = Layer(num_neurons_in_this_layer, num_neurons_in_previous_layer, base_layer.AFtype, base_layer.initalization);
+        Layer new_layer = Layer(num_neurons_in_this_layer, num_neurons_in_previous_layer, base_layer.activation_function, base_layer.neuron_initalization);
 
         for (int i = 0; i < num_neurons_in_this_layer; i++)
         {
@@ -157,7 +157,7 @@ std::vector<double> NeuralNetwork::getNetworkEncoding() const
 
 void NeuralNetwork::setEncoding(std::vector<double> encoding)
 {
-    int num_neurons_prev_layer = this->inputLayer.inputNeurons.size();
+    int num_neurons_prev_layer = this->inputLayer.input_neurons.size();
     this->inputLayer = InputLayer(num_neurons_prev_layer);
 
     int encoding_index = 0;

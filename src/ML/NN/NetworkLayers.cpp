@@ -10,7 +10,7 @@ InputLayer::InputLayer() {}
 InputLayer::InputLayer(int num_features) {
     for (int i = 0; i < num_features; ++i) {
         InputNeuron neuron;
-        this->inputNeurons.push_back(neuron);
+        this->input_neurons.push_back(neuron);
     }
 }
 
@@ -23,7 +23,7 @@ void InputLayer::storeInputs(std::vector<std::vector<double>> input_matrix) {
 }
 
 void InputLayer::addNeuron(InputNeuron inputNeuron) {
-    this->inputNeurons.push_back(inputNeuron);
+    this->input_neurons.push_back(inputNeuron);
 }
 
 
@@ -33,14 +33,16 @@ void InputLayer::addNeuron(InputNeuron inputNeuron) {
 
 
 // Layer Constructor
-Layer::Layer(int num_neurons, int num_inputs, ActivationFunctionType AFtype, NeuronInitializationType NItype) : AFtype(AFtype), initalization(NItype) {
+Layer::Layer(int num_neurons, int num_inputs, ActivationFunctionType activation_function, NeuronInitializationType neuron_initialization) : activation_function(activation_function), neuron_initalization(neuron_initialization) 
+{
     for (int i = 0; i < num_neurons; ++i) {
-        Neuron neuron(num_inputs + 1, NItype); // Including bias
+        Neuron neuron(num_inputs + 1, neuron_initialization); // Including bias
         this->addNeuron(neuron);
     }
 }
 
-void Layer::calculateLayerOutputs(std::vector<std::vector<double>> input_matrix) {
+void Layer::calculateLayerOutputs(std::vector<std::vector<double>> input_matrix) 
+{
     int num_columns = input_matrix[0].size();
     std::vector<double> ones_to_append(num_columns, 1);
 
@@ -48,13 +50,13 @@ void Layer::calculateLayerOutputs(std::vector<std::vector<double>> input_matrix)
     // printDebug("Weights lool like");
     // printMatrixDebug(this->getWeightsMatrix());
     this->pre_activation_outputs = (matrixMultiply(this->getWeightsMatrix(), input_matrix));
-    if (AFtype == RELU) {
+    if (activation_function == RELU) {
         this->activation_outputs = matrix_ReLU(this->pre_activation_outputs);
         this->derivative_activation_outputs = matrix_d_ReLU(this->pre_activation_outputs);
-        } else if(AFtype == SIGMOID) {
+        } else if(activation_function == SIGMOID) {
         this->activation_outputs = matrix_sigmoid(this->pre_activation_outputs);
         this->derivative_activation_outputs = matrix_d_sigmoid(this->pre_activation_outputs);
-    } else if (AFtype == NONE) {
+    } else if (activation_function == NONE) {
         this->activation_outputs = this->pre_activation_outputs;
         this->derivative_activation_outputs = createOnesMatrix(this->pre_activation_outputs.size(), this->pre_activation_outputs[0].size());
     }
@@ -95,20 +97,21 @@ void Layer::addNeuron(Neuron neuron) {
     this->neurons.push_back(neuron);
 }
 
-void Layer::updateNeuronWeights(std::vector<std::vector<double>> gradient_matrix, float LR) {
-        for (int i = 0; i < gradient_matrix.size(); i++) {
-            for (int j = 0; j < gradient_matrix[i].size(); j++) {
-                this->neurons[i].weights[j] -=(LR * gradient_matrix[i][j]);
-            }
+void Layer::updateNeuronWeights(std::vector<std::vector<double>> gradient_matrix, float LR) 
+{
+    for (int i = 0; i < gradient_matrix.size(); i++) {
+        for (int j = 0; j < gradient_matrix[i].size(); j++) {
+            this->neurons[i].weights[j] -=(LR * gradient_matrix[i][j]);
         }
+    }
 }
 
 void Layer::reInitializeNeurons()
 {
     for (Neuron neuron : neurons)
     {
-        neuron.reInitializeWeights(this->initalization);
+        neuron.reInitializeWeights(this->neuron_initalization);
     }
 }
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
