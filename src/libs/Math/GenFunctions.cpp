@@ -112,3 +112,12 @@ std::vector<std::vector<std::vector<double>>> createBatches(const std::vector<st
     return batches;
 }
 
+std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>> splitData( std::vector<std::vector<double>> data, float split_ratio)
+{
+    int split_index = split_ratio * data.size();
+
+    std::vector<std::vector<double>> train_data(data.begin(), data.begin() + split_index);
+    std::vector<std::vector<double>> test_data(data.begin() + split_index, data.end());
+
+    return {train_data, test_data};
+}

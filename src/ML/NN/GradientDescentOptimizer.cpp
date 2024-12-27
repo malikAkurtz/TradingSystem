@@ -232,6 +232,7 @@ void GradientDescentOptimizer::fit(NeuralNetwork &thisNetwork, const std::vector
         gradient_norms.push_back(average_gradient);
 
         std::cout << "Epoch: " << e << " Loss: " << epoch_Loss << " | Average Gradient: " << average_gradient << std::endl;
+        std::cout.flush();
     }
 }
 

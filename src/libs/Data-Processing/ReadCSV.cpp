@@ -96,7 +96,7 @@ std::vector<std::vector<double>> parseCSV(std::string file_name) {
             }
 
             try {
-                rowValues.push_back(std::stof(cell));
+                rowValues.push_back(std::stod(cell));
             } catch (const std::invalid_argument& e) {
             }
             col++;

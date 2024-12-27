@@ -1,5 +1,5 @@
 1.) need to drop the bias contributioin in the last layers partial derivative??????
-2.) double check loss calculations
+2.) double check loss calculations (working for binary classification, not really for mse)
 3.) implemenet xavier initialization
 
 

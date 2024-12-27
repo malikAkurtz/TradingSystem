@@ -11,5 +11,6 @@ double calculateSTD(const std::vector<double>& v1);
 std::vector<std::vector<double>> normalizeData(const std::vector<std::vector<double>>& dataMatrix);
 double calculateMSE_Simple(const std::vector<double>& predictions, const std::vector<double>& labels);
 std::vector<std::vector<std::vector<double>>> createBatches(const std::vector<std::vector<double>> &features, int batchSize);
+std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>> splitData( std::vector<std::vector<double>> data, float split_ratio);
 
 #endif

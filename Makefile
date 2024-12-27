@@ -1,6 +1,6 @@
 # Compiler and Flags
 CXX = g++
-CXXFLAGS = -std=c++17 -Wall -Iinclude -Iinclude/libs -Iinclude/libs/Math -Iinclude/libs/Data-Processing -Iinclude/ML -Iinclude/ML/NN -I/opt/homebrew/include -I/opt/homebrew/include/SDL2
+CXXFLAGS = -std=c++17 -Wall -Iinclude -Iinclude/libs -Iinclude/libs/Math -Iinclude/libs/Data-Processing -Iinclude/ML -Iinclude/ML/NN -I/opt/homebrew/include -I/opt/homebrew/include/SDL2 -Idata
 
 
 LDFLAGS = -L/opt/homebrew/lib -lSDL2 -lSDL2_ttf
