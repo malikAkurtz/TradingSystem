@@ -22,8 +22,8 @@ void InputLayer::storeInputs(std::vector<std::vector<double>> input_matrix) {
     this->inputs = input_matrix;
 }
 
-void InputLayer::addNeuron(InputNeuron inputNeuron) {
-    this->input_neurons.push_back(inputNeuron);
+void InputLayer::addNeuron(InputNeuron input_neuron) {
+    this->input_neurons.push_back(input_neuron);
 }
 
 
@@ -50,13 +50,18 @@ void Layer::calculateLayerOutputs(std::vector<std::vector<double>> input_matrix)
     // printDebug("Weights lool like");
     // printMatrixDebug(this->getWeightsMatrix());
     this->pre_activation_outputs = (matrixMultiply(this->getWeightsMatrix(), input_matrix));
-    if (activation_function == RELU) {
+    if (activation_function == RELU) 
+    {
         this->activation_outputs = matrix_ReLU(this->pre_activation_outputs);
         this->derivative_activation_outputs = matrix_d_ReLU(this->pre_activation_outputs);
-        } else if(activation_function == SIGMOID) {
+    } 
+    else if (activation_function == SIGMOID) 
+    {
         this->activation_outputs = matrix_sigmoid(this->pre_activation_outputs);
         this->derivative_activation_outputs = matrix_d_sigmoid(this->pre_activation_outputs);
-    } else if (activation_function == NONE) {
+    } 
+    else if (activation_function == NONE) 
+    {
         this->activation_outputs = this->pre_activation_outputs;
         this->derivative_activation_outputs = createOnesMatrix(this->pre_activation_outputs.size(), this->pre_activation_outputs[0].size());
     }
@@ -85,7 +90,7 @@ std::vector<std::vector<double>> Layer::getWeightsMatrix() {
         // {
         //     printDebug(theweights[i]);
         // }
-        weights_matrix.push_back(neurons[i].getWeights());
+        weights_matrix.push_back(neurons[i].weights);
     }
 
     // print("SO weights matrix is");

@@ -23,11 +23,6 @@ public:
     // Constructor to initialize weights to a default value
     explicit Neuron(int num_weights, NeuronInitializationType initialization_type);
 
-    // Getter for weights
-    std::vector<double> getWeights() const;
-
-    // Setter for weights
-    void setWeights(const std::vector<double>& new_weights);
 
     void reInitializeWeights(NeuronInitializationType initialization_type);
 };
