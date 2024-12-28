@@ -2,6 +2,7 @@
 #include "ActivationFunctionTypes.h"
 #include "ActivationFunctions.h"
 #include <vector>
+#include <map>
 
 struct Connection
 {
@@ -77,25 +78,71 @@ public:
 class NeuralNetwork
 {
 public:
-    std::vector<Layer> layer;
+    std::vector<Layer> layers;
 
     NeuralNetwork(Genome genome)
     {   
-        // start by organizing nodes into layers
-        // an input layer is essentialy just a collection of nodes which have no incoming connections, defined by having an id of -1
-        Layer input_layer;
-        std::vector<Layer> hidden_layers;
-        Layer output_layer;
-        for (NodeGene node_gene : genome.node_genes)
+        std::vector<int> input_layer_ids;
+        std::vector<int> output_layer_ids;
+
+        std::map<int, Node> id_to_node;
+        std::map<int, int> id_to_depth;
+
+        // for every node in the NodeGene sequence of the genome
+        for (const NodeGene& node_gene : genome.node_genes)
         {
-            if (node_gene.node_type == INPUT)
+            // add it to the map which maps ids to nodes
+            id_to_node[node_gene.node_id] = Node(node_gene);
+            // create a reference to the node
+            Node &this_node = id_to_node[node_gene.node_id];
+
+            id_to_depth[this_node.node_id] = 0; // intialize its depth to zero
+
+        }
+
+        calculateLayerDepths(genome, id_to_depth);
+
+        Layer input_layer;
+        layers.push_back(input_layer);
+        int num_layers = 0;
+        for (const auto &[key, value] : id_to_depth)
+        {
+            if (value == num_layers)
             {
-                input_layer.nodes.emplace_back(Node(node_gene));
+                layers[num_layers].nodes.push_back(id_to_node[key]);
             }
-            else if (node_gene.node_type == OUTPUT)
+            else
             {
-                output_layer.nodes.emplace_back(Node(node_gene));
+                layers.emplace_back(Layer());
+                num_layers++;
+                layers[num_layers].nodes.push_back(id_to_node[key]);
+            }
+            
+        }
+        }
+
+    void calculateLayerDepths(const Genome& genome, std::map<int, int>& id_to_depth)
+    {
+        bool change_occurred = true;
+
+        while (change_occurred)
+        {
+            change_occurred = false;
+            for (const ConnectionGene &connection_gene : genome.connection_genes)
+            {
+                int conn_node_out = connection_gene.node_out;
+                int conn_node_in = connection_gene.node_in;
+
+                int prev_conn_node_out_depth = id_to_depth[conn_node_out];
+
+                id_to_depth[conn_node_out] = std::max(id_to_depth[conn_node_out], id_to_depth[conn_node_in] + 1);
+
+                if (prev_conn_node_out_depth < id_to_depth[conn_node_out])
+                {
+                    change_occurred = true;
+                }
             }
         }
+
     }
 };

@@ -23,7 +23,7 @@ void evaluateModel(NeuralNetwork& network, const std::vector<std::vector<double>
 }
 
 
-int main() {
+int main1() {
     // Seed for random
     srand(static_cast<unsigned int>(time(0)));
 
@@ -95,5 +95,11 @@ int main() {
     evaluateModel(network1, X_val, Y_val);
     evaluateModel(network2, X_val, Y_val);
 
+    return 0;
+}
+
+int main()
+{
+    
     return 0;
 }
