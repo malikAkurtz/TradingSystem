@@ -4,6 +4,8 @@
 #include <vector>
 #include <random>
 #include "NeuronInitializationType.h"
+#include "NodeType.h"
+#include "ActivationFunctionTypes.h"
 
 // InputNeuron Class
 class InputNeuron {
@@ -17,7 +19,7 @@ public:
 // Neuron Class
 class Neuron {
 public:
-    // Member variable
+    // For GD and NE
     std::vector<double> weights;
 
     // Constructor to initialize weights to a default value
