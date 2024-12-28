@@ -3,11 +3,11 @@
 
 #include <vector>
 #include <memory>
-#include "Neuron.h"
+#include "Node.h"
 #include "LinearAlgebra.h"
 #include "GenFunctions.h"
 #include "ActivationFunctions.h"
-#include "NeuronInitializationType.h"
+#include "NodeInitializationType.h"
 #include "ActivationFunctionTypes.h"
 
 
@@ -17,7 +17,7 @@
 // Input Layer Class
 class InputLayer {
 public:
-    std::vector<InputNeuron> input_neurons;
+    std::vector<InputNode> input_nodes;
     std::vector<std::vector<double>> inputs;
 
     explicit InputLayer();
@@ -30,9 +30,8 @@ public:
     void storeInputs(std::vector<std::vector<double>> input_vector);
 
 
-    void addNeuron(InputNeuron neuron);
+    void addNode(InputNode node);
 };
-
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -41,16 +40,16 @@ public:
 // Layer Class
 class Layer {
     public:
-    std::vector<Neuron> neurons;
+    std::vector<Node> nodes;
     ActivationFunctionType activation_function;
-    NeuronInitializationType neuron_initalization;
+    NodeInitializationType node_initalization;
     std::vector<std::vector<double>> pre_activation_outputs;
     std::vector<std::vector<double>> activation_outputs;
     std::vector<std::vector<double>> derivative_activation_outputs;
     
 
     // Constructor
-    Layer(int num_neurons, int num_inputs, ActivationFunctionType activation_function, NeuronInitializationType neuron_initalization);
+    Layer(int num_nodes, int num_inputs, ActivationFunctionType activation_function, NodeInitializationType node_initalization);
 
     // Calculate outputs for the hidden layer
     void calculateLayerOutputs(std::vector<std::vector<double>> input_vector);
@@ -66,11 +65,11 @@ class Layer {
     // Getter for weights matrix
     std::vector<std::vector<double>> getWeightsMatrix();
 
-    void addNeuron(Neuron neuron);
+    void addNode(Node node);
 
-    void updateNeuronWeights(std::vector<std::vector<double>> gradient_matrix, float learning_rate);
+    void updateNodeWeights(std::vector<std::vector<double>> gradient_matrix, float learning_rate);
 
-    void reInitializeNeurons();
+    void reInitializeNodes();
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

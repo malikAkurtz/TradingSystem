@@ -1,33 +1,33 @@
-#ifndef NEURON_H
-#define NEURON_H
+#ifndef NODE_H
+#define NODE_H
 
 #include <vector>
 #include <random>
-#include "NeuronInitializationType.h"
+#include "NodeInitializationType.h"
 #include "NodeType.h"
 #include "ActivationFunctionTypes.h"
 
 // InputNeuron Class
-class InputNeuron {
+class InputNode {
 public:
     // Default constructor
-    InputNeuron();
+    InputNode();
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // Neuron Class
-class Neuron {
+class Node {
 public:
-    // For GD and NE
+    
     std::vector<double> weights;
 
     // Constructor to initialize weights to a default value
-    explicit Neuron(int num_weights, NeuronInitializationType initialization_type);
+    explicit Node(int num_weights, NodeInitializationType initialization_type);
 
 
-    void reInitializeWeights(NeuronInitializationType initialization_type);
+    void reInitializeWeights(NodeInitializationType initialization_type);
 };
 
 
-#endif // NEURON_H
+#endif

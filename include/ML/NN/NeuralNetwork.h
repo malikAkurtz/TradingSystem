@@ -29,7 +29,7 @@ public:
     void fit(const std::vector<std::vector<double>>& features_matrix, const std::vector<std::vector<double>>& labels);
     std::vector<std::vector<double>> feedForward(std::vector<std::vector<double>> features_matrix);
     void addInputLayer(int num_features);
-    void addLayer(int num_neurons, ActivationFunctionType activation_function, NeuronInitializationType neuron_initialization);
+    void addLayer(int num_nodes, ActivationFunctionType activation_function, NodeInitializationType node_initialization);
     void reInitializeLayers();
     std::vector<double> getNetworkEncoding() const;
     void setEncoding(std::vector<double> encoding);

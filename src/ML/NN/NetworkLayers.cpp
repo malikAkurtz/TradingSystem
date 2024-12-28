@@ -9,8 +9,8 @@ InputLayer::InputLayer() {}
 
 InputLayer::InputLayer(int num_features) {
     for (int i = 0; i < num_features; ++i) {
-        InputNeuron neuron;
-        this->input_neurons.push_back(neuron);
+        InputNode node;
+        this->input_nodes.push_back(node);
     }
 }
 
@@ -22,8 +22,8 @@ void InputLayer::storeInputs(std::vector<std::vector<double>> input_matrix) {
     this->inputs = input_matrix;
 }
 
-void InputLayer::addNeuron(InputNeuron input_neuron) {
-    this->input_neurons.push_back(input_neuron);
+void InputLayer::addNode(InputNode input_node) {
+    this->input_nodes.push_back(input_node);
 }
 
 
@@ -33,11 +33,11 @@ void InputLayer::addNeuron(InputNeuron input_neuron) {
 
 
 // Layer Constructor
-Layer::Layer(int num_neurons, int num_inputs, ActivationFunctionType activation_function, NeuronInitializationType neuron_initialization) : activation_function(activation_function), neuron_initalization(neuron_initialization) 
+Layer::Layer(int num_nodes, int num_inputs, ActivationFunctionType activation_function, NodeInitializationType node_initialization) : activation_function(activation_function), node_initalization(node_initialization) 
 {
-    for (int i = 0; i < num_neurons; ++i) {
-        Neuron neuron(num_inputs + 1, neuron_initialization); // Including bias
-        this->addNeuron(neuron);
+    for (int i = 0; i < num_nodes; ++i) {
+        Node node(num_inputs + 1, node_initialization); // Including bias
+        this->addNode(node);
     }
 }
 
@@ -83,14 +83,14 @@ std::vector<std::vector<double>> Layer::getWeightsMatrix() {
     // printDebug("Number of Neurons in layer");
     // printDebug(neurons.size());
     std::vector<std::vector<double>> weights_matrix;
-    for (int i = 0; i < neurons.size(); i++) {
+    for (int i = 0; i < nodes.size(); i++) {
         // printDebug("This Neurons Weights");
         // std::vector<double> theweights = neurons[i].getWeights();
         // for (int m = 0; m < theweights.size(); m++)
         // {
         //     printDebug(theweights[i]);
         // }
-        weights_matrix.push_back(neurons[i].weights);
+        weights_matrix.push_back(nodes[i].weights);
     }
 
     // print("SO weights matrix is");
@@ -98,24 +98,24 @@ std::vector<std::vector<double>> Layer::getWeightsMatrix() {
     return weights_matrix;
 }
 
-void Layer::addNeuron(Neuron neuron) {
-    this->neurons.push_back(neuron);
+void Layer::addNode(Node node) {
+    this->nodes.push_back(node);
 }
 
-void Layer::updateNeuronWeights(std::vector<std::vector<double>> gradient_matrix, float LR) 
+void Layer::updateNodeWeights(std::vector<std::vector<double>> gradient_matrix, float LR) 
 {
     for (int i = 0; i < gradient_matrix.size(); i++) {
         for (int j = 0; j < gradient_matrix[i].size(); j++) {
-            this->neurons[i].weights[j] -=(LR * gradient_matrix[i][j]);
+            this->nodes[i].weights[j] -=(LR * gradient_matrix[i][j]);
         }
     }
 }
 
-void Layer::reInitializeNeurons()
+void Layer::reInitializeNodes()
 {
-    for (Neuron neuron : neurons)
+    for (Node node : nodes)
     {
-        neuron.reInitializeWeights(this->neuron_initalization);
+        node.reInitializeWeights(this->node_initalization);
     }
 }
 

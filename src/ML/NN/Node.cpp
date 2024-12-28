@@ -1,15 +1,15 @@
-#include "Neuron.h"
+#include "Node.h"
 
 
 // InputNeuron Definitions
-InputNeuron::InputNeuron() {}
+InputNode::InputNode() {}
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 // Neuron Definitions
-Neuron::Neuron(int num_weights, NeuronInitializationType initialization_type) 
+Node::Node(int num_weights, NodeInitializationType initialization_type) 
 {
     if (initialization_type == RANDOM) 
     {
@@ -25,7 +25,7 @@ Neuron::Neuron(int num_weights, NeuronInitializationType initialization_type)
     }
 }
 
-void Neuron::reInitializeWeights(NeuronInitializationType initialization_type)
+void Node::reInitializeWeights(NodeInitializationType initialization_type)
 {
     if (initialization_type == RANDOM) 
     {

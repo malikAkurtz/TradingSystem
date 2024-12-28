@@ -23,30 +23,30 @@ NeuralNetwork::NeuralNetwork(const NeuralNetwork& base_NN, const std::vector<dou
     this->num_hidden_layers = 0;
     this->layers.clear();
 
-    int num_neurons_input_layer = base_NN.input_layer.input_neurons.size();
+    int num_nodes_input_layer = base_NN.input_layer.input_nodes.size();
 
-    this->input_layer = InputLayer(num_neurons_input_layer);
+    this->input_layer = InputLayer(num_nodes_input_layer);
 
-    int num_neurons_in_previous_layer = num_neurons_input_layer;
+    int num_nodes_in_previous_layer = num_nodes_input_layer;
     int encoding_index = 0;
     for (Layer base_layer : base_NN.layers)
     {   
-        int num_neurons_in_this_layer = base_layer.neurons.size();
+        int num_nodes_in_this_layer = base_layer.nodes.size();
 
-        Layer new_layer = Layer(num_neurons_in_this_layer, num_neurons_in_previous_layer, base_layer.activation_function, base_layer.neuron_initalization);
+        Layer new_layer = Layer(num_nodes_in_this_layer, num_nodes_in_previous_layer, base_layer.activation_function, base_layer.node_initalization);
 
-        for (int i = 0; i < num_neurons_in_this_layer; i++)
+        for (int i = 0; i < num_nodes_in_this_layer; i++)
         {
-            for (int j = 0; j < (num_neurons_in_previous_layer+1); j++) // need to include the bias here
+            for (int j = 0; j < (num_nodes_in_previous_layer+1); j++) // need to include the bias here
             {
 
-                new_layer.neurons[i].weights[j] = encoding[encoding_index++];
+                new_layer.nodes[i].weights[j] = encoding[encoding_index++];
             }
         }
 
         this->layers.push_back(new_layer);
         this->num_hidden_layers += 1;
-        num_neurons_in_previous_layer = new_layer.neurons.size();
+        num_nodes_in_previous_layer = new_layer.nodes.size();
     }
 }
 
@@ -126,10 +126,10 @@ void NeuralNetwork::addInputLayer(int num_features) {
     this->layer_sizes.push_back(num_features);
 }
 
-void NeuralNetwork::addLayer(int num_neurons, ActivationFunctionType activation_function, NeuronInitializationType neuron_initialization) 
+void NeuralNetwork::addLayer(int num_nodes, ActivationFunctionType activation_function, NodeInitializationType neuron_initialization) 
 {
-    this->layers.emplace_back(Layer(num_neurons, this->layer_sizes.back(), activation_function, neuron_initialization));
-    this->layer_sizes.push_back(num_neurons);
+    this->layers.emplace_back(Layer(num_nodes, this->layer_sizes.back(), activation_function, neuron_initialization));
+    this->layer_sizes.push_back(num_nodes);
     this->num_hidden_layers += 1;
 }
 
@@ -138,7 +138,7 @@ void NeuralNetwork::reInitializeLayers()
 {
     for (Layer layer : this->layers)
     {
-        layer.reInitializeNeurons();
+        layer.reInitializeNodes();
     }
 }
 
@@ -157,22 +157,22 @@ std::vector<double> NeuralNetwork::getNetworkEncoding() const
 
 void NeuralNetwork::setEncoding(std::vector<double> encoding)
 {
-    int num_neurons_prev_layer = this->input_layer.input_neurons.size();
-    this->input_layer = InputLayer(num_neurons_prev_layer);
+    int num_nodes_prev_layer = this->input_layer.input_nodes.size();
+    this->input_layer = InputLayer(num_nodes_prev_layer);
 
     int encoding_index = 0;
     for (int n = 0; n < this->layers.size(); n++)
     {   
-        int num_neurons_cur_layer = this->layers[n].neurons.size();
+        int num_nodes_cur_layer = this->layers[n].nodes.size();
 
-        for (int i = 0; i < num_neurons_cur_layer; i++)
+        for (int i = 0; i < num_nodes_cur_layer; i++)
         {
-            for (int j = 0; j < (num_neurons_prev_layer+1); j++)
+            for (int j = 0; j < (num_nodes_prev_layer+1); j++)
             {
-                this->layers[n].neurons[i].weights[j] = encoding[encoding_index++];
+                this->layers[n].nodes[i].weights[j] = encoding[encoding_index++];
             }
         }
 
-        num_neurons_prev_layer = num_neurons_cur_layer;
+        num_nodes_prev_layer = num_nodes_cur_layer;
     }
 }

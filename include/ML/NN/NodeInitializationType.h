@@ -1,7 +1,7 @@
 #ifndef INIT_TYPE
 #define INIT_TYPE
 
-enum NeuronInitializationType {
+enum NodeInitializationType {
     CONSTANT,
     XAVIER,
     RANDOM

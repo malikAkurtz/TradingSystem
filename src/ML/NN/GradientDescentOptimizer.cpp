@@ -210,7 +210,7 @@ void GradientDescentOptimizer::fit(NeuralNetwork &thisNetwork, const std::vector
             for (int m = 0; m < thisNetwork.num_hidden_layers; m++) 
             {
                 int gradient_index = gradient_J.size() - 1 - m;
-                thisNetwork.layers[m].updateNeuronWeights(gradient_J[gradient_index], this->learning_rate);
+                thisNetwork.layers[m].updateNodeWeights(gradient_J[gradient_index], this->learning_rate);
             }
 
             // norm of gradient for this particular sample
