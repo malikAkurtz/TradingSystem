@@ -2,6 +2,17 @@
 
 namespace ActivationFunctions
 {
+    double ReLU(double value)
+    {
+        if (value >= 0) 
+        {
+            return value;
+        }
+        else
+        {
+            return 0;
+        }
+    }
     std::vector<std::vector<double>> matrix_ReLU(const std::vector<std::vector<double>> &v1)
     {
         int num_rows = v1.size();
