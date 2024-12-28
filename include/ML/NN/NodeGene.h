@@ -7,6 +7,8 @@ struct NodeGene
 {
     int node_id;
     NodeType node_type;
+
+    NodeGene(int node_id, NodeType node_type);
 };
 
 #endif

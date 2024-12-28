@@ -9,6 +9,8 @@ struct Genome
 {
     std::vector<ConnectionGene> connection_genes;
     std::vector<NodeGene> node_genes;
+
+    double feedForward(const std::vector<double>& inputs);
 };
 
 #endif
