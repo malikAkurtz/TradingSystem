@@ -30,16 +30,17 @@ int main() {
     // Parse CSV and specify label column
     std::vector<std::vector<double>> data = parseCSV("/Users/malikkurtz/Coding/TradingSystem/data/csv/Smarket.csv");
     int label_index = 6;
+    float ratio = 0.5;
 
-    float ratio = 0.1;
+
+
     int stop_index = data.size() * ratio;
-
     std::vector<std::vector<double>> data_shortened(data.begin(), data.begin() + stop_index);
     data = data_shortened;
 
     // IF WE JUST WANT TO USE SIMPLE DATA FROM TESTDATA.H
-    data = data2;
-    label_index = 1;
+    // data = data2;
+    // label_index = 1;
     // Separate labels from data before normalization
 
     std::vector<std::vector<double>> labels = vector1DtoColumnVector(getColumn(data, label_index));
