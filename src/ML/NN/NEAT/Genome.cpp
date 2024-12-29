@@ -10,6 +10,8 @@ void Genome::mutateAddConnection()
     NodeGene *node_gene_in;
     // pick random out node
     NodeGene* node_gene_out;
+
+    std::map<int, int> id_to_depth = this->calculateLayerDepths();
     bool connection_exists = false;
     do
     {
@@ -32,7 +34,7 @@ void Genome::mutateAddConnection()
         {
             return; // coudlnt find a valid place to put a connection
         }
-    } while ((node_gene_in->node_type == OUTPUT) || (node_gene_in->node_id == node_gene_out->node_id) || (node_gene_out->node_type == INPUT) || connection_exists);
+    } while ((node_gene_in->node_type == OUTPUT) || (node_gene_in->node_id == node_gene_out->node_id) || (node_gene_out->node_type == INPUT) || connection_exists || id_to_depth[node_gene_in->node_id] >= id_to_depth[node_gene_out->node_id]);
 
     global_innovation_number++;
     int innovation_number = global_innovation_number;
@@ -45,6 +47,8 @@ void Genome::mutateAddNode()
 {   
     // 1.) pick a random existing connection
     ConnectionGene *random_connection_gene = &connection_genes[rand() % this->connection_genes.size()];
+
+    double prev_weight = random_connection_gene->weight;
     // disable the existing connection
     random_connection_gene->enabled = false;
 
@@ -64,10 +68,52 @@ void Genome::mutateAddNode()
 
     global_innovation_number++;
     // create the second connection gene
-    this->connection_genes.emplace_back(ConnectionGene(new_node_id, final_node_out, random_connection_gene->weight, true, global_innovation_number));
+    this->connection_genes.emplace_back(ConnectionGene(new_node_id, final_node_out, prev_weight, true, global_innovation_number));
 
 }
 
+std::map<int, int> Genome::calculateLayerDepths()
+{   
+    std::map<int, Node*> id_to_node;
+    std::map<int, int> id_to_depth;
+
+    // for every node in the NodeGene sequence of the genome
+    for (const NodeGene& node_gene : this->node_genes)
+    {
+        // add it to the map which maps ids to nodes
+        id_to_node[node_gene.node_id] = new Node(node_gene);
+
+        id_to_depth[node_gene.node_id] = 0; // intialize its depth to zero
+
+    }
+
+    bool change_occurred = true;
+
+    while (change_occurred)
+    {
+        change_occurred = false;
+        for (const ConnectionGene &connection_gene : connection_genes)
+        {   
+            int conn_node_in = connection_gene.node_in; 
+            int conn_node_out = connection_gene.node_out;
+            
+            int prev_conn_node_out_depth = id_to_depth[conn_node_out];
+
+            id_to_depth[conn_node_out] = std::max(id_to_depth[conn_node_out], id_to_depth[conn_node_in] + 1);
+
+            if (prev_conn_node_out_depth < id_to_depth[conn_node_out])
+            {
+                change_occurred = true;
+            }
+        }
+    }
+    for (auto& [id, node] : id_to_node)
+    {
+        delete node;
+    }
+
+    return id_to_depth;
+}
 
 std::string Genome::toString() const
 {

@@ -59,50 +59,35 @@ int main()
     print(genome.toString());
 
     genome.mutateAddNode();
+    genome.mutateAddConnection();
     genome.mutateAddNode();
     genome.mutateAddNode();
+    genome.mutateAddConnection();
     genome.mutateAddNode();
     genome.mutateAddNode();
+    genome.mutateAddConnection();
     genome.mutateAddNode();
     genome.mutateAddNode();
+    genome.mutateAddConnection();
     genome.mutateAddNode();
     genome.mutateAddNode();
+    genome.mutateAddConnection();
     genome.mutateAddNode();
     genome.mutateAddNode();
+    genome.mutateAddConnection();
     genome.mutateAddNode();
     genome.mutateAddNode();
+    genome.mutateAddConnection();
     genome.mutateAddNode();
     genome.mutateAddNode();
+    genome.mutateAddConnection();
     genome.mutateAddNode();
     genome.mutateAddNode();
+    genome.mutateAddConnection();
     genome.mutateAddNode();
     genome.mutateAddNode();
+    genome.mutateAddConnection();
     genome.mutateAddNode();
-    genome.mutateAddNode();
-    genome.mutateAddNode();
-    genome.mutateAddNode();
-    genome.mutateAddNode();
-    genome.mutateAddNode();
-    genome.mutateAddNode();
-    genome.mutateAddNode();
-    genome.mutateAddNode();
-    genome.mutateAddNode();
-    genome.mutateAddNode();
-    genome.mutateAddNode();
-    genome.mutateAddNode();
-    genome.mutateAddNode();
-    genome.mutateAddNode();
-    genome.mutateAddNode();
-    genome.mutateAddNode();
-    
-
-    // genome.mutateAddConnection();
-    // genome.mutateAddConnection();
-    // genome.mutateAddConnection();
-    // genome.mutateAddConnection();
-    // genome.mutateAddConnection();
-    // genome.mutateAddConnection();
-
 
     print(genome.toString());
 

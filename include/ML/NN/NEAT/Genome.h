@@ -6,6 +6,7 @@
 #include <ctime>
 #include <iostream>
 #include <fstream>
+#include <map>
 #include "InnovationNum.h"
 struct Genome
 {
@@ -17,6 +18,8 @@ struct Genome
     void mutateAddConnection();
 
     void mutateAddNode();
+
+    std::map<int, int> calculateLayerDepths();
 
     std::string toString() const;
 
