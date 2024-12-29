@@ -6,6 +6,7 @@
 #include <ctime>
 #include <iostream>
 #include <fstream>
+#include "InnovationNum.h"
 struct Genome
 {
     std::vector<ConnectionGene> connection_genes;

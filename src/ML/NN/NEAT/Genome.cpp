@@ -4,7 +4,8 @@
 Genome::Genome(std::vector<ConnectionGene> connection_genes, std::vector<NodeGene> node_genes) : connection_genes(connection_genes), node_genes(node_genes) {};
 
 void Genome::mutateAddConnection()
-{   
+{
+    int attempts = 100;
     // pick random in node
     NodeGene *node_gene_in;
     // pick random out node
@@ -22,12 +23,19 @@ void Genome::mutateAddConnection()
             if (connection_gene.node_in == node_gene_in->node_id && connection_gene.node_out == node_gene_out->node_id)
             {
                 connection_exists = true;
+                break;
                 std::cout << "Connection Already Exists, Finding Another" << std::endl;
             }
         }
+        attempts--;
+        if (attempts == 0) 
+        {
+            return; // coudlnt find a valid place to put a connection
+        }
     } while ((node_gene_in->node_type == OUTPUT) || (node_gene_in->node_id == node_gene_out->node_id) || (node_gene_out->node_type == INPUT) || connection_exists);
 
-    int innovation_number = connection_genes.back().innovation_number + 1;
+    global_innovation_number++;
+    int innovation_number = global_innovation_number;
 
     this->connection_genes.emplace_back(ConnectionGene(node_gene_in->node_id, node_gene_out->node_id, static_cast<double>(rand()) / RAND_MAX - 0.5, true, innovation_number));
     std::cout << "Added Connection" << std::endl;
@@ -50,11 +58,13 @@ void Genome::mutateAddNode()
     // create the node gene and add it
     this->node_genes.emplace_back(NodeGene(new_node_id, HIDDEN));
 
+    global_innovation_number++;
     // 3.) create connection gene to connect base_node_in to new_node_id
-    this->connection_genes.emplace_back(ConnectionGene(base_node_in, new_node_id, 1, true, connection_genes.back().innovation_number + 1));
+    this->connection_genes.emplace_back(ConnectionGene(base_node_in, new_node_id, 1, true, global_innovation_number));
 
+    global_innovation_number++;
     // create the second connection gene
-    this->connection_genes.emplace_back(ConnectionGene(new_node_id, final_node_out, random_connection_gene->weight, true, connection_genes.back().innovation_number + 1));
+    this->connection_genes.emplace_back(ConnectionGene(new_node_id, final_node_out, random_connection_gene->weight, true, global_innovation_number));
 
 }
 
