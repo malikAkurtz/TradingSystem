@@ -5,6 +5,7 @@ bool DEBUG = false;
 
 int main()
 {
+    srand(time(0)); 
 
     NodeGene ng1(1, INPUT);
     NodeGene ng2(2, INPUT);
@@ -23,6 +24,16 @@ int main()
     std::vector<ConnectionGene> connection_genes = {cg1, cg2, cg3, cg4, cg5, cg6};
 
     Genome genome(connection_genes, node_genes);
+
+    print(genome.toString());
+
+    genome.mutateAddConnection();
+    genome.mutateAddNode();
+  
+
+    genome.saveToDotFile("genome_graph.dot");
+
+    print(genome.toString());
 
     NeuralNet network(genome);
 

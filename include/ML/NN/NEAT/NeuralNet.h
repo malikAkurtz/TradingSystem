@@ -31,6 +31,8 @@ public:
     // want to return a matrix where each row is the networks predictions for that sample
     // the matrix allows us to support batches
     std::vector<std::vector<double>> feedForward(const std::vector<std::vector<double>> &features_matrix);
+
+    void loadInputs(const std::vector<std::vector<double>>& features_matrix);
 };
 
 #endif

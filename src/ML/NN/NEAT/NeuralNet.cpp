@@ -10,7 +10,6 @@ NeuralNet::NeuralNet(Genome genome)
     {
         // add it to the map which maps ids to nodes
         this->id_to_node[node_gene.node_id] = new Node(node_gene);
-        // create a reference to the node
 
         id_to_depth[node_gene.node_id] = 0; // intialize its depth to zero
 
@@ -32,7 +31,7 @@ void NeuralNet::calculateLayerDepths(const std::vector<ConnectionGene>& connecti
         change_occurred = false;
         for (const ConnectionGene &connection_gene : connection_genes)
         {   
-            int conn_node_in = connection_gene.node_in;
+            int conn_node_in = connection_gene.node_in; 
             int conn_node_out = connection_gene.node_out;
             
             int prev_conn_node_out_depth = id_to_depth[conn_node_out];
@@ -82,25 +81,10 @@ void NeuralNet::assignConnectionstoNodes(const std::vector<ConnectionGene>& conn
 
 std::vector<std::vector<double>> NeuralNet::feedForward(const std::vector<std::vector<double>> &features_matrix)
 {
-    int num_features = features_matrix[0].size();
+    this->loadInputs(features_matrix);
+
     int last_layer_index = this->layers.size() - 1;
 
-    // for every feature column in the features_matrix
-    std::cout << "----------------------LOADING INPUTS----------------------" << std::endl;
-    for (int j = 0; j < num_features; j++)
-    {
-        std::cout << "Loading Feature: " << j << " Into Input Layer" << std::endl;
-        // save it
-        std::vector<double> feature_vector = LinearAlgebra::getColumn(features_matrix, j);
-        // store it in the input neurons in the input layer (layers index 0)
-        this->layers[0].nodes[j]->storeOutputs(feature_vector);
-    }
-    for (const auto& node : this->layers[0].nodes)
-    {
-        std::cout << "Input Node: " << node->node_id << " Has Output Vector" << std::endl;
-        printVector(node->outputs);
-    }
-    std::cout << "----------------------DONE LOADING INPUTS----------------------" << std::endl;
     std::vector<std::vector<double>> network_outputs;
 
     // starting at 1 to skip the input layer
@@ -137,6 +121,8 @@ std::vector<std::vector<double>> NeuralNet::feedForward(const std::vector<std::v
             {
                 node_output = LinearAlgebra::addVectors(node_output, vector);
             }
+            // apply acivation
+            node_output = this_layer.nodes[n]->applyActivation(node_output);
             std::cout << "After Summing All Vectors, Output is: " << std::endl;
             printVector(node_output);
             this_layer.nodes[n]->storeOutputs(node_output);
@@ -147,4 +133,25 @@ std::vector<std::vector<double>> NeuralNet::feedForward(const std::vector<std::v
         }
     }
     return network_outputs;
+}
+
+void NeuralNet::loadInputs(const std::vector<std::vector<double>>& features_matrix)
+{
+    int num_features = features_matrix[0].size();
+    // for every feature column in the features_matrix
+    std::cout << "----------------------LOADING INPUTS----------------------" << std::endl;
+    for (int j = 0; j < num_features; j++)
+    {
+        std::cout << "Loading Feature: " << j << " Into Input Layer" << std::endl;
+        // save it
+        std::vector<double> feature_vector = LinearAlgebra::getColumn(features_matrix, j);
+        // store it in the input neurons in the input layer (layers index 0)
+        this->layers[0].nodes[j]->storeOutputs(feature_vector);
+    }
+    for (const auto& node : this->layers[0].nodes)
+    {
+        std::cout << "Input Node: " << node->node_id << " Has Output Vector" << std::endl;
+        printVector(node->outputs);
+    }
+    std::cout << "----------------------DONE LOADING INPUTS----------------------" << std::endl;
 }

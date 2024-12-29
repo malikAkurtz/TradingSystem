@@ -2,3 +2,141 @@
 
 
 Genome::Genome(std::vector<ConnectionGene> connection_genes, std::vector<NodeGene> node_genes) : connection_genes(connection_genes), node_genes(node_genes) {};
+
+void Genome::mutateAddConnection()
+{   
+    // pick random in node
+    NodeGene *node_gene_in;
+    do {
+        node_gene_in = &node_genes[rand() % this->node_genes.size()];
+    } while (node_gene_in->node_type == OUTPUT);
+
+    // pick random out node
+    NodeGene* node_gene_out;
+    do {
+        node_gene_out = &node_genes[rand() % this->node_genes.size()];
+    } while (node_gene_in == node_gene_out || node_gene_out->node_type == INPUT);
+
+    int innovation_number = connection_genes.back().innovation_number + 1;
+
+    this->connection_genes.emplace_back(ConnectionGene(node_gene_in->node_id, node_gene_out->node_id, static_cast<double>(rand()) / RAND_MAX - 0.5, true, innovation_number));
+    std::cout << "Added Connection" << std::endl;
+}
+
+void Genome::mutateAddNode()
+{   
+    // 1.) pick a random existing connection
+    ConnectionGene *random_connection_gene = &connection_genes[rand() % this->connection_genes.size()];
+    // disable the existing connection
+    random_connection_gene->enabled = false;
+
+    // get in node
+    int base_node_in = random_connection_gene->node_in;
+    // get out node
+    int final_node_out = random_connection_gene->node_out;
+
+    // 2.) generate the new node_id
+    int new_node_id = node_genes.size() + 1;
+    // create the node gene and add it
+    this->node_genes.emplace_back(NodeGene(new_node_id, HIDDEN));
+
+    // 3.) create connection gene to connect base_node_in to new_node_id
+    this->connection_genes.emplace_back(ConnectionGene(base_node_in, new_node_id, 1, true, connection_genes.back().innovation_number + 1));
+
+    // create the second connection gene
+    this->connection_genes.emplace_back(ConnectionGene(new_node_id, final_node_out, random_connection_gene->weight, true, connection_genes.back().innovation_number + 1));
+
+}
+
+
+std::string Genome::toString() const
+{
+    std::string result = "Genome:\n";
+    
+    result += "NodeGenes:\n";
+    for (const auto& node : this->node_genes)
+    {
+        result += "  " + node.toString() + "\n";
+    }
+
+    result += "ConnectionGenes:\n";
+    for (const auto& connection : this->connection_genes)
+    {
+        result += "  " + connection.toString() + "\n";
+    }
+
+    return result;
+}
+
+
+
+std::string Genome::toGraphviz() const
+{
+    std::string result = "digraph Genome {\n";
+    result += "  rankdir=LR;\n"; // Arrange graph from left to right instead of top to bottom
+
+    // Group nodes into subgraphs for layers
+    result += "  {rank=same; Input; ";
+    for (const auto& node : this->node_genes)
+    {
+        if (node.node_type == INPUT)
+        {
+            result += std::to_string(node.node_id) + "; ";
+        }
+    }
+    result += "}\n";
+
+    result += "  {rank=same; Hidden; ";
+    for (const auto& node : this->node_genes)
+    {
+        if (node.node_type == HIDDEN)
+        {
+            result += std::to_string(node.node_id) + "; ";
+        }
+    }
+    result += "}\n";
+
+    result += "  {rank=same; Output; ";
+    for (const auto& node : this->node_genes)
+    {
+        if (node.node_type == OUTPUT)
+        {
+            result += std::to_string(node.node_id) + "; ";
+        }
+    }
+    result += "}\n";
+
+    // Add connections
+    for (const auto& connection : this->connection_genes)
+    {
+        if (connection.enabled)
+        {
+            result += "  " + std::to_string(connection.node_in) + " -> " + std::to_string(connection.node_out) +
+                      " [label=\"w: " + std::to_string(connection.weight) + "\"];\n";
+        }
+    }
+
+    result += "}\n";
+    return result;
+}
+
+
+
+
+void Genome::saveToDotFile(const std::string& filename) const
+{
+    std::ofstream file(filename); // Open file for writing
+    if (!file.is_open())
+    {
+        std::cerr << "Error: Could not open file " << filename << " for writing." << std::endl;
+        return;
+    }
+
+    // Generate the Graphviz-compatible dot content
+    std::string dotContent = this->toGraphviz();
+    
+    // Write the content to the file
+    file << dotContent;
+    file.close(); // Close the file
+    std::cout << "Graphviz content saved to " << filename << std::endl;
+}

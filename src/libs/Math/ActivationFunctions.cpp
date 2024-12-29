@@ -33,6 +33,19 @@ namespace ActivationFunctions
         return resultant;
     }
 
+    std::vector<double> vectorReLU(const std::vector<double>& v1)
+    {
+        std::vector<double> resultant = v1;
+        for (auto& value : resultant)
+        {
+            if (value < 0)
+            {
+                value = 0;
+            }
+        }
+        return resultant;
+    }
+
     std::vector<std::vector<double>> matrix_d_ReLU(const std::vector<std::vector<double>>& v1)
     {
         int num_rows = v1.size();
@@ -65,6 +78,17 @@ namespace ActivationFunctions
             for (int j = 0; j < num_cols; j++) {
                 resultant[i][j] = 1.0 / (1.0 + std::exp(-v1[i][j]));
             }
+        }
+
+        return resultant;
+    }
+
+    std::vector<double> vectorSigmoid(const std::vector<double>& v1)
+    {
+        std::vector<double> resultant = v1;
+        for (auto& value : resultant)
+        {
+            value = 1.0 / (1.0 + std::exp(-value));
         }
 
         return resultant;

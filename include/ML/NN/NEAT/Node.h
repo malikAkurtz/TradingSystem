@@ -13,6 +13,8 @@ struct NodeGene
     NodeType node_type;
 
     NodeGene(int node_id, NodeType node_type);
+
+    std::string toString() const;
 };
 
 class Node
@@ -32,9 +34,7 @@ public:
 
     void storeOutputs(std::vector<double> outputs);
 
-
+    std::vector<double> applyActivation(const std::vector<double> &pre_activation_outputs);
 };
-
-
 
 #endif
