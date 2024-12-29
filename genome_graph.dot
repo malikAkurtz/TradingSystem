@@ -1,13 +1,25 @@
 digraph Genome {
   rankdir=LR;
-  {rank=same; Input; 1; 2; 3; }
-  {rank=same; Hidden; 5; 6; }
-  {rank=same; Output; 4; }
+  subgraph cluster_0 {
+    label="Input Layer";
+    1;
+    2;
+    3;
+  }
+  subgraph cluster_1 {
+    label="Hidden Layer";
+    5;
+    6;
+  }
+  subgraph cluster_2 {
+    label="Output Layer";
+    4;
+  }
   1 -> 4 [label="w: 0.700000"];
   3 -> 4 [label="w: 0.500000"];
-  2 -> 5 [label="w: 0.200000"];
   5 -> 4 [label="w: 0.400000"];
-  5 -> 4 [label="w: -0.381149"];
-  1 -> 6 [label="w: 1.000000"];
-  6 -> 5 [label="w: 0.600000"];
+  1 -> 5 [label="w: 0.600000"];
+  3 -> 5 [label="w: -0.462646"];
+  2 -> 6 [label="w: 1.000000"];
+  6 -> 5 [label="w: 0.200000"];
 }

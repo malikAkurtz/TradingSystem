@@ -7,15 +7,25 @@ void Genome::mutateAddConnection()
 {   
     // pick random in node
     NodeGene *node_gene_in;
-    do {
-        node_gene_in = &node_genes[rand() % this->node_genes.size()];
-    } while (node_gene_in->node_type == OUTPUT);
-
     // pick random out node
     NodeGene* node_gene_out;
-    do {
+    bool connection_exists = false;
+    do
+    {
+        connection_exists = false;
+        node_gene_in = &node_genes[rand() % this->node_genes.size()];
+        std::cout << "Node Gene In Selected: " << node_gene_in->node_id << std::endl;
         node_gene_out = &node_genes[rand() % this->node_genes.size()];
-    } while (node_gene_in == node_gene_out || node_gene_out->node_type == INPUT);
+        std::cout << "Node Gene out Selected: " << node_gene_out->node_id << std::endl;
+        for (ConnectionGene connection_gene : connection_genes)
+        {
+            if (connection_gene.node_in == node_gene_in->node_id && connection_gene.node_out == node_gene_out->node_id)
+            {
+                connection_exists = true;
+                std::cout << "Connection Already Exists, Finding Another" << std::endl;
+            }
+        }
+    } while ((node_gene_in->node_type == OUTPUT) || (node_gene_in->node_id == node_gene_out->node_id) || (node_gene_out->node_type == INPUT) || connection_exists);
 
     int innovation_number = connection_genes.back().innovation_number + 1;
 
@@ -73,38 +83,43 @@ std::string Genome::toString() const
 std::string Genome::toGraphviz() const
 {
     std::string result = "digraph Genome {\n";
-    result += "  rankdir=LR;\n"; // Arrange graph from left to right instead of top to bottom
+    result += "  rankdir=LR;\n"; // Left-to-right layout
 
-    // Group nodes into subgraphs for layers
-    result += "  {rank=same; Input; ";
+    // Subgraph for input layer
+    result += "  subgraph cluster_0 {\n";
+    result += "    label=\"Input Layer\";\n";
     for (const auto& node : this->node_genes)
     {
         if (node.node_type == INPUT)
         {
-            result += std::to_string(node.node_id) + "; ";
+            result += "    " + std::to_string(node.node_id) + ";\n";
         }
     }
-    result += "}\n";
+    result += "  }\n";
 
-    result += "  {rank=same; Hidden; ";
+    // Subgraph for hidden layers
+    result += "  subgraph cluster_1 {\n";
+    result += "    label=\"Hidden Layer\";\n";
     for (const auto& node : this->node_genes)
     {
         if (node.node_type == HIDDEN)
         {
-            result += std::to_string(node.node_id) + "; ";
+            result += "    " + std::to_string(node.node_id) + ";\n";
         }
     }
-    result += "}\n";
+    result += "  }\n";
 
-    result += "  {rank=same; Output; ";
+    // Subgraph for output layer
+    result += "  subgraph cluster_2 {\n";
+    result += "    label=\"Output Layer\";\n";
     for (const auto& node : this->node_genes)
     {
         if (node.node_type == OUTPUT)
         {
-            result += std::to_string(node.node_id) + "; ";
+            result += "    " + std::to_string(node.node_id) + ";\n";
         }
     }
-    result += "}\n";
+    result += "  }\n";
 
     // Add connections
     for (const auto& connection : this->connection_genes)
@@ -119,6 +134,7 @@ std::string Genome::toGraphviz() const
     result += "}\n";
     return result;
 }
+
 
 
 

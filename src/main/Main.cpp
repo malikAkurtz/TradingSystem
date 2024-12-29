@@ -1,5 +1,8 @@
 #include "NeuralNet.h"
 #include "Output.h"
+#include <chrono>
+#include <thread>
+#include <cstdlib>
 
 bool DEBUG = false;
 
@@ -24,16 +27,34 @@ int main()
     std::vector<ConnectionGene> connection_genes = {cg1, cg2, cg3, cg4, cg5, cg6};
 
     Genome genome(connection_genes, node_genes);
+    
+    // while (true)
+    // {
+    
+    
 
+    // genome.mutateAddConnection();
+    // genome.mutateAddConnection();
+    // genome.mutateAddConnection();
+    // genome.mutateAddConnection();
+    // genome.mutateAddNode();
+
+    // genome.saveToDotFile("genome_graph.dot");
+
+    // print(genome.toString());
+
+    // std::system("python3 graph_node.py");
+
+    // std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    // }
     print(genome.toString());
 
     genome.mutateAddConnection();
     genome.mutateAddNode();
-  
+    
+    print(genome.toString());
 
     genome.saveToDotFile("genome_graph.dot");
-
-    print(genome.toString());
 
     NeuralNet network(genome);
 
