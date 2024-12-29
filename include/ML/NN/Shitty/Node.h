@@ -3,9 +3,9 @@
 
 #include <vector>
 #include <random>
-#include "NodeInitializationType.h"
-#include "NodeType.h"
-#include "ActivationFunctionTypes.h"
+#include "../NodeInitializationType.h"
+#include "../NodeType.h"
+#include "../ActivationFunctionTypes.h"
 
 // InputNeuron Class
 class InputNode {

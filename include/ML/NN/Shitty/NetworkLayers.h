@@ -6,9 +6,9 @@
 #include "Node.h"
 #include "LinearAlgebra.h"
 #include "GenFunctions.h"
-#include "ActivationFunctions.h"
-#include "NodeInitializationType.h"
-#include "ActivationFunctionTypes.h"
+#include "/Users/malikkurtz/Coding/TradingSystem/include/libs/Math/ActivationFunctions.h"
+#include "../NodeInitializationType.h"
+#include "../ActivationFunctionTypes.h"
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

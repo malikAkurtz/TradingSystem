@@ -1,12 +1,11 @@
-#ifndef OUTPUT
-#define OUTPUT
+#ifndef OUTPUT_H
+#define OUTPUT_H
 
 #include <vector>
 #include <iostream>
 #include "../Math/LinearAlgebra.h"
 
 extern bool DEBUG;
-
 
 void printMatrixDebug(const std::vector<std::vector<double>>& matrix);
 void printMatrix(const std::vector<std::vector<double>> &matrix);

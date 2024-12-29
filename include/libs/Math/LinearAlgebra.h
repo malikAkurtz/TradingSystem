@@ -4,7 +4,6 @@
 #include <vector>
 #include <cmath>
 #include <stdexcept>
-#include <../Data-Processing/Output.h>
  namespace LinearAlgebra 
  {
     std::vector<std::vector<double>> takeTranspose(const std::vector<std::vector<double>>& inputMatrix);

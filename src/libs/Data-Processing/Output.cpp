@@ -1,8 +1,5 @@
 #include "Output.h"
 
-
-using namespace LinearAlgebra;
-
 void printMatrix(const std::vector<std::vector<double>>& matrix) {
     std::cout << "[" << std::endl;
     for (const auto& row : matrix) {
@@ -58,7 +55,7 @@ void printVectorDebug(const std::vector<double>& vec) {
 void printPredictionsVSLabels(const std::vector<std::vector<double>> &predictions, 
                               const std::vector<std::vector<double>> &labels) {
     // Transpose predictions so each row corresponds to a sample
-    std::vector<std::vector<double>> predictions_T = takeTranspose(predictions);
+    std::vector<std::vector<double>> predictions_T = LinearAlgebra::takeTranspose(predictions);
 
     // Check size compatibility
     if (predictions_T.size() != labels.size()) {

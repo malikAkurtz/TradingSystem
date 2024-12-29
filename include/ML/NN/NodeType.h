@@ -5,7 +5,7 @@ enum NodeType
 {
     INPUT,
     HIDDEN,
-    OUTPUT
+    OUTPUT,
 };
 
 #endif
