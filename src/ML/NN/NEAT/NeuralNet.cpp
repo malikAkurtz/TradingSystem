@@ -2,49 +2,15 @@
 #include <iostream>
 
 NeuralNet::NeuralNet(Genome genome)
-{   
-    std::map<int, int> id_to_depth;
-
-    // for every node in the NodeGene sequence of the genome
-    for (const NodeGene& node_gene : genome.node_genes)
-    {
-        // add it to the map which maps ids to nodes
-        this->id_to_node[node_gene.node_id] = new Node(node_gene);
-
-        id_to_depth[node_gene.node_id] = 0; // intialize its depth to zero
-
-    }
-
-    this->calculateLayerDepths(genome.connection_genes, id_to_depth);
-    this->assignConnectionstoNodes(genome.connection_genes);
-    this->assignNodestoLayers(id_to_depth);
-
-}
-
-
-void NeuralNet::calculateLayerDepths(const std::vector<ConnectionGene>& connection_genes, std::map<int, int>& id_to_depth)
 {
-    bool change_occurred = true;
+    
+    this->id_to_node = genome.mapIDtoNode();
+    this->id_to_depth = genome.mapIDtoDepth();
 
-    while (change_occurred)
-    {
-        change_occurred = false;
-        for (const ConnectionGene &connection_gene : connection_genes)
-        {   
-            int conn_node_in = connection_gene.node_in; 
-            int conn_node_out = connection_gene.node_out;
-            
-            int prev_conn_node_out_depth = id_to_depth[conn_node_out];
-
-            id_to_depth[conn_node_out] = std::max(id_to_depth[conn_node_out], id_to_depth[conn_node_in] + 1);
-
-            if (prev_conn_node_out_depth < id_to_depth[conn_node_out])
-            {
-                change_occurred = true;
-            }
-        }
-    }
+    genome.assignConnectionsToNodes(id_to_node);
+    this->assignNodestoLayers(this->id_to_depth);
 }
+
 
 void NeuralNet::assignNodestoLayers(const std::map<int, int>& id_to_depth)
 {
@@ -70,14 +36,6 @@ void NeuralNet::assignNodestoLayers(const std::map<int, int>& id_to_depth)
     }
 }
 
-void NeuralNet::assignConnectionstoNodes(const std::vector<ConnectionGene>& connection_genes)
-{
-    for (const auto& cg : connection_genes)
-    {
-        int node_out = cg.node_out;
-        this->id_to_node[node_out]->connections_in.emplace_back(Connection(cg));
-    }
-}
 
 std::vector<std::vector<double>> NeuralNet::feedForward(const std::vector<std::vector<double>> &features_matrix)
 {

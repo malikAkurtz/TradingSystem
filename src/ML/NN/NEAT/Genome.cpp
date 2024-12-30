@@ -11,7 +11,7 @@ void Genome::mutateAddConnection()
     // pick random out node
     NodeGene* node_gene_out;
 
-    std::map<int, int> id_to_depth = this->calculateLayerDepths();
+    std::map<int, int> id_to_depth = this->mapIDtoDepth();
     bool connection_exists = false;
     do
     {
@@ -72,21 +72,28 @@ void Genome::mutateAddNode()
 
 }
 
-std::map<int, int> Genome::calculateLayerDepths()
-{   
+std::map<int, Node*> Genome::mapIDtoNode()
+{
     std::map<int, Node*> id_to_node;
-    std::map<int, int> id_to_depth;
-
     // for every node in the NodeGene sequence of the genome
     for (const NodeGene& node_gene : this->node_genes)
     {
         // add it to the map which maps ids to nodes
         id_to_node[node_gene.node_id] = new Node(node_gene);
-
-        id_to_depth[node_gene.node_id] = 0; // intialize its depth to zero
-
     }
 
+    return id_to_node;
+}
+
+std::map<int, int> Genome::mapIDtoDepth()
+{
+    std::map<int, int> id_to_depth;
+
+    for (const NodeGene& node_gene : this->node_genes)
+    {
+        id_to_depth[node_gene.node_id] = 0;
+    }
+    
     bool change_occurred = true;
 
     while (change_occurred)
@@ -107,12 +114,25 @@ std::map<int, int> Genome::calculateLayerDepths()
             }
         }
     }
+    
+    return id_to_depth;
+}
+
+void Genome::assignConnectionsToNodes(std::map<int, Node*>& id_to_node)
+{
+    for (const auto& cg : this->connection_genes)
+    {
+        int node_out = cg.node_out;
+        id_to_node[node_out]->connections_in.emplace_back(Connection(cg));
+    }
+}
+
+void Genome::freeIDtoNode(std::map<int, Node*>& id_to_node)
+{
     for (auto& [id, node] : id_to_node)
     {
         delete node;
     }
-
-    return id_to_depth;
 }
 
 std::string Genome::toString() const

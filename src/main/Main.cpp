@@ -36,62 +36,12 @@ int main()
     std::vector<ConnectionGene> connection_genes = {cg1, cg2, cg3, cg4, cg5, cg6};
 
     Genome genome(connection_genes, node_genes);
-    
-    // while (true)
-    // {
-    
-    
 
-    // genome.mutateAddConnection();
-    // genome.mutateAddConnection();
-    // genome.mutateAddConnection();
     // genome.mutateAddConnection();
     // genome.mutateAddNode();
 
-    // genome.saveToDotFile("genome_graph.dot");
-
-    // print(genome.toString());
-
-    // std::system("python3 graph_node.py");
-
-    // std::this_thread::sleep_for(std::chrono::milliseconds(100));
-    // }
     print(genome.toString());
 
-    genome.mutateAddNode();
-    genome.mutateAddConnection();
-    genome.mutateAddNode();
-    genome.mutateAddNode();
-    genome.mutateAddConnection();
-    genome.mutateAddNode();
-    genome.mutateAddNode();
-    genome.mutateAddConnection();
-    genome.mutateAddNode();
-    genome.mutateAddNode();
-    genome.mutateAddConnection();
-    genome.mutateAddNode();
-    genome.mutateAddNode();
-    genome.mutateAddConnection();
-    genome.mutateAddNode();
-    genome.mutateAddNode();
-    genome.mutateAddConnection();
-    genome.mutateAddNode();
-    genome.mutateAddNode();
-    genome.mutateAddConnection();
-    genome.mutateAddNode();
-    genome.mutateAddNode();
-    genome.mutateAddConnection();
-    genome.mutateAddNode();
-    genome.mutateAddNode();
-    genome.mutateAddConnection();
-    genome.mutateAddNode();
-    genome.mutateAddNode();
-    genome.mutateAddConnection();
-    genome.mutateAddNode();
-
-    print(genome.toString());
-
-    std::cout << "Made it Here" << std::endl;
     genome.saveToDotFile("genome_graph.dot");
 
     NeuralNet network(genome);
@@ -111,7 +61,6 @@ int main()
     }
 
 
-    std::cout << "About To Feed Forward" << std::endl;
     std::vector<std::vector<double>> network_outputs = network.feedForward({{1, 2, 3}, {4, 5, 6}});
     printMatrix(network_outputs);
 

@@ -19,7 +19,13 @@ struct Genome
 
     void mutateAddNode();
 
-    std::map<int, int> calculateLayerDepths();
+    std::map<int, Node *> mapIDtoNode();
+
+    std::map<int, int> mapIDtoDepth();
+
+    void assignConnectionsToNodes(std::map<int, Node *> &id_to_node);
+
+    void freeIDtoNode(std::map<int, Node *> &id_to_node);
 
     std::string toString() const;
 

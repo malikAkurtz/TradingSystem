@@ -19,14 +19,11 @@ class NeuralNet
 public:
     std::vector<Layer> layers;
     std::map<int, Node*> id_to_node;
+    std::map<int, int> id_to_depth;
 
     NeuralNet(Genome genome);
 
-    void calculateLayerDepths(const std::vector<ConnectionGene>& connection_genes, std::map<int, int> &id_to_depth);
-
     void assignNodestoLayers(const std::map<int, int> &id_to_depth);
-
-    void assignConnectionstoNodes(const std::vector<ConnectionGene> &connection_genes);
 
     // want to return a matrix where each row is the networks predictions for that sample
     // the matrix allows us to support batches
