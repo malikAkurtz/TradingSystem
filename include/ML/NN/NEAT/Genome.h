@@ -8,10 +8,15 @@
 #include <fstream>
 #include <map>
 #include "InnovationNum.h"
+
+struct Entity;
+
 struct Genome
 {
     std::vector<ConnectionGene> connection_genes;
     std::vector<NodeGene> node_genes;
+
+    Genome();
 
     Genome(std::vector<ConnectionGene> connection_genes, std::vector<NodeGene> node_genes);
 
@@ -25,13 +30,13 @@ struct Genome
 
     void assignConnectionsToNodes(std::map<int, Node *> &id_to_node);
 
-    void freeIDtoNode(std::map<int, Node *> &id_to_node);
-
     std::string toString() const;
 
     std::string toGraphviz() const;
 
     void saveToDotFile(const std::string &filename) const;
+
+    Genome crossover(Entity &parent_1, Entity &parent_2);
 };
 
 #endif

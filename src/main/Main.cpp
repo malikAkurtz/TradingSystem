@@ -37,12 +37,24 @@ int main()
 
     Genome genome(connection_genes, node_genes);
 
-    // genome.mutateAddConnection();
-    // genome.mutateAddNode();
+    while (true) 
+    {   
+        if (rand() % 2)
+        {
+            genome.mutateAddConnection();
+        }
+        else
+        {
+            genome.mutateAddNode();
+        }
+        std::this_thread::sleep_for(std::chrono::milliseconds(500));
+        genome.saveToDotFile("genome_graph.dot");
+        std::system("python3 graph_node.py");
+    }
 
     print(genome.toString());
 
-    genome.saveToDotFile("genome_graph.dot");
+    
 
     NeuralNet network(genome);
 

@@ -1,5 +1,7 @@
 #include "Genome.h"
+#include "Entity.h"
 
+Genome::Genome() {};
 
 Genome::Genome(std::vector<ConnectionGene> connection_genes, std::vector<NodeGene> node_genes) : connection_genes(connection_genes), node_genes(node_genes) {};
 
@@ -127,12 +129,55 @@ void Genome::assignConnectionsToNodes(std::map<int, Node*>& id_to_node)
     }
 }
 
-void Genome::freeIDtoNode(std::map<int, Node*>& id_to_node)
+
+Genome Genome::crossover(Entity &parent_1, Entity &parent_2)
 {
-    for (auto& [id, node] : id_to_node)
+    Genome offspring;
+    Entity* most_fit;
+    Entity* least_fit;
+
+    if (parent_1.fitness > parent_2.fitness)
     {
-        delete node;
+        most_fit = &parent_1;
+        least_fit = &parent_2;
     }
+    else
+    {
+        most_fit = &parent_2;
+        least_fit = &parent_1;
+    }
+
+    if (parent_1.genome.node_genes.size() > parent_2.genome.node_genes.size())
+    {
+        offspring.node_genes = parent_1.genome.node_genes;
+    }
+    else
+    {
+        offspring.node_genes = parent_2.genome.node_genes;
+    }
+
+    for (const auto &most_fit_gene : most_fit->genome.connection_genes)
+    {
+        for (const auto &least_fit_gene : least_fit->genome.connection_genes)
+        {
+            if (most_fit_gene.innovation_number == least_fit_gene.innovation_number)
+            {
+                if (rand() % 2)
+                {
+                    offspring.connection_genes.push_back(most_fit_gene);
+                }
+                else
+                {
+                    offspring.connection_genes.push_back(least_fit_gene);
+                }
+            }
+            else
+            {
+                offspring.connection_genes.push_back(most_fit_gene);
+            }
+        }
+    }
+    return offspring;
 }
 
 std::string Genome::toString() const

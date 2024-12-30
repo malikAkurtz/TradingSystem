@@ -7,15 +7,24 @@ NeuralNet::NeuralNet(Genome genome)
     this->id_to_node = genome.mapIDtoNode();
     this->id_to_depth = genome.mapIDtoDepth();
 
-    genome.assignConnectionsToNodes(id_to_node);
-    this->assignNodestoLayers(this->id_to_depth);
+    genome.assignConnectionsToNodes(this->id_to_node);
+    this->assignNodestoLayers();
+}
+
+NeuralNet::~NeuralNet()
+{
+    for (auto& [id, node] : this->id_to_node)
+    {
+        delete node;
+    }
+    this->id_to_node.clear();
 }
 
 
-void NeuralNet::assignNodestoLayers(const std::map<int, int>& id_to_depth)
+void NeuralNet::assignNodestoLayers()
 {
     int greatest_depth = 0;
-    for (const auto &[key, value] : id_to_depth)
+    for (const auto &[key, value] : this->id_to_depth)
     {
         if (value > greatest_depth)
         {
@@ -30,7 +39,7 @@ void NeuralNet::assignNodestoLayers(const std::map<int, int>& id_to_depth)
     }
 
     // for every node id mapped to its depth (the map is already sorted )
-    for (const auto &[key, value] : id_to_depth)
+    for (const auto &[key, value] : this->id_to_depth)
     {
         this->layers[value].nodes.push_back(this->id_to_node.at(key));
     }
@@ -113,3 +122,4 @@ void NeuralNet::loadInputs(const std::vector<std::vector<double>>& features_matr
     }
     std::cout << "----------------------DONE LOADING INPUTS----------------------" << std::endl;
 }
+
