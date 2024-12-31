@@ -49,8 +49,8 @@ std::vector<std::vector<double>> NeuralNet::feedForward(const std::vector<std::v
     int last_layer_index = this->layers.size() - 1;
 
     int num_samples = features_matrix.size();
-    int num_labels = this->layers[last_layer_index].nodes.size();
-    std::cout << "num_labels: " << num_labels << std::endl;
+    // int num_labels = this->layers[last_layer_index].nodes.size();
+    // std::cout << "num_labels: " << num_labels << std::endl;
 
     std::vector<std::vector<double>> network_outputs(num_samples);
 

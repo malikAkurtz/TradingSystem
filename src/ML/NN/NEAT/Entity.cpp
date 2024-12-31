@@ -32,8 +32,8 @@ Genome Entity::crossover(Entity &other_parent)
 
     for (const auto& fit_connection_gene : most_fit->genome.connection_genes)
     {
-        std::cout << "Most Fit it is at: " << fit_connection_gene.toString() << std::endl;
-        std::cout << "Most Fit Parent IN: " << fit_connection_gene.innovation_number << " Least Fit Parent IN: " << least_fit_it->innovation_number << std::endl;
+        // std::cout << "Most Fit it is at: " << fit_connection_gene.toString() << std::endl;
+        // std::cout << "Most Fit Parent IN: " << fit_connection_gene.innovation_number << " Least Fit Parent IN: " << least_fit_it->innovation_number << std::endl;
         if (least_fit_it == least_fit->genome.connection_genes.end())
         {
             offspring.connection_genes.push_back(fit_connection_gene);

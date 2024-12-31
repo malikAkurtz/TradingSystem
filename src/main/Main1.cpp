@@ -105,6 +105,8 @@ int main()
 
             Genome offspring_genome = random_elite1.crossover(random_elite2);
 
+            std::cout << "New Offspring Genome is: " << offspring_genome.toString() << std::endl;
+
             // perform mutations
             if (dis(gen) < weight_mutation_rate)
             {
@@ -118,6 +120,9 @@ int main()
             {
                 offspring_genome.mutateAddNode();
             }
+
+            std::cout << "New Mutated Genome is: " << offspring_genome.toString() << std::endl;
+            std::cout << "Base Genome was: " << base_genome.toString() << std::endl;
 
             Entity offspring(offspring_genome);
 
