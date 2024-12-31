@@ -1,6 +1,11 @@
 #include "NeuralNet.h"
 #include <iostream>
 
+
+NeuralNet::NeuralNet()
+{
+}
+
 NeuralNet::NeuralNet(Genome genome)
 {
     

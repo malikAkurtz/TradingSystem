@@ -1,9 +1,13 @@
 #include "Entity.h"
 
+Entity::Entity(const Genome& genome)
+{
+    this->genome = genome;
+    this->brain = NeuralNet(genome);
+}
+
 Genome Entity::crossover(Entity &other_parent)
 {
-
-    std::vector<std::pair<ConnectionGene, ConnectionGene>> pairs;
 
     Genome offspring;
     Entity* most_fit;
@@ -22,12 +26,9 @@ Genome Entity::crossover(Entity &other_parent)
 
     offspring.node_genes = most_fit->genome.node_genes;
 
-    //auto most_fit_it = most_fit->genome.connection_genes.begin();
     auto least_fit_it = least_fit->genome.connection_genes.begin();
 
 
-
-    // while we have not fully processed both connection sequences
     for (const auto& fit_connection_gene : most_fit->genome.connection_genes)
     {
         std::cout << "Most Fit it is at: " << fit_connection_gene.toString() << std::endl;
@@ -62,6 +63,26 @@ Genome Entity::crossover(Entity &other_parent)
         }
     }
 
+
+
     return offspring;
 
+}
+
+void Entity::evaluateFitness(const std::vector<std::vector<double>> &features_matrix, const std::vector<std::vector<double>> &labels)
+{
+    int num_samples = features_matrix.size();
+
+    std::vector<std::vector<double>> entity_outputs = this->brain.feedForward(features_matrix);
+
+    double cumError = 0;
+
+    for (int i = 0; i < num_samples; i++)
+    {
+        cumError += LossFunctions::vectorizedModifiedSquarredError(entity_outputs[i], labels[i]);
+    }
+
+    double entity_loss = cumError / num_samples;
+
+    this->fitness = entity_loss;
 }

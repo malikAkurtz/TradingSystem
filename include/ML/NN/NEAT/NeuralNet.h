@@ -21,6 +21,8 @@ public:
     std::map<int, Node*> id_to_node;
     std::map<int, int> id_to_depth;
 
+    NeuralNet();
+
     NeuralNet(Genome genome);
     ~NeuralNet();
 
@@ -32,7 +34,6 @@ public:
 
     void loadInputs(const std::vector<std::vector<double>>& features_matrix);
 
-    void fit();
 };
 
 #endif
