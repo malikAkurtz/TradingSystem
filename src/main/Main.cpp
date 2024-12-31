@@ -107,11 +107,11 @@ int main()
 
     Entity parent1;
     parent1.genome.connection_genes = parent1_connection_genes;
-    parent1.fitness = 5;
+    parent1.fitness = 8;
 
     Entity parent2;
     parent2.genome.connection_genes = parent2_connection_genes;
-    parent2.fitness = 6;
+    parent2.fitness = 9;
 
     Genome offspring = parent1.crossover(parent2);
 
