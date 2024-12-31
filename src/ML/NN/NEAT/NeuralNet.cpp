@@ -16,15 +16,6 @@ NeuralNet::NeuralNet(Genome genome)
     this->assignNodestoLayers();
 }
 
-NeuralNet::~NeuralNet()
-{
-    for (auto& [id, node] : this->id_to_node)
-    {
-        delete node;
-    }
-    this->id_to_node.clear();
-}
-
 
 void NeuralNet::assignNodestoLayers()
 {
@@ -46,7 +37,7 @@ void NeuralNet::assignNodestoLayers()
     // for every node id mapped to its depth (the map is already sorted )
     for (const auto &[key, value] : this->id_to_depth)
     {
-        this->layers[value].nodes.push_back(this->id_to_node.at(key));
+        this->layers[value].nodes.push_back(&this->id_to_node.at(key));
     }
 }
 
@@ -57,7 +48,11 @@ std::vector<std::vector<double>> NeuralNet::feedForward(const std::vector<std::v
 
     int last_layer_index = this->layers.size() - 1;
 
-    std::vector<std::vector<double>> network_outputs;
+    int num_samples = features_matrix.size();
+    int num_labels = this->layers[last_layer_index].nodes.size();
+    std::cout << "num_labels: " << num_labels << std::endl;
+
+    std::vector<std::vector<double>> network_outputs(num_samples);
 
     // starting at 1 to skip the input layer
     std::cout << "----------------------PROCESSING LAYERS----------------------" << std::endl;
@@ -80,7 +75,7 @@ std::vector<std::vector<double>> NeuralNet::feedForward(const std::vector<std::v
                 int node_in = connection.node_in;
                 std::cout << "Node In ID: " << node_in << std::endl;
                 // get the incoming nodes outputs
-                std::vector<double> input = this->id_to_node.at(node_in)->outputs;
+                std::vector<double> input = this->id_to_node.at(node_in).outputs;
                 std::cout << "Has Output Vector: " << std::endl;
                 printVector(input);
                 std::vector<double> scaled_input = LinearAlgebra::scaleVector(input, connection.weight);
@@ -97,18 +92,22 @@ std::vector<std::vector<double>> NeuralNet::feedForward(const std::vector<std::v
             node_output = this_layer.nodes[n]->applyActivation(node_output);
             std::cout << "After Summing All Vectors, Output is: " << std::endl;
             printVector(node_output);
+            
             this_layer.nodes[n]->storeOutputs(node_output);
             if (l == last_layer_index) 
             {
-                network_outputs.push_back(node_output);
+                LinearAlgebra::addColumn(network_outputs, node_output);
             }
         }
     }
+
+    std::cout << "Networks Outputs are:" << std::endl;
+    printMatrix(network_outputs);
     return network_outputs;
 }
 
 void NeuralNet::loadInputs(const std::vector<std::vector<double>>& features_matrix)
-{
+{   
     int num_features = features_matrix[0].size();
     // for every feature column in the features_matrix
     std::cout << "----------------------LOADING INPUTS----------------------" << std::endl;
@@ -117,6 +116,8 @@ void NeuralNet::loadInputs(const std::vector<std::vector<double>>& features_matr
         std::cout << "Loading Feature: " << j << " Into Input Layer" << std::endl;
         // save it
         std::vector<double> feature_vector = LinearAlgebra::getColumn(features_matrix, j);
+
+        
         // store it in the input neurons in the input layer (layers index 0)
         this->layers[0].nodes[j]->storeOutputs(feature_vector);
     }
@@ -128,3 +129,30 @@ void NeuralNet::loadInputs(const std::vector<std::vector<double>>& features_matr
     std::cout << "----------------------DONE LOADING INPUTS----------------------" << std::endl;
 }
 
+  // for std::ostringstream
+
+std::string NeuralNet::toString() const
+{
+    std::ostringstream oss;
+
+    for (int i = 0; i < layers.size(); i++)
+    {
+        oss << "Layer: " << i << " Consists of:\n";
+        
+        for (int j = 0; j < layers[i].nodes.size(); j++)
+        {
+            Node* node = layers[i].nodes[j];
+            
+            oss << "  Node ID: " << node->node_id << "\n";
+            oss << "  Has Connections:\n";
+
+            for (int m = 0; m < node->connections_in.size(); m++)
+            {
+                const Connection& conn = node->connections_in[m];
+                oss << "    From: " << conn.node_in 
+                    << " To: "   << conn.node_out << "\n";
+            }
+        }
+    }
+    return oss.str();
+}

@@ -11,7 +11,7 @@ BUILD_DIR = build
 BIN_DIR = bin
 
 # Source files
-SOURCES = $(wildcard $(SRC_DIR)/main/Main.cpp) $(wildcard $(SRC_DIR)/ML/NN/NEAT/*.cpp) $(wildcard $(SRC_DIR)/libs/Math/*.cpp) $(wildcard $(SRC_DIR)/libs/Data-Processing/*.cpp)
+SOURCES = $(wildcard $(SRC_DIR)/main/Main1.cpp) $(wildcard $(SRC_DIR)/ML/NN/NEAT/*.cpp) $(wildcard $(SRC_DIR)/libs/Math/*.cpp) $(wildcard $(SRC_DIR)/libs/Data-Processing/*.cpp)
 
 # Object files
 OBJECTS = $(patsubst $(SRC_DIR)/%.cpp, $(BUILD_DIR)/%.o, $(SOURCES))

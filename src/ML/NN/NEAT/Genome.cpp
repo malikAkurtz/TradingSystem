@@ -74,14 +74,23 @@ void Genome::mutateAddNode()
 
 }
 
-std::map<int, Node*> Genome::mapIDtoNode()
+void Genome::mutateChangeWeight()
 {
-    std::map<int, Node*> id_to_node;
+    ConnectionGene &random_connection_gene = this->connection_genes[rand() % this->connection_genes.size()];
+
+    double random_weight = static_cast<double>(rand()) / RAND_MAX - 0.5;
+
+    random_connection_gene.weight = random_weight;
+}
+
+std::map<int, Node> Genome::mapIDtoNode()
+{
+    std::map<int, Node> id_to_node;
     // for every node in the NodeGene sequence of the genome
     for (const NodeGene& node_gene : this->node_genes)
     {
         // add it to the map which maps ids to nodes
-        id_to_node[node_gene.node_id] = new Node(node_gene);
+        id_to_node[node_gene.node_id] = Node(node_gene);
     }
 
     return id_to_node;
@@ -120,12 +129,12 @@ std::map<int, int> Genome::mapIDtoDepth()
     return id_to_depth;
 }
 
-void Genome::assignConnectionsToNodes(std::map<int, Node*>& id_to_node)
+void Genome::assignConnectionsToNodes(std::map<int, Node>& id_to_node)
 {
     for (const auto& cg : this->connection_genes)
     {
         int node_out = cg.node_out;
-        id_to_node[node_out]->connections_in.emplace_back(Connection(cg));
+        id_to_node[node_out].connections_in.emplace_back(Connection(cg));
     }
 }
 

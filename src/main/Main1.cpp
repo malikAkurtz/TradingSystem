@@ -1,0 +1,144 @@
+#include "NeuralNet.h"
+#include "Output.h"
+#include <chrono>
+#include <thread>
+#include <cstdlib>
+#include "Entity.h"
+#include <random>
+#include <TestData.h>
+#include "LinearAlgebra.h"
+#include <algorithm>
+
+bool DEBUG = false;
+
+int global_innovation_number = 0;
+
+int main()
+{
+    std::vector<std::vector<double>> data = data1;
+
+    std::vector<std::vector<double>> labels = LinearAlgebra::vector1DtoColumnVector(LinearAlgebra::getColumn(data, 2));
+    std::cout << "Labels are: " << std::endl;
+    printMatrix(labels);
+
+    LinearAlgebra::deleteColumn(data, 2);
+
+    std::vector<std::vector<double>> features_matrix = data;
+    std::cout << "Features Matrix is: " << std::endl;
+    printMatrix(features_matrix);
+
+
+
+    srand(time(0));
+    std::random_device rd;
+    std::mt19937 gen(rd());
+
+    NodeGene ng1(1, INPUT);
+    NodeGene ng2(2, INPUT);
+    NodeGene ng3(3, OUTPUT);
+
+    ConnectionGene cg1(1, 3, 0.2, true, 1);
+    global_innovation_number++;
+    ConnectionGene cg2(2, 3, 0.1, true, 2);
+    global_innovation_number++;
+
+    std::vector<ConnectionGene> connection_genes = {cg1, cg2};
+    std::vector<NodeGene> node_genes = {ng1, ng2, ng3};
+
+    
+    Genome base_genome(connection_genes, node_genes);
+    std::cout << "Base Genome is:" << std::endl;
+    std::cout << base_genome.toString() << std::endl;
+
+    int max_generations = 10;
+    int population_size = 10;
+
+    double weight_mutation_rate = 0.8;
+    double  add_connection_mutation_rate = 0.1;
+    double add_node_mutation_rate = 0.01;
+    std::uniform_real_distribution<> dis(0.0, 1.0);
+
+
+    //initialie the base population
+    std::vector<Entity> population;
+    population.reserve(population_size);
+
+    for (int i = 0; i < population_size; i++)
+    {
+        population.emplace_back(Entity(base_genome));
+    }
+
+
+    std::cout << "Default Entity Neural Network toString" << std::endl;
+    std::cout << population[8].brain.toString() << std::endl;
+
+    // for every generation
+    for (int i = 0; i < max_generations; i++)
+    {
+        // evaluate the population
+        for (auto& entity : population)
+        {
+            entity.evaluateFitness(features_matrix, labels);
+        }
+        std::sort(population.begin(), population.end(), [](const Entity &a, const Entity &b)
+                  { return a.fitness > b.fitness; });
+
+        // select the top 20% for crossover
+        int num_elites = population_size * 0.2;
+        int offspring_required = population_size - num_elites;
+
+        std::vector<Entity> new_population(population.begin(), population.begin() + num_elites);
+
+        // perform crossover
+        for (int j = 0; j < offspring_required; j++)
+        {   
+            int random_elite_index1 = rand() % num_elites;
+            int random_elite_index2 = rand() % num_elites;
+
+            while (random_elite_index2 == random_elite_index1)
+            {
+                random_elite_index2 = rand() % num_elites;
+            }
+
+            Entity random_elite1 = new_population[random_elite_index1];
+            Entity random_elite2 = new_population[random_elite_index2];
+
+            Genome offspring_genome = random_elite1.crossover(random_elite2);
+
+            // perform mutations
+            if (dis(gen) < weight_mutation_rate)
+            {
+                offspring_genome.mutateChangeWeight();
+            }
+            else if (dis(gen) < add_connection_mutation_rate)
+            {
+                offspring_genome.mutateAddConnection();
+            }
+            else if (dis(gen) < add_node_mutation_rate)
+            {
+                offspring_genome.mutateAddNode();
+            }
+
+            Entity offspring(offspring_genome);
+
+            new_population.push_back(offspring);
+        }
+        population = new_population;
+    }
+
+    for (auto& entity : population)
+    {
+        entity.evaluateFitness(features_matrix, labels);
+    }
+    std::sort(population.begin(), population.end(), [](const Entity &a, const Entity &b)
+                { return a.fitness > b.fitness; });
+
+    Entity best_entity = population[0];
+
+    std::vector<std::vector<double>> best_predictions = best_entity.brain.feedForward(features_matrix);
+
+    std::cout << "Predictions are: " << std::endl;
+    printMatrix(best_predictions);
+
+    return 0;
+}

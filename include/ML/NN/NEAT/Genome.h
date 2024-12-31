@@ -24,11 +24,13 @@ struct Genome
 
     void mutateAddNode();
 
-    std::map<int, Node *> mapIDtoNode();
+    void mutateChangeWeight();
+
+    std::map<int, Node> mapIDtoNode();
 
     std::map<int, int> mapIDtoDepth();
 
-    void assignConnectionsToNodes(std::map<int, Node *> &id_to_node);
+    void assignConnectionsToNodes(std::map<int, Node> &id_to_node);
 
     std::string toString() const;
 

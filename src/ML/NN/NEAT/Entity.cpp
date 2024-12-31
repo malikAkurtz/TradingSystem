@@ -1,5 +1,6 @@
 #include "Entity.h"
 
+
 Entity::Entity(const Genome& genome)
 {
     this->genome = genome;
