@@ -38,7 +38,6 @@ struct Genome
 
     void saveToDotFile(const std::string &filename) const;
 
-    Genome crossover(Entity &parent_1, Entity &parent_2);
 };
 
 #endif

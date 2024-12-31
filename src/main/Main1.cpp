@@ -75,9 +75,16 @@ int main()
     // for every generation
     for (int i = 0; i < max_generations; i++)
     {
+        std::cout << "------------------BEGINNING GENERATION " << i << "-------------------" << std::endl;
         // evaluate the population
         for (auto& entity : population)
         {
+            std::cout << "Evalutating Fitness of " << entity.genome.toString() << std::endl;
+            std::cout << "Neural Network looks like: " << entity.brain.toString() << std::endl;
+            for (const auto& node : entity.brain.layers[1].nodes)
+            {
+                std::cout << node->node_type << std::endl;
+            }
             entity.evaluateFitness(features_matrix, labels);
         }
         std::sort(population.begin(), population.end(), [](const Entity &a, const Entity &b)
@@ -103,32 +110,32 @@ int main()
             Entity random_elite1 = new_population[random_elite_index1];
             Entity random_elite2 = new_population[random_elite_index2];
 
-            Genome offspring_genome = random_elite1.crossover(random_elite2);
+            //Genome offspring_genome = random_elite1.crossover(random_elite2);
 
-            std::cout << "New Offspring Genome is: " << offspring_genome.toString() << std::endl;
+            //std::cout << "New Offspring Genome is: " << offspring_genome.toString() << std::endl;
 
             // perform mutations
-            if (dis(gen) < weight_mutation_rate)
-            {
-                offspring_genome.mutateChangeWeight();
-            }
-            else if (dis(gen) < add_connection_mutation_rate)
-            {
-                offspring_genome.mutateAddConnection();
-            }
-            else if (dis(gen) < add_node_mutation_rate)
-            {
-                offspring_genome.mutateAddNode();
-            }
+            // if (dis(gen) < weight_mutation_rate)
+            // {
+            //     offspring_genome.mutateChangeWeight();
+            // }
+            // else if (dis(gen) < add_connection_mutation_rate)
+            // {
+            //     offspring_genome.mutateAddConnection();
+            // }
+            // else if (dis(gen) < add_node_mutation_rate)
+            // {
+            //     offspring_genome.mutateAddNode();
+            // }
 
-            std::cout << "New Mutated Genome is: " << offspring_genome.toString() << std::endl;
-            std::cout << "Base Genome was: " << base_genome.toString() << std::endl;
+            //std::cout << "New Mutated Genome is: " << offspring_genome.toString() << std::endl;
 
-            Entity offspring(offspring_genome);
+            Entity offspring(base_genome);
 
             new_population.push_back(offspring);
         }
         population = new_population;
+        std::cout << "------------------FINISHED GENERATION " << i << "-------------------" << std::endl;
     }
 
     for (auto& entity : population)

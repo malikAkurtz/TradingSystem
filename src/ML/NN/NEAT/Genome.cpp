@@ -19,24 +19,36 @@ void Genome::mutateAddConnection()
     {
         connection_exists = false;
         node_gene_in = &node_genes[rand() % this->node_genes.size()];
-        std::cout << "Node Gene In Selected: " << node_gene_in->node_id << std::endl;
         node_gene_out = &node_genes[rand() % this->node_genes.size()];
-        std::cout << "Node Gene out Selected: " << node_gene_out->node_id << std::endl;
+
+        // if the source connection is the output, skip
+        if (node_gene_in->node_type == OUTPUT) {continue;}
+        // if the destination connection is an input node, skip
+        if (node_gene_out->node_type == INPUT) {continue;}
+        // if the connection is to the same node, skip
+        if (node_gene_in->node_id == node_gene_out->node_id) {continue;}
+
         for (ConnectionGene connection_gene : connection_genes)
         {
             if (connection_gene.node_in == node_gene_in->node_id && connection_gene.node_out == node_gene_out->node_id)
             {
                 connection_exists = true;
-                break;
                 std::cout << "Connection Already Exists, Finding Another" << std::endl;
+                break;
             }
         }
+
+        if (id_to_depth[node_gene_in->node_id] >= id_to_depth[node_gene_out->node_id]) {continue;}
+
         attempts--;
         if (attempts == 0) 
         {
             return; // coudlnt find a valid place to put a connection
         }
-    } while ((node_gene_in->node_type == OUTPUT) || (node_gene_in->node_id == node_gene_out->node_id) || (node_gene_out->node_type == INPUT) || connection_exists || id_to_depth[node_gene_in->node_id] >= id_to_depth[node_gene_out->node_id]);
+
+    } while (connection_exists);
+
+    std::cout << "Added a connection from " << node_gene_in->node_id << " To " << node_gene_out->node_id << std::endl;
 
     global_innovation_number++;
     int innovation_number = global_innovation_number;
@@ -90,7 +102,7 @@ std::map<int, Node> Genome::mapIDtoNode()
     for (const NodeGene& node_gene : this->node_genes)
     {
         // add it to the map which maps ids to nodes
-        id_to_node[node_gene.node_id] = Node(node_gene);
+        id_to_node.emplace(node_gene.node_id, Node(node_gene));
     }
 
     return id_to_node;
@@ -111,8 +123,10 @@ std::map<int, int> Genome::mapIDtoDepth()
     {
         change_occurred = false;
         for (const ConnectionGene &connection_gene : connection_genes)
-        {   
-            int conn_node_in = connection_gene.node_in; 
+        {
+            std::cout << "Connection gene when mapping looks like: " << std::endl;
+            std::cout << connection_gene.toString() << std::endl;
+            int conn_node_in = connection_gene.node_in;
             int conn_node_out = connection_gene.node_out;
             
             int prev_conn_node_out_depth = id_to_depth[conn_node_out];
@@ -134,7 +148,13 @@ void Genome::assignConnectionsToNodes(std::map<int, Node>& id_to_node)
     for (const auto& cg : this->connection_genes)
     {
         int node_out = cg.node_out;
-        id_to_node[node_out].connections_in.emplace_back(Connection(cg));
+        
+        auto it = id_to_node.find(node_out);
+        if (it != id_to_node.end()) {
+            it->second.connections_in.emplace_back(Connection(cg));
+        } else {
+            std::cerr << "Error: Node " << node_out << " not found in id_to_node." << std::endl;
+        }
     }
 }
 
@@ -236,3 +256,4 @@ void Genome::saveToDotFile(const std::string& filename) const
     file.close(); // Close the file
     std::cout << "Graphviz content saved to " << filename << std::endl;
 }
+

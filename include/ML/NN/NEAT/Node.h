@@ -26,8 +26,6 @@ public:
     std::vector<Connection> connections_in;
     std::vector<double> outputs;
 
-    Node();
-
     Node(NodeGene node_gene);
 
     double calculateNodeOutput(const std::vector<double>& input_vector);

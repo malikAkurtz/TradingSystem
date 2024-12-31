@@ -8,11 +8,13 @@ NeuralNet::NeuralNet()
 
 NeuralNet::NeuralNet(Genome genome)
 {
-    
+    this->id_to_node.clear();
     this->id_to_node = genome.mapIDtoNode();
+    this->id_to_depth.clear();
     this->id_to_depth = genome.mapIDtoDepth();
 
     genome.assignConnectionsToNodes(this->id_to_node);
+    this->layers.clear();
     this->assignNodestoLayers();
 }
 
@@ -20,6 +22,7 @@ NeuralNet::NeuralNet(Genome genome)
 void NeuralNet::assignNodestoLayers()
 {
     int greatest_depth = 0;
+    
     for (const auto &[key, value] : this->id_to_depth)
     {
         if (value > greatest_depth)
@@ -28,6 +31,14 @@ void NeuralNet::assignNodestoLayers()
         }
     }
     greatest_depth++; // bc of index 0
+
+    std::ostringstream oss;
+    oss << "id_to_depth Map:\n";
+    for (const auto& pair : id_to_depth)
+    {
+        oss << "  Node ID: " << pair.first << ", Depth: " << pair.second << "\n";
+    }
+    std::cout << oss.str() << std::endl;
 
     for (int i = 0; i < greatest_depth; i++)
     {

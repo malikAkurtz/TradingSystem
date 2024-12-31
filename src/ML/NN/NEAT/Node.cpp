@@ -24,7 +24,7 @@ std::string NodeGene::toString() const
 
 
 
-Node::Node() : node_id(-1), node_type(INPUT), activation(RELU) {};
+//Node::Node() : node_id(-1), node_type(INPUT), activation(RELU) {};
 
 Node::Node(NodeGene node_gene) 
     : node_id(node_gene.node_id), node_type(node_gene.node_type) {};
