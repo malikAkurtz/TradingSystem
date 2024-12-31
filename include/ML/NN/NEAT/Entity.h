@@ -7,6 +7,8 @@ struct Entity
 {
     Genome genome;
     double fitness;
+
+    Genome crossover(Entity &other_parent);
 };
 
 #endif

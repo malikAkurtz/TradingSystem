@@ -3,12 +3,13 @@
 #include <chrono>
 #include <thread>
 #include <cstdlib>
+#include "Entity.h"
 
 bool DEBUG = false;
 
 int global_innovation_number = 0;
 
-int main()
+int main1()
 {
     srand(time(0)); 
 
@@ -47,7 +48,7 @@ int main()
         {
             genome.mutateAddNode();
         }
-        std::this_thread::sleep_for(std::chrono::milliseconds(500));
+        std::this_thread::sleep_for(std::chrono::milliseconds(50));
         genome.saveToDotFile("genome_graph.dot");
         std::system("python3 graph_node.py");
     }
@@ -75,6 +76,46 @@ int main()
 
     std::vector<std::vector<double>> network_outputs = network.feedForward({{1, 2, 3}, {4, 5, 6}});
     printMatrix(network_outputs);
+
+    return 0;
+}
+
+int main()
+{
+    srand(time(0)); 
+
+    std::vector<ConnectionGene> parent1_connection_genes = {
+        ConnectionGene(1, 4, 1, true, 1),
+        ConnectionGene(2, 4, 1, true, 2),
+        ConnectionGene(3, 4, 1, true, 3),
+        ConnectionGene(2, 5, 1, true, 4),
+        ConnectionGene(5, 4, 1, true, 5),
+        ConnectionGene(1, 5, 1, true, 8),
+    };
+
+    std::vector<ConnectionGene> parent2_connection_genes = {
+        ConnectionGene(1, 4, 0, true, 1),
+        ConnectionGene(2, 4, 0, true, 2),
+        ConnectionGene(3, 4, 0, true, 3),
+        ConnectionGene(2, 5, 0, true, 4),
+        ConnectionGene(5, 4, 0, true, 5),
+        ConnectionGene(5, 6, 0, true, 6),
+        ConnectionGene(6, 4, 0, true, 7),
+        ConnectionGene(3, 5, 0, true, 9),
+        ConnectionGene(1, 6, 0, true, 10),
+    };
+
+    Entity parent1;
+    parent1.genome.connection_genes = parent1_connection_genes;
+    parent1.fitness = 5;
+
+    Entity parent2;
+    parent2.genome.connection_genes = parent2_connection_genes;
+    parent2.fitness = 6;
+
+    Genome offspring = parent1.crossover(parent2);
+
+    print(offspring.toString());
 
     return 0;
 }

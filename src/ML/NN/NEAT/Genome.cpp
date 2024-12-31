@@ -130,56 +130,6 @@ void Genome::assignConnectionsToNodes(std::map<int, Node*>& id_to_node)
 }
 
 
-Genome Genome::crossover(Entity &parent_1, Entity &parent_2)
-{
-    Genome offspring;
-    Entity* most_fit;
-    Entity* least_fit;
-
-    if (parent_1.fitness > parent_2.fitness)
-    {
-        most_fit = &parent_1;
-        least_fit = &parent_2;
-    }
-    else
-    {
-        most_fit = &parent_2;
-        least_fit = &parent_1;
-    }
-
-    if (parent_1.genome.node_genes.size() > parent_2.genome.node_genes.size())
-    {
-        offspring.node_genes = parent_1.genome.node_genes;
-    }
-    else
-    {
-        offspring.node_genes = parent_2.genome.node_genes;
-    }
-
-    for (const auto &most_fit_gene : most_fit->genome.connection_genes)
-    {
-        for (const auto &least_fit_gene : least_fit->genome.connection_genes)
-        {
-            if (most_fit_gene.innovation_number == least_fit_gene.innovation_number)
-            {
-                if (rand() % 2)
-                {
-                    offspring.connection_genes.push_back(most_fit_gene);
-                }
-                else
-                {
-                    offspring.connection_genes.push_back(least_fit_gene);
-                }
-            }
-            else
-            {
-                offspring.connection_genes.push_back(most_fit_gene);
-            }
-        }
-    }
-    return offspring;
-}
-
 std::string Genome::toString() const
 {
     std::string result = "Genome:\n";
