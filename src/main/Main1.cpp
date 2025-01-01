@@ -12,6 +12,7 @@
 bool DEBUG = false;
 
 int global_innovation_number = 0;
+int global_entity_id = 0;
 
 int main()
 {
@@ -88,9 +89,10 @@ int main()
         std::cout << "--------------START EVALUATING POPULATION FITNESS--------------" << std::endl;
         for (auto &entity : population)
         {
-            std::cout << "Evalutating Fitness of " << entity.genome.toString() << std::endl;
+            std::cout << "Evalutating Fitness of Entity: " << entity.id << std::endl << entity.genome.toString() << std::endl;
             std::cout << "Neural Network looks like: " << std::endl << entity.brain.toString() << std::endl;
             entity.evaluateFitness(features_matrix, labels);
+            std::cout << "Entity: " << entity.id << " Fitness: " << entity.fitness << std::endl;
         }
         std::cout << "----------------END EVALUATING POPULATION FITNESS--------------" << std::endl;
         std::sort(population.begin(), population.end(), [](const Entity &a, const Entity &b)
@@ -169,6 +171,8 @@ int main()
 
     std::cout << "Final Neural Net" << std::endl;
     std::cout << best_entity.brain.toString();
+
+    best_entity.genome.saveToDotFile("genome_graph.dot");
 
     return 0;
 }

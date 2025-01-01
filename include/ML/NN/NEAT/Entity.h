@@ -4,9 +4,11 @@
 #include "Genome.h"
 #include "NeuralNet.h"
 #include "LossFunctions.h"
+#include "EntityID.h"
 
 struct Entity
 {
+    int id;
     Genome genome;
     double fitness;
     NeuralNet brain;

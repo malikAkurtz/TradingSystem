@@ -5,6 +5,8 @@ Entity::Entity(const Genome& genome)
 {
     this->genome = genome;
     this->brain = NeuralNet(genome);
+    this->id = global_entity_id;
+    global_entity_id++;
 }
 
 Genome Entity::crossover(Entity &other_parent)
@@ -65,7 +67,6 @@ Genome Entity::crossover(Entity &other_parent)
     }
 
 
-
     return offspring;
 
 }
@@ -85,6 +86,5 @@ void Entity::evaluateFitness(const std::vector<std::vector<double>> &features_ma
 
     double entity_loss = cumError / num_samples;
 
-    std::cout << "This Entities Fitness is: " << -entity_loss << std::endl;
     this->fitness = -entity_loss; // negative because we want higher to be better
 }
