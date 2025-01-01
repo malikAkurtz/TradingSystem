@@ -50,12 +50,12 @@ int main()
     std::cout << "Base Genome is:" << std::endl;
     std::cout << base_genome.toString() << std::endl;
 
-    int max_generations = 10;
-    int population_size = 10;
+    int max_generations = 1000;
+    int population_size = 100;
 
     double weight_mutation_rate = 0.8;
-    double  add_connection_mutation_rate = 0.1;
-    double add_node_mutation_rate = 0.01;
+    double  add_connection_mutation_rate = 0.2;
+    double add_node_mutation_rate = 0.03;
     std::uniform_real_distribution<> dis(0.0, 1.0);
 
 
@@ -70,32 +70,38 @@ int main()
 
 
     std::cout << "Default Entity Neural Network toString" << std::endl;
-    std::cout << population[8].brain.toString() << std::endl;
+    std::cout << population[0].brain.toString() << std::endl;
 
     // for every generation
     for (int i = 0; i < max_generations; i++)
     {
         std::cout << "------------------BEGINNING GENERATION " << i << "-------------------" << std::endl;
+        // for (const auto& entity : population)
+        // {
+        //     std::cout << "Genome for this entity looks like: " << std::endl;
+        //     std::cout << entity.genome.toString() << std::endl;
+        //     std::cout << "brain for this entity looks like: " << std::endl;
+        //     std::cout << entity.brain.toString() << std::endl;
+        // }   
         // evaluate the population
         for (auto& entity : population)
         {
-            std::cout << "Evalutating Fitness of " << entity.genome.toString() << std::endl;
-            std::cout << "Neural Network looks like: " << entity.brain.toString() << std::endl;
-            for (const auto& node : entity.brain.layers[1].nodes)
-            {
-                std::cout << node->node_type << std::endl;
-            }
+            // std::cout << "Evalutating Fitness of " << entity.genome.toString() << std::endl;
+            // std::cout << "Neural Network looks like: " << entity.brain.toString() << std::endl;
             entity.evaluateFitness(features_matrix, labels);
         }
+        
         std::sort(population.begin(), population.end(), [](const Entity &a, const Entity &b)
                   { return a.fitness > b.fitness; });
 
         // select the top 20% for crossover
         int num_elites = population_size * 0.2;
+        // std::cout << "Number of elites selected for crossover: " << num_elites << std::endl;
         int offspring_required = population_size - num_elites;
+        // std::cout << "Number of offspring required: " << offspring_required << std::endl;
 
         std::vector<Entity> new_population(population.begin(), population.begin() + num_elites);
-
+        population.clear();
         // perform crossover
         for (int j = 0; j < offspring_required; j++)
         {   
@@ -107,34 +113,32 @@ int main()
                 random_elite_index2 = rand() % num_elites;
             }
 
-            Entity random_elite1 = new_population[random_elite_index1];
-            Entity random_elite2 = new_population[random_elite_index2];
+            Entity& random_elite1 = new_population[random_elite_index1];
+            Entity& random_elite2 = new_population[random_elite_index2];
 
-            //Genome offspring_genome = random_elite1.crossover(random_elite2);
+            Genome offspring_genome = random_elite1.crossover(random_elite2);
 
-            //std::cout << "New Offspring Genome is: " << offspring_genome.toString() << std::endl;
+            // std::cout << "New Offspring Genome is: " << offspring_genome.toString() << std::endl;
 
-            // perform mutations
-            // if (dis(gen) < weight_mutation_rate)
-            // {
-            //     offspring_genome.mutateChangeWeight();
-            // }
-            // else if (dis(gen) < add_connection_mutation_rate)
-            // {
-            //     offspring_genome.mutateAddConnection();
-            // }
-            // else if (dis(gen) < add_node_mutation_rate)
-            // {
-            //     offspring_genome.mutateAddNode();
-            // }
+            //perform mutations
+            if (dis(gen) < weight_mutation_rate)
+            {
+                offspring_genome.mutateChangeWeight();
+            }
+            else if (dis(gen) < add_connection_mutation_rate)
+            {
+                offspring_genome.mutateAddConnection();
+            }
+            else if (dis(gen) < add_node_mutation_rate)
+            {
+                offspring_genome.mutateAddNode();
+            }
 
-            //std::cout << "New Mutated Genome is: " << offspring_genome.toString() << std::endl;
+            // std::cout << "New Mutated Genome is: " << offspring_genome.toString() << std::endl;
 
-            Entity offspring(base_genome);
 
-            new_population.push_back(offspring);
+            population.emplace_back(Entity(offspring_genome));
         }
-        population = new_population;
         std::cout << "------------------FINISHED GENERATION " << i << "-------------------" << std::endl;
     }
 
@@ -143,7 +147,7 @@ int main()
         entity.evaluateFitness(features_matrix, labels);
     }
     std::sort(population.begin(), population.end(), [](const Entity &a, const Entity &b)
-                { return a.fitness > b.fitness; });
+                { return a.fitness < b.fitness; });
 
     Entity best_entity = population[0];
 
@@ -151,6 +155,9 @@ int main()
 
     std::cout << "Predictions are: " << std::endl;
     printMatrix(best_predictions);
+
+    std::cout << "Final Genome" << std::endl;
+    std::cout << best_entity.genome.toString();
 
     return 0;
 }

@@ -5,6 +5,18 @@ Genome::Genome() {};
 
 Genome::Genome(std::vector<ConnectionGene> connection_genes, std::vector<NodeGene> node_genes) : connection_genes(connection_genes), node_genes(node_genes) {};
 
+
+std::string nodeToString(NodeType type)
+{
+    switch (type)
+    {
+        case INPUT: return "INPUT";
+        case HIDDEN: return "HIDDEN";
+        case OUTPUT: return "OUTPUT";
+        default: return "UNKNOWN";
+    }
+}
+
 void Genome::mutateAddConnection()
 {
     int attempts = 100;
@@ -14,10 +26,10 @@ void Genome::mutateAddConnection()
     NodeGene* node_gene_out;
 
     std::map<int, int> id_to_depth = this->mapIDtoDepth();
-    bool connection_exists = false;
-    do
+    bool connection_is_valid = false;
+
+    while (!connection_is_valid && attempts > 0)
     {
-        connection_exists = false;
         node_gene_in = &node_genes[rand() % this->node_genes.size()];
         node_gene_out = &node_genes[rand() % this->node_genes.size()];
 
@@ -27,31 +39,41 @@ void Genome::mutateAddConnection()
         if (node_gene_out->node_type == INPUT) {continue;}
         // if the connection is to the same node, skip
         if (node_gene_in->node_id == node_gene_out->node_id) {continue;}
+        if (id_to_depth[node_gene_in->node_id] >= id_to_depth[node_gene_out->node_id]) {continue;}
 
+        bool exists = false;
         for (ConnectionGene connection_gene : connection_genes)
         {
             if (connection_gene.node_in == node_gene_in->node_id && connection_gene.node_out == node_gene_out->node_id)
             {
-                connection_exists = true;
                 std::cout << "Connection Already Exists, Finding Another" << std::endl;
+                exists = true;
                 break;
             }
         }
 
-        if (id_to_depth[node_gene_in->node_id] >= id_to_depth[node_gene_out->node_id]) {continue;}
 
-        attempts--;
-        if (attempts == 0) 
+        if (exists)
         {
-            return; // coudlnt find a valid place to put a connection
+            attempts--;
+            continue;
         }
 
-    } while (connection_exists);
+        connection_is_valid = true;
+        attempts--;
+    }
 
+    if (!connection_is_valid) {return;}
     std::cout << "Added a connection from " << node_gene_in->node_id << " To " << node_gene_out->node_id << std::endl;
 
     global_innovation_number++;
     int innovation_number = global_innovation_number;
+
+    std::cout << "We are trying: in->id=" << node_gene_in->node_id
+          << ", in->type=" << nodeToString(node_gene_in->node_type)
+          << " out->id=" << node_gene_out->node_id
+          << ", out->type=" << nodeToString(node_gene_out->node_type)
+          << std::endl;
 
     this->connection_genes.emplace_back(ConnectionGene(node_gene_in->node_id, node_gene_out->node_id, static_cast<double>(rand()) / RAND_MAX - 0.5, true, innovation_number));
     std::cout << "Added Connection" << std::endl;
@@ -124,8 +146,8 @@ std::map<int, int> Genome::mapIDtoDepth()
         change_occurred = false;
         for (const ConnectionGene &connection_gene : connection_genes)
         {
-            std::cout << "Connection gene when mapping looks like: " << std::endl;
-            std::cout << connection_gene.toString() << std::endl;
+            // std::cout << "Connection gene when mapping looks like: " << std::endl;
+            // std::cout << connection_gene.toString() << std::endl;
             int conn_node_in = connection_gene.node_in;
             int conn_node_out = connection_gene.node_out;
             
@@ -148,7 +170,7 @@ void Genome::assignConnectionsToNodes(std::map<int, Node>& id_to_node)
     for (const auto& cg : this->connection_genes)
     {
         int node_out = cg.node_out;
-        
+
         auto it = id_to_node.find(node_out);
         if (it != id_to_node.end()) {
             it->second.connections_in.emplace_back(Connection(cg));

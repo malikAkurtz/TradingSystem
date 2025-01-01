@@ -84,14 +84,14 @@ std::vector<std::vector<double>> NeuralNet::feedForward(const std::vector<std::v
                     continue;
                 }
                 int node_in = connection.node_in;
-                std::cout << "Node In ID: " << node_in << std::endl;
+                // std::cout << "Node In ID: " << node_in << std::endl;
                 // get the incoming nodes outputs
                 std::vector<double> input = this->id_to_node.at(node_in).outputs;
-                std::cout << "Has Output Vector: " << std::endl;
-                printVector(input);
+                // std::cout << "Has Output Vector: " << std::endl;
+                // printVector(input);
                 std::vector<double> scaled_input = LinearAlgebra::scaleVector(input, connection.weight);
-                std::cout << "Has Scaled Outputs: " << std::endl;
-                printVector(scaled_input);
+                // std::cout << "Has Scaled Outputs: " << std::endl;
+                // printVector(scaled_input);
                 scaled_inputs.push_back(scaled_input);
             }
             std::vector<double> node_output(scaled_inputs[0].size(), 0);
@@ -101,8 +101,8 @@ std::vector<std::vector<double>> NeuralNet::feedForward(const std::vector<std::v
             }
             // apply acivation
             node_output = this_layer.nodes[n]->applyActivation(node_output);
-            std::cout << "After Summing All Vectors, Output is: " << std::endl;
-            printVector(node_output);
+            // std::cout << "After Summing All Vectors, Output is: " << std::endl;
+            // printVector(node_output);
             
             this_layer.nodes[n]->storeOutputs(node_output);
             if (l == last_layer_index) 
@@ -112,9 +112,10 @@ std::vector<std::vector<double>> NeuralNet::feedForward(const std::vector<std::v
         }
     }
 
-    std::cout << "Networks Outputs are:" << std::endl;
-    printMatrix(network_outputs);
+    // std::cout << "Networks Outputs are:" << std::endl;
+    // printMatrix(network_outputs);
     return network_outputs;
+    std::cout << "--------------------------------------------------" << std::endl;
 }
 
 void NeuralNet::loadInputs(const std::vector<std::vector<double>>& features_matrix)
