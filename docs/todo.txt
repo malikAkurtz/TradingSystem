@@ -3,9 +3,7 @@
 3.) implemenet xavier initialization
 
 
-
-1.) need to make it so that a networks full information is in its encoding, i.e dont need to pass in a reference to a base network to create a new one based of any given encoding
-2.) currently not getting the actual last computed best encoding in neuroevolution (getting second to last)
+1.) nead to redo how i calculate fitness
 
 Neural network, 1 input layer 1 neuron, 1 hidden layer 2 neurons, 1 output layer 1 neuron,
 

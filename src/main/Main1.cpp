@@ -15,7 +15,7 @@ int global_innovation_number = 0;
 
 int main()
 {
-    std::vector<std::vector<double>> data = data1;
+    std::vector<std::vector<double>> data = data1_test;
 
     std::vector<std::vector<double>> labels = LinearAlgebra::vector1DtoColumnVector(LinearAlgebra::getColumn(data, 2));
     std::cout << "Labels are: " << std::endl;
@@ -50,12 +50,13 @@ int main()
     std::cout << "Base Genome is:" << std::endl;
     std::cout << base_genome.toString() << std::endl;
     std::cout << "-------------------------------------------------------------------" << std::endl;
-    int max_generations = 10;
-    int population_size = 10;
+    int max_generations = 100;
+    int population_size = 100;
+    float elite_ratio = 0.2;
 
     double weight_mutation_rate = 0.8;
     double  add_connection_mutation_rate = 0.2;
-    double add_node_mutation_rate = 0.03;
+    double add_node_mutation_rate = 0.1;
     std::uniform_real_distribution<> dis(0.0, 1.0);
 
 
@@ -87,21 +88,22 @@ int main()
         std::cout << "--------------START EVALUATING POPULATION FITNESS--------------" << std::endl;
         for (auto &entity : population)
         {
-            // std::cout << "Evalutating Fitness of " << entity.genome.toString() << std::endl;
-            // std::cout << "Neural Network looks like: " << entity.brain.toString() << std::endl;
+            std::cout << "Evalutating Fitness of " << entity.genome.toString() << std::endl;
+            std::cout << "Neural Network looks like: " << std::endl << entity.brain.toString() << std::endl;
             entity.evaluateFitness(features_matrix, labels);
         }
         std::cout << "----------------END EVALUATING POPULATION FITNESS--------------" << std::endl;
         std::sort(population.begin(), population.end(), [](const Entity &a, const Entity &b)
-                  { return a.fitness > b.fitness; });
+                  { return a.fitness > b.fitness; }); 
 
         // select the top 20% for crossover
-        int num_elites = population_size * 0.2;
+        int num_elites = population_size * elite_ratio;
         // std::cout << "Number of elites selected for crossover: " << num_elites << std::endl;
         int offspring_required = population_size - num_elites;
         // std::cout << "Number of offspring required: " << offspring_required << std::endl;
-        std::vector<Entity> new_population(population_size);
-        
+        std::vector<Entity> new_population;
+        new_population.reserve(population_size);
+
         for (int j = 0; j < num_elites; j++)
         {
             new_population.push_back(population[j]);
@@ -163,7 +165,10 @@ int main()
     printMatrix(best_predictions);
 
     std::cout << "Final Genome" << std::endl;
-    std::cout << best_entity.genome.toString();
+    std::cout << best_entity.genome.toString() << std::endl;
+
+    std::cout << "Final Neural Net" << std::endl;
+    std::cout << best_entity.brain.toString();
 
     return 0;
 }

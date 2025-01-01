@@ -94,9 +94,19 @@ std::vector<std::vector<double>> NeuralNet::feedForward(const std::vector<std::v
                 // printVector(scaled_input);
                 scaled_inputs.push_back(scaled_input);
             }
-            std::vector<double> node_output(scaled_inputs[0].size(), 0);
-            for (const auto& vector: scaled_inputs)
+            if (scaled_inputs.empty())
             {
+                std::vector<double> default_output(num_samples, 0);
+                this_layer.nodes[n]->storeOutputs(default_output);
+                continue;
+            }
+            std::vector<double> node_output(scaled_inputs[0].size(), 0);
+            std::cout << "First Vector in scaled inputs size" << std::endl;
+            std::cout << scaled_inputs[0].size() << std::endl;
+            for (const auto &vector : scaled_inputs)
+            {
+                std::cout << "Vector in scaled_inputs size" << std::endl;
+                std::cout << vector.size() << std::endl;
                 node_output = LinearAlgebra::addVectors(node_output, vector);
             }
             // apply acivation
@@ -114,8 +124,8 @@ std::vector<std::vector<double>> NeuralNet::feedForward(const std::vector<std::v
 
     // std::cout << "Networks Outputs are:" << std::endl;
     // printMatrix(network_outputs);
-    return network_outputs;
     std::cout << "--------------------------------------------------" << std::endl;
+    return network_outputs;
 }
 
 void NeuralNet::loadInputs(const std::vector<std::vector<double>>& features_matrix)
@@ -125,7 +135,7 @@ void NeuralNet::loadInputs(const std::vector<std::vector<double>>& features_matr
     std::cout << "----------------------LOADING INPUTS----------------------" << std::endl;
     for (int j = 0; j < num_features; j++)
     {
-        std::cout << "Loading Feature: " << j << " Into Input Layer" << std::endl;
+        // std::cout << "Loading Feature: " << j << " Into Input Layer" << std::endl;
         // save it
         std::vector<double> feature_vector = LinearAlgebra::getColumn(features_matrix, j);
 
@@ -133,11 +143,11 @@ void NeuralNet::loadInputs(const std::vector<std::vector<double>>& features_matr
         // store it in the input neurons in the input layer (layers index 0)
         this->layers[0].nodes[j]->storeOutputs(feature_vector);
     }
-    for (const auto& node : this->layers[0].nodes)
-    {
-        std::cout << "Input Node: " << node->node_id << " Has Output Vector" << std::endl;
-        printVector(node->outputs);
-    }
+    // for (const auto& node : this->layers[0].nodes)
+    // {
+    //     std::cout << "Input Node: " << node->node_id << " Has Output Vector" << std::endl;
+    //     printVector(node->outputs);
+    // }
     std::cout << "----------------------DONE LOADING INPUTS----------------------" << std::endl;
 }
 

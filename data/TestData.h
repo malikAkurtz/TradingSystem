@@ -15,6 +15,10 @@ std::vector<std::vector<double>> data1 = {
     {15.0, 17.4, 28.4}, {15.5, 18.0, 29.0}
 };
 
+std::vector<std::vector<double>> data1_test = {
+    {1.0, 2.5, 5.0}, {1.5, 3.1, 6.0}
+};
+
 // Data2 consolidated
 std::vector<std::vector<double>> data2 = {
     {1, 5}, {2, 7}, {3, 9}, {4, 11}, {5, 13}, {6, 15}, {7, 17}, {8, 19}, {9, 21}, {10, 23},

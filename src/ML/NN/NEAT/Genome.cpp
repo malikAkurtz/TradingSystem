@@ -46,7 +46,7 @@ void Genome::mutateAddConnection()
         {
             if (connection_gene.node_in == node_gene_in->node_id && connection_gene.node_out == node_gene_out->node_id)
             {
-                std::cout << "Connection Already Exists, Finding Another" << std::endl;
+                //std::cout << "Connection Already Exists, Finding Another" << std::endl;
                 exists = true;
                 break;
             }
@@ -69,14 +69,12 @@ void Genome::mutateAddConnection()
     global_innovation_number++;
     int innovation_number = global_innovation_number;
 
-    std::cout << "We are trying: in->id=" << node_gene_in->node_id
-          << ", in->type=" << nodeToString(node_gene_in->node_type)
-          << " out->id=" << node_gene_out->node_id
-          << ", out->type=" << nodeToString(node_gene_out->node_type)
-          << std::endl;
-
+    // std::cout << "We are trying: in->id=" << node_gene_in->node_id
+    //       << ", in->type=" << nodeToString(node_gene_in->node_type)
+    //       << " out->id=" << node_gene_out->node_id
+    //       << ", out->type=" << nodeToString(node_gene_out->node_type)
+    //       << std::endl;
     this->connection_genes.emplace_back(ConnectionGene(node_gene_in->node_id, node_gene_out->node_id, static_cast<double>(rand()) / RAND_MAX - 0.5, true, innovation_number));
-    std::cout << "Added Connection" << std::endl;
 }
 
 void Genome::mutateAddNode()
@@ -106,6 +104,7 @@ void Genome::mutateAddNode()
     // create the second connection gene
     this->connection_genes.emplace_back(ConnectionGene(new_node_id, final_node_out, prev_weight, true, global_innovation_number));
 
+    std::cout << "Added Node: " << new_node_id << " With node_in: " << base_node_in << " And node_out: " << final_node_out << std::endl;
 }
 
 void Genome::mutateChangeWeight()
