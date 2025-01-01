@@ -32,13 +32,13 @@ void NeuralNet::assignNodestoLayers()
     }
     greatest_depth++; // bc of index 0
 
-    std::ostringstream oss;
-    oss << "id_to_depth Map:\n";
-    for (const auto& pair : id_to_depth)
-    {
-        oss << "  Node ID: " << pair.first << ", Depth: " << pair.second << "\n";
-    }
-    std::cout << oss.str() << std::endl;
+    // std::ostringstream oss;
+    // oss << "id_to_depth Map:\n";
+    // for (const auto& pair : id_to_depth)
+    // {
+    //     oss << "  Node ID: " << pair.first << ", Depth: " << pair.second << "\n";
+    // }
+    // std::cout << oss.str() << std::endl;
 
     for (int i = 0; i < greatest_depth; i++)
     {

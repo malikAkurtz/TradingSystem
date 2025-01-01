@@ -49,9 +49,9 @@ int main()
     Genome base_genome(connection_genes, node_genes);
     std::cout << "Base Genome is:" << std::endl;
     std::cout << base_genome.toString() << std::endl;
-
-    int max_generations = 1000;
-    int population_size = 100;
+    std::cout << "-------------------------------------------------------------------" << std::endl;
+    int max_generations = 10;
+    int population_size = 10;
 
     double weight_mutation_rate = 0.8;
     double  add_connection_mutation_rate = 0.2;
@@ -69,7 +69,7 @@ int main()
     }
 
 
-    std::cout << "Default Entity Neural Network toString" << std::endl;
+    std::cout << "Base Entity Neural Network toString" << std::endl;
     std::cout << population[0].brain.toString() << std::endl;
 
     // for every generation
@@ -84,13 +84,14 @@ int main()
         //     std::cout << entity.brain.toString() << std::endl;
         // }   
         // evaluate the population
-        for (auto& entity : population)
+        std::cout << "--------------START EVALUATING POPULATION FITNESS--------------" << std::endl;
+        for (auto &entity : population)
         {
             // std::cout << "Evalutating Fitness of " << entity.genome.toString() << std::endl;
             // std::cout << "Neural Network looks like: " << entity.brain.toString() << std::endl;
             entity.evaluateFitness(features_matrix, labels);
         }
-        
+        std::cout << "----------------END EVALUATING POPULATION FITNESS--------------" << std::endl;
         std::sort(population.begin(), population.end(), [](const Entity &a, const Entity &b)
                   { return a.fitness > b.fitness; });
 
@@ -99,8 +100,13 @@ int main()
         // std::cout << "Number of elites selected for crossover: " << num_elites << std::endl;
         int offspring_required = population_size - num_elites;
         // std::cout << "Number of offspring required: " << offspring_required << std::endl;
+        std::vector<Entity> new_population(population_size);
+        
+        for (int j = 0; j < num_elites; j++)
+        {
+            new_population.push_back(population[j]);
+        }
 
-        std::vector<Entity> new_population(population.begin(), population.begin() + num_elites);
         population.clear();
         // perform crossover
         for (int j = 0; j < offspring_required; j++)
@@ -147,7 +153,7 @@ int main()
         entity.evaluateFitness(features_matrix, labels);
     }
     std::sort(population.begin(), population.end(), [](const Entity &a, const Entity &b)
-                { return a.fitness < b.fitness; });
+                { return a.fitness > b.fitness; });
 
     Entity best_entity = population[0];
 
