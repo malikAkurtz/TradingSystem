@@ -19,34 +19,52 @@ std::string nodeToString(NodeType type)
 
 void Genome::mutateAddConnection()
 {
-    int attempts = 100;
+    int initial_attempts = 10 * this->node_genes.size();
+    int attempts = initial_attempts;
     // pick random in node
-    NodeGene *node_gene_in;
+    NodeGene &node_gene_in = node_genes[rand() % this->node_genes.size()];
     // pick random out node
-    NodeGene* node_gene_out;
+    NodeGene &node_gene_out = node_genes[rand() % this->node_genes.size()];
 
     std::map<int, int> id_to_depth = this->mapIDtoDepth();
     bool connection_is_valid = false;
 
     while (!connection_is_valid && attempts > 0)
     {
-        node_gene_in = &node_genes[rand() % this->node_genes.size()];
-        node_gene_out = &node_genes[rand() % this->node_genes.size()];
+        node_gene_in = node_genes[rand() % this->node_genes.size()];
+        node_gene_out = node_genes[rand() % this->node_genes.size()];
+
+        debugMessage("mutateAddConnection", "Attempting Connection: In Node: " + std::to_string(node_gene_in.node_id) + " Out Node: " + std::to_string(node_gene_out.node_id));
 
         // if the source connection is the output, skip
-        if (node_gene_in->node_type == OUTPUT) {continue;}
+        if (node_gene_in.node_type == OUTPUT) 
+        {
+            debugMessage("mutateAddConnection", "Rejected: In node is OUTPUT");
+            continue;
+        }
         // if the destination connection is an input node, skip
-        if (node_gene_out->node_type == INPUT) {continue;}
+        if (node_gene_out.node_type == INPUT) 
+        {
+            debugMessage("mutateAddConnection", "Rejected: Out node is INPUT");
+            continue;
+        }
         // if the connection is to the same node, skip
-        if (node_gene_in->node_id == node_gene_out->node_id) {continue;}
-        if (id_to_depth[node_gene_in->node_id] >= id_to_depth[node_gene_out->node_id]) {continue;}
+        if (node_gene_in.node_id == node_gene_out.node_id) 
+        {
+            debugMessage("mutateAddConnection", "Rejected: Same node");
+            continue;
+        }
+        if (id_to_depth[node_gene_in.node_id] >= id_to_depth[node_gene_out.node_id]) 
+        {
+            debugMessage("mutateAddConnection", "Depth Condition not met");
+            continue;
+        }
 
         bool exists = false;
         for (ConnectionGene connection_gene : connection_genes)
         {
-            if (connection_gene.node_in == node_gene_in->node_id && connection_gene.node_out == node_gene_out->node_id)
+            if (connection_gene.node_in == node_gene_in.node_id && connection_gene.node_out == node_gene_out.node_id)
             {
-                //std::cout << "Connection Already Exists, Finding Another" << std::endl;
                 exists = true;
                 break;
             }
@@ -55,6 +73,7 @@ void Genome::mutateAddConnection()
 
         if (exists)
         {
+            debugMessage("mutateAddConnection", "Connection Already Exists, Finding Another");
             attempts--;
             continue;
         }
@@ -63,33 +82,46 @@ void Genome::mutateAddConnection()
         attempts--;
     }
 
-    if (!connection_is_valid) {return;}
-    std::cout << "Added a connection from " << node_gene_in->node_id << " To " << node_gene_out->node_id << std::endl;
+    if (!connection_is_valid) 
+    {   
+        debugMessage("mutateAddConnection", "Warning: No valid connection found after " + std::to_string(attempts) + " attempts");
+        return;
+    }
+    debugMessage("mutateAddConnection", "Added a connection from: " + std::to_string(node_gene_in.node_id) + " To: " + std::to_string(node_gene_out.node_id));
 
     global_innovation_number++;
-    int innovation_number = global_innovation_number;
 
     // std::cout << "We are trying: in->id=" << node_gene_in->node_id
     //       << ", in->type=" << nodeToString(node_gene_in->node_type)
     //       << " out->id=" << node_gene_out->node_id
     //       << ", out->type=" << nodeToString(node_gene_out->node_type)
     //       << std::endl;
-    this->connection_genes.emplace_back(ConnectionGene(node_gene_in->node_id, node_gene_out->node_id, static_cast<double>(rand()) / RAND_MAX - 0.5, true, innovation_number));
+    this->connection_genes.emplace_back(
+        ConnectionGene(
+            node_gene_in.node_id, node_gene_out.node_id, 
+            static_cast<double>(rand()) / RAND_MAX - 0.5, 
+            true, 
+            global_innovation_number)
+            );
 }
 
 void Genome::mutateAddNode()
 {   
-    // 1.) pick a random existing connection
-    ConnectionGene *random_connection_gene = &connection_genes[rand() % this->connection_genes.size()];
 
-    double prev_weight = random_connection_gene->weight;
+    std::map<int, int> id_to_depth = this->mapIDtoDepth();
+    // 1.) pick a random existing connection
+    ConnectionGene &random_connection_gene = this->connection_genes[rand() % this->connection_genes.size()];
+
+    debugMessage("mutateAddNode", "Connection Gene Selected for Node Placement: " + random_connection_gene.toString());
+
+    double prev_weight = random_connection_gene.weight;
     // disable the existing connection
-    random_connection_gene->enabled = false;
+    random_connection_gene.enabled = false;
 
     // get in node
-    int base_node_in = random_connection_gene->node_in;
+    int base_node_in = random_connection_gene.node_in;
     // get out node
-    int final_node_out = random_connection_gene->node_out;
+    int final_node_out = random_connection_gene.node_out;
 
     // 2.) generate the new node_id
     int new_node_id = node_genes.size() + 1;
@@ -110,10 +142,12 @@ void Genome::mutateAddNode()
 void Genome::mutateChangeWeight()
 {
     ConnectionGene &random_connection_gene = this->connection_genes[rand() % this->connection_genes.size()];
+    debugMessage("mutateChangeWeight", "Connection Gene Selected for Weight Replacement: " + random_connection_gene.toString());
 
     double random_weight = static_cast<double>(rand()) / RAND_MAX - 0.5;
 
     random_connection_gene.weight = random_weight;
+    
 }
 
 std::map<int, Node> Genome::mapIDtoNode()

@@ -10,6 +10,15 @@ NeuralNet::NeuralNet(Genome genome)
 {
     this->id_to_node.clear();
     this->id_to_node = genome.mapIDtoNode();
+    
+    std::ostringstream oss;
+    oss << "id_to_node Map:\n";
+    for (const auto& pair : id_to_node)
+    {
+        oss << "  Node ID: " << pair.first << ", Node ID: " << pair.second.node_id << "\n";
+    }
+    debugMessage("NeuralNet Constructer", "id_to_map Structure: " + oss.str());
+
     this->id_to_depth.clear();
     this->id_to_depth = genome.mapIDtoDepth();
 
@@ -32,13 +41,14 @@ void NeuralNet::assignNodestoLayers()
     }
     greatest_depth++; // bc of index 0
 
-    // std::ostringstream oss;
-    // oss << "id_to_depth Map:\n";
-    // for (const auto& pair : id_to_depth)
-    // {
-    //     oss << "  Node ID: " << pair.first << ", Depth: " << pair.second << "\n";
-    // }
-    // std::cout << oss.str() << std::endl;
+    std::ostringstream oss;
+    oss << "id_to_depth Map:\n";
+    for (const auto& pair : id_to_depth)
+    {
+        oss << "  Node ID: " << pair.first << ", Depth: " << pair.second << "\n";
+    }
+
+    debugMessage("assignNodestoLayers", "Node/Layer Depths Before Assignment: " + oss.str());
 
     for (int i = 0; i < greatest_depth; i++)
     {
@@ -50,11 +60,13 @@ void NeuralNet::assignNodestoLayers()
     {
         this->layers[value].nodes.push_back(&this->id_to_node.at(key));
     }
-}
 
+}
 
 std::vector<std::vector<double>> NeuralNet::feedForward(const std::vector<std::vector<double>> &features_matrix)
 {
+    debugMessage("feedForward", "Beginning Feed Forwad With Feature Matrix: Rows = " + std::to_string(features_matrix.size()) + ", Columns = " + std::to_string(features_matrix[0].size()));
+
     this->loadInputs(features_matrix);
 
     int last_layer_index = this->layers.size() - 1;
@@ -66,15 +78,12 @@ std::vector<std::vector<double>> NeuralNet::feedForward(const std::vector<std::v
     std::vector<std::vector<double>> network_outputs(num_samples);
 
     // starting at 1 to skip the input layer
-    std::cout << "----------------------PROCESSING LAYERS----------------------" << std::endl;
     for (int l = 1; l < this->layers.size(); l++)
     {
-        std::cout << "Processing Layer: " << l << std::endl;
         Layer &this_layer = this->layers[l];
         // for every node in the layer, need to calculate its output and store it in that node
         for (int n = 0; n < this_layer.nodes.size(); n++)
         {
-            std::cout << "Processing Node: " << this_layer.nodes[n]->node_id << std::endl;
             std::vector<std::vector<double>> scaled_inputs;
             // for every connection going into the node
             for (const auto &connection : this_layer.nodes[n]->connections_in)
@@ -84,13 +93,10 @@ std::vector<std::vector<double>> NeuralNet::feedForward(const std::vector<std::v
                     continue;
                 }
                 int node_in = connection.node_in;
-                // std::cout << "Node In ID: " << node_in << std::endl;
                 // get the incoming nodes outputs
                 std::vector<double> input = this->id_to_node.at(node_in).outputs;
-                // std::cout << "Has Output Vector: " << std::endl;
-                // printVector(input);
+
                 std::vector<double> scaled_input = LinearAlgebra::scaleVector(input, connection.weight);
-                // std::cout << "Has Scaled Outputs: " << std::endl;
                 // printVector(scaled_input);
                 scaled_inputs.push_back(scaled_input);
             }
@@ -101,18 +107,14 @@ std::vector<std::vector<double>> NeuralNet::feedForward(const std::vector<std::v
                 continue;
             }
             std::vector<double> node_output(scaled_inputs[0].size(), 0);
-            std::cout << "First Vector in scaled inputs size" << std::endl;
-            std::cout << scaled_inputs[0].size() << std::endl;
+
             for (const auto &vector : scaled_inputs)
             {
-                std::cout << "Vector in scaled_inputs size" << std::endl;
-                std::cout << vector.size() << std::endl;
+
                 node_output = LinearAlgebra::addVectors(node_output, vector);
             }
             // apply acivation
             node_output = this_layer.nodes[n]->applyActivation(node_output);
-            // std::cout << "After Summing All Vectors, Output is: " << std::endl;
-            // printVector(node_output);
             
             this_layer.nodes[n]->storeOutputs(node_output);
             if (l == last_layer_index) 
@@ -124,18 +126,19 @@ std::vector<std::vector<double>> NeuralNet::feedForward(const std::vector<std::v
 
     // std::cout << "Networks Outputs are:" << std::endl;
     // printMatrix(network_outputs);
-    std::cout << "--------------------------------------------------" << std::endl;
+    debugMessage("feedForward", "feedForward Result: ");
+    printMatrixDebug(network_outputs);
     return network_outputs;
 }
 
 void NeuralNet::loadInputs(const std::vector<std::vector<double>>& features_matrix)
 {   
+
     int num_features = features_matrix[0].size();
     // for every feature column in the features_matrix
-    std::cout << "----------------------LOADING INPUTS----------------------" << std::endl;
+
     for (int j = 0; j < num_features; j++)
     {
-        // std::cout << "Loading Feature: " << j << " Into Input Layer" << std::endl;
         // save it
         std::vector<double> feature_vector = LinearAlgebra::getColumn(features_matrix, j);
 
@@ -143,13 +146,10 @@ void NeuralNet::loadInputs(const std::vector<std::vector<double>>& features_matr
         // store it in the input neurons in the input layer (layers index 0)
         this->layers[0].nodes[j]->storeOutputs(feature_vector);
     }
-    // for (const auto& node : this->layers[0].nodes)
-    // {
-    //     std::cout << "Input Node: " << node->node_id << " Has Output Vector" << std::endl;
-    //     printVector(node->outputs);
-    // }
-    std::cout << "----------------------DONE LOADING INPUTS----------------------" << std::endl;
 }
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
   // for std::ostringstream
 

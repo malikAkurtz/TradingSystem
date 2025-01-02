@@ -66,9 +66,9 @@ Genome Entity::crossover(Entity &other_parent)
         }
     }
 
+    debugMessage("crossover", "Performed Crossover Between Entities: " + std::to_string(this->id) + ", " + std::to_string(other_parent.id) + + " To Produce: " + offspring.toString());
 
     return offspring;
-
 }
 
 void Entity::evaluateFitness(const std::vector<std::vector<double>> &features_matrix, const std::vector<std::vector<double>> &labels)
@@ -85,6 +85,7 @@ void Entity::evaluateFitness(const std::vector<std::vector<double>> &features_ma
     }
 
     double entity_loss = cumError / num_samples;
-
+    debugMessage("evaluateFitness", "Entity: " + std::to_string(this->id) + " Fitness: " + std::to_string(-entity_loss));
+    
     this->fitness = -entity_loss; // negative because we want higher to be better
 }

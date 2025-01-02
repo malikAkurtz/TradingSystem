@@ -7,6 +7,8 @@
 
 extern bool DEBUG;
 
+void debugMessage(const std::string& tag, const std::string& message);
+
 void printMatrixDebug(const std::vector<std::vector<double>>& matrix);
 void printMatrix(const std::vector<std::vector<double>> &matrix);
 
@@ -27,5 +29,7 @@ void printDebug(const T& value) {
 
 void printPredictionsVSLabels(const std::vector<std::vector<double>> &predictions,
                               const std::vector<std::vector<double>> &labels);
+
+
 
 #endif

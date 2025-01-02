@@ -1,5 +1,13 @@
 #include "Output.h"
 
+void debugMessage(const std::string& tag, const std::string& message)
+{
+    if (DEBUG)
+    {
+        std::cout << "[" << tag << "]" << message << std::endl;
+    }
+}
+
 void printMatrix(const std::vector<std::vector<double>>& matrix) {
     std::cout << "[" << std::endl;
     for (const auto& row : matrix) {
