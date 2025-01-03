@@ -1,0 +1,105 @@
+Evalutating Fitness of Entity: 87-----
+Genome:
+NodeGenes:
+  NodeGene(node_id: 1, node_type: INPUT)
+  NodeGene(node_id: 2, node_type: OUTPUT)
+ConnectionGenes:
+  ConnectionGene(node_in: 1, node_out: 2, weight: 0.489295, enabled: true, innovation_number: 1)
+
+Neural Network looks like: 
+Layer: 0 Consists of:
+  Node ID: 1
+  Has Connections:
+Layer: 1 Consists of:
+  Node ID: 2
+  Has Connections:
+    From: 1 To: 2
+
+[feedForward]Beginning Feed Forwad With Feature Matrix: Rows = 20, Columns = 1
+[feedForward]feedForward Result: 
+[
+  < 0.489295 >
+  < 0.978589 >
+  < 1.46788 >
+  < 1.95718 >
+  < 2.44647 >
+  < 2.93577 >
+  < 3.42506 >
+  < 3.91436 >
+  < 4.40365 >
+  < 4.89295 >
+  < 5.38224 >
+  < 5.87154 >
+  < 6.36083 >
+  < 6.85013 >
+  < 7.33942 >
+  < 7.82871 >
+  < 8.31801 >
+  < 8.8073 >
+  < 9.2966 >
+  < 9.78589 >
+]
+(20,1)
+[evaluateFitness]Entity: 87 Fitness: -215.837268
+
+----Evalutating Fitness of Entity: 91-----
+Genome:
+NodeGenes:
+  NodeGene(node_id: 1, node_type: INPUT)
+  NodeGene(node_id: 2, node_type: OUTPUT)
+  NodeGene(node_id: 3, node_type: HIDDEN)
+ConnectionGenes:
+  ConnectionGene(node_in: 1, node_out: 2, weight: 0.489295, enabled: false, innovation_number: 1)
+  ConnectionGene(node_in: 1, node_out: 3, weight: 1.000000, enabled: true, innovation_number: 4)
+  ConnectionGene(node_in: 3, node_out: 2, weight: 0.489295, enabled: true, innovation_number: 5)
+
+Neural Network looks like: 
+Layer: 0 Consists of:
+  Node ID: 1
+  Has Connections:
+Layer: 1 Consists of:
+  Node ID: 3
+  Has Connections:
+    From: 1 To: 3
+Layer: 2 Consists of:
+  Node ID: 2
+  Has Connections:
+    From: 1 To: 2
+    From: 3 To: 2
+
+[feedForward]Beginning Feed Forwad With Feature Matrix: Rows = 20, Columns = 1
+[feedForward]feedForward Result: 
+[
+  < 0.489295 >
+  < 0.978589 >
+  < 1.46788 >
+  < 1.95718 >
+  < 2.44647 >
+  < 2.93577 >
+  < 3.42506 >
+  < 3.91436 >
+  < 4.40365 >
+  < 4.89295 >
+  < 5.38224 >
+  < 5.87154 >
+  < 6.36083 >
+  < 6.85013 >
+  < 7.33942 >
+  < 7.82871 >
+  < 8.31801 >
+  < 8.8073 >
+  < 9.2966 >
+  < 9.78589 >
+]
+(20,1)
+[evaluateFitness]Entity: 91 Fitness: -215.837268
+
+[crossover]Performed Crossover Between Entities: 87, 91 To Produce: Genome:
+NodeGenes:
+  NodeGene(node_id: 1, node_type: INPUT)
+  NodeGene(node_id: 2, node_type: OUTPUT)
+  NodeGene(node_id: 3, node_type: HIDDEN)
+ConnectionGenes:
+  ConnectionGene(node_in: 1, node_out: 2, weight: 0.489295, enabled: true, innovation_number: 1)
+  ConnectionGene(node_in: 1, node_out: 3, weight: 1.000000, enabled: true, innovation_number: 4)
+  ConnectionGene(node_in: 3, node_out: 2, weight: 0.489295, enabled: true, innovation_number: 5)

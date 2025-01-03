@@ -6,6 +6,7 @@ enum NodeType
     INPUT,
     HIDDEN,
     OUTPUT,
+    BIAS
 };
 
 #endif

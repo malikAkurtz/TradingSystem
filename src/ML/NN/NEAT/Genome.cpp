@@ -13,7 +13,9 @@ std::string nodeToString(NodeType type)
         case INPUT: return "INPUT";
         case HIDDEN: return "HIDDEN";
         case OUTPUT: return "OUTPUT";
-        default: return "UNKNOWN";
+        case BIAS: return "BIAS";
+        default:
+            return "UNKNOWN";
     }
 }
 
@@ -107,10 +109,21 @@ void Genome::mutateAddConnection()
 
 void Genome::mutateAddNode()
 {   
-
-    std::map<int, int> id_to_depth = this->mapIDtoDepth();
     // 1.) pick a random existing connection
     ConnectionGene &random_connection_gene = this->connection_genes[rand() % this->connection_genes.size()];
+
+    int initial_attempts = 10 * this->connection_genes.size();
+    int attempts = initial_attempts;
+
+    while (random_connection_gene.enabled == false)
+    {
+        random_connection_gene = this->connection_genes[rand() % this->connection_genes.size()];
+        attempts--;
+        if (attempts <= 0)
+        {
+            return;
+        }
+    }
 
     debugMessage("mutateAddNode", "Connection Gene Selected for Node Placement: " + random_connection_gene.toString());
 
@@ -124,7 +137,7 @@ void Genome::mutateAddNode()
     int final_node_out = random_connection_gene.node_out;
 
     // 2.) generate the new node_id
-    int new_node_id = node_genes.size() + 1;
+    int new_node_id = node_genes.size();
     // create the node gene and add it
     this->node_genes.emplace_back(NodeGene(new_node_id, HIDDEN));
 
@@ -136,18 +149,18 @@ void Genome::mutateAddNode()
     // create the second connection gene
     this->connection_genes.emplace_back(ConnectionGene(new_node_id, final_node_out, prev_weight, true, global_innovation_number));
 
-    std::cout << "Added Node: " << new_node_id << " With node_in: " << base_node_in << " And node_out: " << final_node_out << std::endl;
+    std::cout << "Added Node to Entity: " << global_innovation_number << " With: " << new_node_id << " With node_in: " << base_node_in << " And node_out: " << final_node_out << std::endl;
 }
 
 void Genome::mutateChangeWeight()
 {
     ConnectionGene &random_connection_gene = this->connection_genes[rand() % this->connection_genes.size()];
-    debugMessage("mutateChangeWeight", "Connection Gene Selected for Weight Replacement: " + random_connection_gene.toString());
+    // debugMessage("mutateChangeWeight", "Connection Gene Selected for Weight Replacement: " + random_connection_gene.toString());
 
     double random_weight = static_cast<double>(rand()) / RAND_MAX - 0.5;
 
     random_connection_gene.weight = random_weight;
-    
+
 }
 
 std::map<int, Node> Genome::mapIDtoNode()

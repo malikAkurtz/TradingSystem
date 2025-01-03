@@ -36,15 +36,18 @@ int main()
 
     NodeGene ng1(1, INPUT);
     // NodeGene ng2(2, INPUT);
+    NodeGene bias(-1, BIAS);
     NodeGene ng2(2, OUTPUT);
 
     ConnectionGene cg1(1, 2, 0.2, true, 1);
     global_innovation_number++;
+    ConnectionGene bias_conn(-1, 2, 1, true, 2);
+    global_innovation_number++;
     // ConnectionGene cg2(2, 3, 0.1, true, 2);
     // global_innovation_number++;
 
-    std::vector<ConnectionGene> connection_genes = {cg1};
-    std::vector<NodeGene> node_genes = {ng1, ng2};
+    std::vector<ConnectionGene> connection_genes = {cg1, bias_conn};
+    std::vector<NodeGene> node_genes = {ng1, ng2, bias};
 
     
     Genome base_genome(connection_genes, node_genes);
@@ -55,7 +58,7 @@ int main()
     int population_size = 100;
     float elite_ratio = 0.2;
 
-    double weight_mutation_rate = 0.8;
+    double weight_mutation_rate = 0.99;
     double  add_connection_mutation_rate = 0.2;
     double add_node_mutation_rate = 0.1;
     std::uniform_real_distribution<> dis(0.0, 1.0);
@@ -72,27 +75,30 @@ int main()
 
 
     std::cout << "Base Entity Neural Network toString" << std::endl;
-    std::cout << population[0].brain.toString() << std::endl;
+    std::cout << population[9].brain.toString() << std::endl;
 
     // for every generation
     for (int i = 0; i < max_generations; i++)
     {
-        global_entity_id = 0;
         std::cout << "------------------BEGINNING GENERATION " << i << "-------------------" << std::endl;
         // evaluate the population
         std::cout << "--------------START EVALUATING POPULATION FITNESS--------------" << std::endl;
         for (auto &entity : population)
         {
-            std::cout << "Evalutating Fitness of Entity: " << entity.id << std::endl << entity.genome.toString() << std::endl;
+            std::cout << "----Evalutating Fitness of Entity: " << entity.id << "-----" << std::endl << entity.genome.toString() << std::endl;
             std::cout << "Neural Network looks like: " << std::endl << entity.brain.toString() << std::endl;
             entity.evaluateFitness(features_matrix, labels);
-            std::cout << "Entity: " << entity.id << " Fitness: " << entity.fitness << std::endl;
         }
         std::cout << "----------------END EVALUATING POPULATION FITNESS--------------" << std::endl;
 
         std::sort(population.begin(), population.end(), [](const Entity &a, const Entity &b)
                   { return a.fitness > b.fitness; }); 
-
+        
+        std::cout << "Sorted Fitnesses in decreasing order:" << std::endl;
+        for (int j = 0; j < population.size(); j++)
+        {
+            std::cout << "Entity: " << population[j].id << " Fitness: " << population[j].fitness << std::endl;
+        }
         // select the top 20% for crossover
         int num_elites = population_size * elite_ratio;
         // std::cout << "Number of elites selected for crossover: " << num_elites << std::endl;
@@ -100,6 +106,12 @@ int main()
         // std::cout << "Number of offspring required: " << offspring_required << std::endl;
 
         population.erase(population.begin() + num_elites, population.end());
+        std::cout << "Elites For This Generation Are: " << std::endl;
+        for (int j = 0; j < population.size(); j++)
+        {
+            std::cout << "Entity: " << population[j].id << " Fitness: " << population[j].fitness << std::endl;
+        }
+
         // perform crossover
         for (int j = 0; j < offspring_required; j++)
         {   
@@ -127,7 +139,7 @@ int main()
             // {
             //     offspring_genome.mutateAddConnection();
             // }
-            else if (dis(gen) < add_node_mutation_rate)
+            if (dis(gen) < add_node_mutation_rate)
             {
                 offspring_genome.mutateAddNode();
             }
@@ -149,6 +161,9 @@ int main()
     Entity best_entity = population[0];
 
     std::vector<std::vector<double>> best_predictions = best_entity.brain.feedForward(features_matrix);
+
+    std::cout << "Best Entity is: " << best_entity.id << std::endl;
+    std::cout << "Has Fitness: " << best_entity.fitness << std::endl;
 
     std::cout << "Predictions are: " << std::endl;
     printMatrix(best_predictions);

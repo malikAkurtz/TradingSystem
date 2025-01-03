@@ -10,14 +10,14 @@ NeuralNet::NeuralNet(Genome genome)
 {
     this->id_to_node.clear();
     this->id_to_node = genome.mapIDtoNode();
-    
-    std::ostringstream oss;
-    oss << "id_to_node Map:\n";
-    for (const auto& pair : id_to_node)
-    {
-        oss << "  Node ID: " << pair.first << ", Node ID: " << pair.second.node_id << "\n";
-    }
-    debugMessage("NeuralNet Constructer", "id_to_map Structure: " + oss.str());
+
+    // std::ostringstream oss;
+    // oss << "id_to_node Map:\n";
+    // for (const auto& pair : id_to_node)
+    // {
+    //     oss << "  Node ID: " << pair.first << ", Node ID: " << pair.second.node_id << "\n";
+    // }
+    // debugMessage("NeuralNet Constructer", "\n" + oss.str());
 
     this->id_to_depth.clear();
     this->id_to_depth = genome.mapIDtoDepth();
@@ -42,13 +42,13 @@ void NeuralNet::assignNodestoLayers()
     greatest_depth++; // bc of index 0
 
     std::ostringstream oss;
-    oss << "id_to_depth Map:\n";
-    for (const auto& pair : id_to_depth)
-    {
-        oss << "  Node ID: " << pair.first << ", Depth: " << pair.second << "\n";
-    }
+    // oss << "id_to_depth Map:\n";
+    // for (const auto& pair : id_to_depth)
+    // {
+    //     oss << "  Node ID: " << pair.first << ", Depth: " << pair.second << "\n";
+    // }
 
-    debugMessage("assignNodestoLayers", "Node/Layer Depths Before Assignment: " + oss.str());
+    // debugMessage("assignNodestoLayers", "Node/Layer Depths Before Assignment:\n " + oss.str());
 
     for (int i = 0; i < greatest_depth; i++)
     {
@@ -69,6 +69,7 @@ std::vector<std::vector<double>> NeuralNet::feedForward(const std::vector<std::v
 
     this->loadInputs(features_matrix);
 
+    //std::cout << "Made it after load inputs" << std::endl;
     int last_layer_index = this->layers.size() - 1;
 
     int num_samples = features_matrix.size();
@@ -88,13 +89,23 @@ std::vector<std::vector<double>> NeuralNet::feedForward(const std::vector<std::v
             // for every connection going into the node
             for (const auto &connection : this_layer.nodes[n]->connections_in)
             {    
+                // if the connection is disabled, skip it
                 if (!connection.enabled) 
                 {
                     continue;
                 }
+
                 int node_in = connection.node_in;
+                std::vector<double> input;
                 // get the incoming nodes outputs
-                std::vector<double> input = this->id_to_node.at(node_in).outputs;
+                if (connection.node_in == -1) // bias
+                {
+                    input = std::vector<double>(num_samples, 1);
+                }
+                else
+                {
+                    input = this->id_to_node.at(node_in).outputs;
+                }
 
                 std::vector<double> scaled_input = LinearAlgebra::scaleVector(input, connection.weight);
                 // printVector(scaled_input);
@@ -110,7 +121,8 @@ std::vector<std::vector<double>> NeuralNet::feedForward(const std::vector<std::v
 
             for (const auto &vector : scaled_inputs)
             {
-
+                // debugMessage("feedForward", "A Vector in Scaled Inputs Looks like: ");
+                // printVectorDebug(vector);
                 node_output = LinearAlgebra::addVectors(node_output, vector);
             }
             // apply acivation
@@ -136,15 +148,30 @@ void NeuralNet::loadInputs(const std::vector<std::vector<double>>& features_matr
 
     int num_features = features_matrix[0].size();
     // for every feature column in the features_matrix
+    int num_nodes_w_bias = this->layers[0].nodes.size();
+    int num_input_nodes = this->layers[0].nodes.size() - 1; // not including bias
 
-    for (int j = 0; j < num_features; j++)
+    if (num_input_nodes != num_features)
+    {
+        throw std::invalid_argument("The Number of Input Nodes Does Not Match The Number of Features");
+    }
+
+    std::vector<Node *> input_nodes;
+
+    for (Node* node : this->layers[0].nodes)
+    {
+        if (node->node_type == INPUT)
+        {
+            input_nodes.push_back(node);
+        }
+    }
+
+    for (int j = 0; j < num_features; j++) // start
     {
         // save it
         std::vector<double> feature_vector = LinearAlgebra::getColumn(features_matrix, j);
 
-        
-        // store it in the input neurons in the input layer (layers index 0)
-        this->layers[0].nodes[j]->storeOutputs(feature_vector);
+        input_nodes[j]->storeOutputs(feature_vector);
     }
 }
 

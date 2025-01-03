@@ -12,7 +12,9 @@ std::string nodeTypeToString(NodeType type)
         case INPUT: return "INPUT";
         case HIDDEN: return "HIDDEN";
         case OUTPUT: return "OUTPUT";
-        default: return "UNKNOWN";
+        case BIAS: return "BIAS";
+        default:
+            return "UNKNOWN";
     }
 }
 

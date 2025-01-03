@@ -27,46 +27,58 @@ Genome Entity::crossover(Entity &other_parent)
         least_fit = this;
     }
 
+    // offspring inherits topology of most fit parent (https://ai.stackexchange.com/questions/9667/using-neat-will-the-child-of-two-parent-genomes-always-have-the-same-structure)
     offspring.node_genes = most_fit->genome.node_genes;
 
+    auto most_fit_it = most_fit->genome.connection_genes.begin();
     auto least_fit_it = least_fit->genome.connection_genes.begin();
 
-
-    for (const auto& fit_connection_gene : most_fit->genome.connection_genes)
+    while (most_fit_it != most_fit->genome.connection_genes.end() &&
+            least_fit_it != least_fit->genome.connection_genes.end())
     {
-        // std::cout << "Most Fit it is at: " << fit_connection_gene.toString() << std::endl;
-        // std::cout << "Most Fit Parent IN: " << fit_connection_gene.innovation_number << " Least Fit Parent IN: " << least_fit_it->innovation_number << std::endl;
-        if (least_fit_it == least_fit->genome.connection_genes.end())
+        if (most_fit_it->innovation_number == least_fit_it->innovation_number)
         {
-            offspring.connection_genes.push_back(fit_connection_gene);
+
+            if (rand() % 2)
+            {
+                offspring.connection_genes.push_back(*most_fit_it);
+            }
+            else
+            {
+                offspring.connection_genes.push_back(*least_fit_it);
+            }
+
+            if (!most_fit_it->enabled || !least_fit_it->enabled)
+            {   
+                if ((rand() % 4) == 0)
+                {
+                    offspring.connection_genes.back().enabled = false;
+                }
+            }
+
+            most_fit_it++;
+            least_fit_it++;
         }
-        else
+        else if (most_fit_it->innovation_number < least_fit_it->innovation_number)
         {
-            if (fit_connection_gene.innovation_number == least_fit_it->innovation_number)
-            {
-                if (rand() % 2)
-                {
-                    offspring.connection_genes.push_back(fit_connection_gene);
-                }
-                else
-                {
-                    offspring.connection_genes.push_back(*least_fit_it);
-                }
-                least_fit_it++;
-            }
-            else if (fit_connection_gene.innovation_number > least_fit_it->innovation_number)
-            {
-                offspring.connection_genes.push_back(fit_connection_gene);
-                least_fit_it++;
-            }
-            else if (fit_connection_gene.innovation_number < least_fit_it->innovation_number)
-            {
-                offspring.connection_genes.push_back(fit_connection_gene);
-            }
+            offspring.connection_genes.push_back(*most_fit_it);
+            most_fit_it++;
+        }
+        else 
+        {
+            least_fit_it++;
         }
     }
 
-    debugMessage("crossover", "Performed Crossover Between Entities: " + std::to_string(this->id) + ", " + std::to_string(other_parent.id) + + " To Produce: " + offspring.toString());
+    while (most_fit_it != most_fit->genome.connection_genes.end())
+    {
+        offspring.connection_genes.push_back(*most_fit_it);
+        most_fit_it++;
+    }
+    // if we didnt get to the end of least fit, just drop them they dont matter
+
+
+    debugMessage("crossover", "Performed Crossover Between Entities: " + std::to_string(this->id) + ", " + std::to_string(other_parent.id) + + " To Produce: " + offspring.toString() + " For Future Entity: " + std::to_string(global_innovation_number));
 
     return offspring;
 }

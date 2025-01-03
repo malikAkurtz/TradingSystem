@@ -11,5 +11,6 @@ digraph Genome {
     label="Output Layer";
     2;
   }
-  1 -> 2 [label="w: 0.483726"];
+  1 -> 2 [label="w: 0.491290"];
+  -1 -> 2 [label="w: 1.000000"];
 }
