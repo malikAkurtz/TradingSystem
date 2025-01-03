@@ -54,7 +54,7 @@ int main()
     std::cout << "Base Genome is:" << std::endl;
     std::cout << base_genome.toString() << std::endl;
     std::cout << "-------------------------------------------------------------------" << std::endl;
-    int max_generations = 1000;
+    int max_generations = 800;
     int population_size = 50;
     float elite_ratio = 0.2;
 
@@ -162,6 +162,7 @@ int main()
 
     std::vector<std::vector<double>> best_predictions = best_entity.brain.feedForward(features_matrix);
 
+    std::cout << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" << std::endl;
     std::cout << "Best Entity is: " << best_entity.id << std::endl;
     std::cout << "Has Fitness: " << best_entity.fitness << std::endl;
 

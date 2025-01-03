@@ -148,7 +148,6 @@ void NeuralNet::loadInputs(const std::vector<std::vector<double>>& features_matr
 
     int num_features = features_matrix[0].size();
     // for every feature column in the features_matrix
-    int num_nodes_w_bias = this->layers[0].nodes.size();
     int num_input_nodes = this->layers[0].nodes.size() - 1; // not including bias
 
     if (num_input_nodes != num_features)
@@ -186,20 +185,20 @@ std::string NeuralNet::toString() const
 
     for (int i = 0; i < layers.size(); i++)
     {
-        oss << "Layer: " << i << " Consists of:\n";
+        oss << "<<<<<<<<<Layer " << i << " >>>>>>>>>\n";
         
         for (int j = 0; j < layers[i].nodes.size(); j++)
         {
             Node* node = layers[i].nodes[j];
             
-            oss << "  Node ID: " << node->node_id << "\n";
-            oss << "  Has Connections:\n";
+            oss << "    Node ID: " << node->node_id << "\n";
+            oss << "        Connections In:\n";
 
             for (int m = 0; m < node->connections_in.size(); m++)
             {
                 const Connection& conn = node->connections_in[m];
-                oss << "    From: " << conn.node_in 
-                    << " To: "   << conn.node_out << "\n";
+                oss << "            From: " << conn.node_in
+                    << " To: " << conn.node_out << " , " << (conn.enabled ? "true" : "false") <<"\n";
             }
         }
     }
