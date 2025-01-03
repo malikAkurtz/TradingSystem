@@ -92,7 +92,7 @@ Genome Entity::crossover(Entity &other_parent)
     // if we didnt get to the end of least fit, just drop them they dont matter
 
 
-    debugMessage("crossover", "Performed Crossover Between Entities: " + std::to_string(this->id) + ", " + std::to_string(other_parent.id) + + " To Produce: " + offspring.toString() + " For Future Entity: " + std::to_string(global_innovation_number));
+    debugMessage("crossover", "Performed Crossover Between Entities: " + std::to_string(this->id) + ", " + std::to_string(other_parent.id) + + " To Produce: " + offspring.toString());
 
     return offspring;
 }

@@ -11,8 +11,9 @@
 
 bool DEBUG = true;
 
-int global_innovation_number = 0;
+int global_innovation_number = 1;
 int global_entity_id = 0;
+std::map<std::pair<int, int>, int> global_connection_map;
 
 int main()
 {
@@ -39,12 +40,11 @@ int main()
     NodeGene bias(-1, BIAS);
     NodeGene ng2(2, OUTPUT);
 
-    ConnectionGene cg1(1, 2, 0.2, true, 1);
-    global_innovation_number++;
-    ConnectionGene bias_conn(-1, 2, 1, true, 2);
-    global_innovation_number++;
-    // ConnectionGene cg2(2, 3, 0.1, true, 2);
-    // global_innovation_number++;
+    ConnectionGene cg1(1, 2, 0.2, true, global_innovation_number++);
+    global_connection_map.insert({{cg1.node_in, cg1.node_out}, cg1.innovation_number});
+
+    ConnectionGene bias_conn(-1, 2, 1, true, global_innovation_number++);
+        global_connection_map.insert({{bias_conn.node_in, bias_conn.node_out}, bias_conn.innovation_number});
 
     std::vector<ConnectionGene> connection_genes = {cg1, bias_conn};
     std::vector<NodeGene> node_genes = {ng1, ng2, bias};
@@ -54,13 +54,13 @@ int main()
     std::cout << "Base Genome is:" << std::endl;
     std::cout << base_genome.toString() << std::endl;
     std::cout << "-------------------------------------------------------------------" << std::endl;
-    int max_generations = 800;
-    int population_size = 50;
+    int max_generations = 100;
+    int population_size = 10;
     float elite_ratio = 0.2;
 
     double weight_mutation_rate = 0.8;
     double  add_connection_mutation_rate = 0.2;
-    double add_node_mutation_rate = 0.03;
+    double add_node_mutation_rate = 0.8;
     std::uniform_real_distribution<> dis(0.0, 1.0);
 
 

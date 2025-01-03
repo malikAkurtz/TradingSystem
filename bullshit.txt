@@ -1,41 +1,23 @@
-[crossover]Performed Crossover Between Entities: 521, 563 To Produce: Genome:
-NodeGenes:
-  NodeGene(node_id: 1, node_type: INPUT)
-  NodeGene(node_id: 2, node_type: OUTPUT)
-  NodeGene(node_id: -1, node_type: BIAS)
-ConnectionGenes:
-  ConnectionGene(node_in: 1, node_out: 2, weight: 0.499435, enabled: false, innovation_number: 1)
-  ConnectionGene(node_in: -1, node_out: 2, weight: 1.000000, enabled: false, innovation_number: 2)
-
-
-line 40261^^
-
-----Evalutating Fitness of Entity: 521-----
-Genome:
+[crossover]Performed Crossover Between Entities: 55, 50 To Produce: Genome:
 NodeGenes:
   NodeGene(node_id: 1, node_type: INPUT)
   NodeGene(node_id: 2, node_type: OUTPUT)
   NodeGene(node_id: -1, node_type: BIAS)
   NodeGene(node_id: 3, node_type: HIDDEN)
   NodeGene(node_id: 4, node_type: HIDDEN)
+  NodeGene(node_id: 5, node_type: HIDDEN)
+  NodeGene(node_id: 6, node_type: HIDDEN)
+  NodeGene(node_id: 7, node_type: HIDDEN)
 ConnectionGenes:
-  ConnectionGene(node_in: 1, node_out: 2, weight: 0.499435, enabled: false, innovation_number: 1)
-  ConnectionGene(node_in: -1, node_out: 2, weight: 1.000000, enabled: false, innovation_number: 2)
-  ConnectionGene(node_in: -1, node_out: 3, weight: 1.000000, enabled: true, innovation_number: 15)
-  ConnectionGene(node_in: 3, node_out: 2, weight: 1.000000, enabled: true, innovation_number: 16)
-  ConnectionGene(node_in: 1, node_out: 4, weight: 1.000000, enabled: true, innovation_number: 21)
-  ConnectionGene(node_in: 4, node_out: 2, weight: 0.499435, enabled: true, innovation_number: 22)
-
-  [evaluateFitness]Entity: 521 Fitness: -195.071024
-
-  ----Evalutating Fitness of Entity: 563-----
-Genome:
-NodeGenes:
-  NodeGene(node_id: 1, node_type: INPUT)
-  NodeGene(node_id: 2, node_type: OUTPUT)
-  NodeGene(node_id: -1, node_type: BIAS)
-ConnectionGenes:
-  ConnectionGene(node_in: 1, node_out: 2, weight: 0.499435, enabled: true, innovation_number: 1)
+  ConnectionGene(node_in: 1, node_out: 2, weight: 0.404350, enabled: true, innovation_number: 1)
   ConnectionGene(node_in: -1, node_out: 2, weight: 1.000000, enabled: true, innovation_number: 2)
-
-[evaluateFitness]Entity: 563 Fitness: -195.071024
+  ConnectionGene(node_in: 3, node_out: 2, weight: 1.000000, enabled: true, innovation_number: 12)
+  ConnectionGene(node_in: -1, node_out: 4, weight: 1.000000, enabled: true, innovation_number: 23)
+  ConnectionGene(node_in: 4, node_out: 3, weight: 1.000000, enabled: true, innovation_number: 24)
+  ConnectionGene(node_in: -1, node_out: 5, weight: 1.000000, enabled: true, innovation_number: 35)
+  ConnectionGene(node_in: 5, node_out: 3, weight: 1.000000, enabled: true, innovation_number: 36)
+  ConnectionGene(node_in: 1, node_out: 6, weight: 1.000000, enabled: true, innovation_number: 55)
+  ConnectionGene(node_in: 6, node_out: 2, weight: 0.404350, enabled: true, innovation_number: 56)
+  ConnectionGene(node_in: 6, node_out: 2, weight: 0.404350, enabled: true, innovation_number: 56)
+  ConnectionGene(node_in: 6, node_out: 7, weight: 1.000000, enabled: true, innovation_number: 73)
+  ConnectionGene(node_in: 7, node_out: 2, weight: 0.404350, enabled: true, innovation_number: 74)

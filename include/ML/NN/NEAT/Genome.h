@@ -8,6 +8,7 @@
 #include <fstream>
 #include <map>
 #include "InnovationNum.h"
+#include "ConnectionMap.h"
 
 struct Entity;
 

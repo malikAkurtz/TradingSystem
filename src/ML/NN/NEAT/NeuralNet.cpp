@@ -136,10 +136,9 @@ std::vector<std::vector<double>> NeuralNet::feedForward(const std::vector<std::v
         }
     }
 
-    // std::cout << "Networks Outputs are:" << std::endl;
-    // printMatrix(network_outputs);
-    debugMessage("feedForward", "feedForward Result: ");
-    printMatrixDebug(network_outputs);
+
+    // debugMessage("feedForward", "feedForward Result: ");
+    // printMatrixDebug(network_outputs);
     return network_outputs;
 }
 

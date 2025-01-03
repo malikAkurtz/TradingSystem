@@ -112,6 +112,7 @@ void Genome::mutateAddNode()
     // 1.) pick a random existing connection
     ConnectionGene &random_connection_gene = this->connection_genes[rand() % this->connection_genes.size()];
 
+
     int initial_attempts = 10 * this->connection_genes.size();
     int attempts = initial_attempts;
 
@@ -141,15 +142,17 @@ void Genome::mutateAddNode()
     // create the node gene and add it
     this->node_genes.emplace_back(NodeGene(new_node_id, HIDDEN));
 
-    global_innovation_number++;
     // 3.) create connection gene to connect base_node_in to new_node_id
-    this->connection_genes.emplace_back(ConnectionGene(base_node_in, new_node_id, 1, true, global_innovation_number));
+    this->connection_genes.emplace_back(ConnectionGene(base_node_in, new_node_id, 1, true, global_innovation_number++));
 
-    global_innovation_number++;
     // create the second connection gene
-    this->connection_genes.emplace_back(ConnectionGene(new_node_id, final_node_out, prev_weight, true, global_innovation_number));
+    this->connection_genes.emplace_back(ConnectionGene(new_node_id, final_node_out, prev_weight, true, global_innovation_number++));
 
-    std::cout << "Added Node to Entity: " << global_innovation_number << " With: " << new_node_id << " With node_in: " << base_node_in << " And node_out: " << final_node_out << std::endl;
+    std::sort(this->connection_genes.begin(), this->connection_genes.end(), [](const ConnectionGene &a, const ConnectionGene &b)
+              { return a.innovation_number < b.innovation_number;});
+
+    std::cout
+        << "Added Node: " << new_node_id << " With node_in: " << base_node_in << " And node_out: " << final_node_out << std::endl;
 }
 
 void Genome::mutateChangeWeight()
