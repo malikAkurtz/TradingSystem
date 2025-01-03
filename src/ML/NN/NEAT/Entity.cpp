@@ -30,11 +30,21 @@ Genome Entity::crossover(Entity &other_parent)
     // offspring inherits topology of most fit parent (https://ai.stackexchange.com/questions/9667/using-neat-will-the-child-of-two-parent-genomes-always-have-the-same-structure)
     offspring.node_genes = most_fit->genome.node_genes;
 
-    auto most_fit_it = most_fit->genome.connection_genes.begin();
-    auto least_fit_it = least_fit->genome.connection_genes.begin();
+    std::vector<ConnectionGene> most_fit_sorted = most_fit->genome.connection_genes;
+    std::vector<ConnectionGene> least_fit_sorted = least_fit->genome.connection_genes;
 
-    while (most_fit_it != most_fit->genome.connection_genes.end() &&
-            least_fit_it != least_fit->genome.connection_genes.end())
+    std::sort(most_fit_sorted.begin(), most_fit_sorted.end(), [](const ConnectionGene &a, const ConnectionGene &b)
+              { return a.innovation_number < b.innovation_number; });
+
+    std::sort(least_fit_sorted.begin(), least_fit_sorted.end(), [](const ConnectionGene &a, const ConnectionGene &b)
+              { return a.innovation_number < b.innovation_number; });
+
+
+    auto most_fit_it = most_fit_sorted.begin();
+    auto least_fit_it = least_fit_sorted.begin();
+
+    while (most_fit_it != most_fit_sorted.end() &&
+            least_fit_it != least_fit_sorted.end())
     {
         if (most_fit_it->innovation_number == least_fit_it->innovation_number)
         {
@@ -70,7 +80,7 @@ Genome Entity::crossover(Entity &other_parent)
         }
     }
 
-    while (most_fit_it != most_fit->genome.connection_genes.end())
+    while (most_fit_it != most_fit_sorted.end())
     {
         offspring.connection_genes.push_back(*most_fit_it);
         most_fit_it++;

@@ -114,7 +114,8 @@ int main()
 
         // perform crossover
         for (int j = 0; j < offspring_required; j++)
-        {   
+        {
+            
             int random_elite_index1 = rand() % num_elites;
             int random_elite_index2 = rand() % num_elites;
 
@@ -122,12 +123,11 @@ int main()
             {
                 random_elite_index2 = rand() % num_elites;
             }
-
+            
             Entity& random_elite1 = population[random_elite_index1];
             Entity& random_elite2 = population[random_elite_index2];
 
             Genome offspring_genome = random_elite1.crossover(random_elite2);
-
             // std::cout << "New Offspring Genome is: " << offspring_genome.toString() << std::endl;
 
             //perform mutations
