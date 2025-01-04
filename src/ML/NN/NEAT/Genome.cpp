@@ -150,14 +150,21 @@ void Genome::mutateAddNode()
 }
 
 void Genome::mutateChangeWeight()
-{
-    ConnectionGene &random_connection_gene = this->connection_genes[rand() % this->connection_genes.size()];
+{   
+    ConnectionGene* random_connection_gene = &this->connection_genes[rand() % (this->connection_genes.size())];
+    double random_weight = static_cast<double>(rand()) / RAND_MAX * 0.2 - 0.1;
+    double offset = static_cast<double>(rand()) / RAND_MAX * 0.2 - 0.1;
+    if (rand() % 2)
+    {
+        random_connection_gene->weight += offset;
+    }
+    else
+    {
+        random_connection_gene->weight = random_weight;
+    }
     // debugMessage("mutateChangeWeight", "Connection Gene Selected for Weight Replacement: " + random_connection_gene.toString());
-
-    double random_weight = static_cast<double>(rand()) / RAND_MAX - 0.5;
-
-    random_connection_gene.weight = random_weight;
-
+    // debugMessage("mutateChangeWeight", "Connection Selected for Random Weight Change: " + random_connection_gene->toString());
+    
 }
 
 std::map<int, Node> Genome::mapIDtoNode()

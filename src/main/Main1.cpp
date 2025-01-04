@@ -39,10 +39,10 @@ int main()
     NodeGene bias(-1, BIAS);
     NodeGene ng2(2, OUTPUT);
 
-    ConnectionGene cg1(1, 2, 0.2, true, global_innovation_number++);
+    ConnectionGene cg1(1, 2, static_cast<double>(rand()) / RAND_MAX - 0.5, true, global_innovation_number++);
     global_connection_map.insert({{cg1.node_in, cg1.node_out}, cg1.innovation_number});
 
-    ConnectionGene bias_conn(-1, 2, 1, true, global_innovation_number++);
+    ConnectionGene bias_conn(-1, 2, static_cast<double>(rand()) / RAND_MAX - 0.5, true, global_innovation_number++);
         global_connection_map.insert({{bias_conn.node_in, bias_conn.node_out}, bias_conn.innovation_number});
 
     std::vector<ConnectionGene> connection_genes = {cg1, bias_conn};
@@ -53,8 +53,8 @@ int main()
     std::cout << "Base Genome is:" << std::endl;
     std::cout << base_genome.toString() << std::endl;
     std::cout << "-------------------------------------------------------------------" << std::endl;
-    int max_generations = 200;
-    int population_size = 50;
+    int max_generations = 1000;
+    int population_size = 100;
     float elite_ratio = 0.2;
 
     double weight_mutation_rate = 0.8;
@@ -133,15 +133,16 @@ int main()
             if (dis(gen) < weight_mutation_rate)
             {
                 offspring_genome.mutateChangeWeight();
+                std::cout << "Offspring Genome is now: " << offspring_genome.toString() << std::endl;
             }
-            if (dis(gen) < add_connection_mutation_rate)
-            {
-                offspring_genome.mutateAddConnection();
-            }
-            if (dis(gen) < add_node_mutation_rate)
-            {
-                offspring_genome.mutateAddNode();
-            }
+            // if (dis(gen) < add_connection_mutation_rate)
+            // {
+            //     offspring_genome.mutateAddConnection();
+            // }
+            // if (dis(gen) < add_node_mutation_rate)
+            // {
+            //     offspring_genome.mutateAddNode();
+            // }
 
             // std::cout << "New Mutated Genome is: " << offspring_genome.toString() << std::endl;
 
