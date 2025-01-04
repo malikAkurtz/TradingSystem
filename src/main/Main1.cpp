@@ -9,7 +9,7 @@
 #include "LinearAlgebra.h"
 #include <algorithm>
 
-bool DEBUG = true;
+bool DEBUG = false;
 
 int global_innovation_number = 1;
 int global_entity_id = 0;
@@ -53,8 +53,8 @@ int main()
     std::cout << "Base Genome is:" << std::endl;
     std::cout << base_genome.toString() << std::endl;
     std::cout << "-------------------------------------------------------------------" << std::endl;
-    int max_generations = 50;
-    int population_size = 10;
+    int max_generations = 500;
+    int population_size = 100;
     float elite_ratio = 0.2;
 
     double weight_mutation_rate = 0.8;

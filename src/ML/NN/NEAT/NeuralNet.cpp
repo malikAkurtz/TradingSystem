@@ -65,7 +65,8 @@ void NeuralNet::assignNodestoLayers()
 
 std::vector<std::vector<double>> NeuralNet::feedForward(const std::vector<std::vector<double>> &features_matrix)
 {
-    debugMessage("feedForward", "Beginning Feed Forwad With Feature Matrix: Rows = " + std::to_string(features_matrix.size()) + ", Columns = " + std::to_string(features_matrix[0].size()) + " And NeuralNetwork: " + this->toString());
+    debugMessage("feedForward", "Beginning Feed Forwad With Feature Matrix: Rows = " + std::to_string(features_matrix.size()) + ", Columns = " + std::to_string(features_matrix[0].size()));
+    debugMessage("feedForward", "Neural Network Before Pass: " + this->toString());
 
     this->loadInputs(features_matrix);
 

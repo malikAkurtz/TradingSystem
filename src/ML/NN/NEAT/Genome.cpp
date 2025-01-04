@@ -165,8 +165,8 @@ void Genome::mutateChangeWeight()
     {
         random_connection_gene->weight = random_weight;
     }
-    // debugMessage("mutateChangeWeight", "Connection Gene Selected for Weight Replacement: " + random_connection_gene.toString());
-    // debugMessage("mutateChangeWeight", "Connection Selected for Random Weight Change: " + random_connection_gene->toString());
+
+    debugMessage("mutateChangeWeight", "Connection Selected for Random Weight Change: " + random_connection_gene->toString());
     
 }
 
