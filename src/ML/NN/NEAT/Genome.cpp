@@ -42,25 +42,35 @@ void Genome::mutateAddConnection()
         if (node_gene_in->node_type == OUTPUT) 
         {
             //debugMessage("mutateAddConnection", "Rejected: In node is OUTPUT");
+            attempts--;
             continue;
         }
         // if the destination connection is an input node, skip
         if (node_gene_out->node_type == INPUT) 
         {
             //debugMessage("mutateAddConnection", "Rejected: Out node is INPUT");
+            attempts--;
             continue;
         }
         // if the connection is to the same node, skip
         if (node_gene_in->node_id == node_gene_out->node_id) 
         {
             //debugMessage("mutateAddConnection", "Rejected: Same node");
+            attempts--;
             continue;
         }
         if (id_to_depth[node_gene_in->node_id] >= id_to_depth[node_gene_out->node_id]) 
         {
             //debugMessage("mutateAddConnection", "Depth Condition not met");
+            attempts--;
             continue;
         }
+        // if (!(id_to_depth[node_gene_in->node_id] == id_to_depth[node_gene_out->node_id]-1)) 
+        // {
+        //     //debugMessage("mutateAddConnection", "Depth Condition not met");
+        //     attempts--;
+        //     continue;
+        // }
 
         bool exists = false;
         for (ConnectionGene connection_gene : connection_genes)
@@ -89,8 +99,6 @@ void Genome::mutateAddConnection()
         // debugMessage("mutateAddConnection", "Warning: No valid connection found after " + std::to_string(attempts) + " attempts");
         return;
     }
-
-    ;
 
     this->connection_genes.emplace_back(
         ConnectionGene(
