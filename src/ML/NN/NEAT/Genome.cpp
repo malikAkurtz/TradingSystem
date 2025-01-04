@@ -89,17 +89,20 @@ void Genome::mutateAddConnection()
         // debugMessage("mutateAddConnection", "Warning: No valid connection found after " + std::to_string(attempts) + " attempts");
         return;
     }
-    debugMessage("mutateAddConnection", "Added a connection from: " + std::to_string(node_gene_in->node_id) + " To: " + std::to_string(node_gene_out->node_id));
 
-    global_innovation_number++;
+    ;
 
     this->connection_genes.emplace_back(
         ConnectionGene(
             node_gene_in->node_id, node_gene_out->node_id, 
             static_cast<double>(rand()) / RAND_MAX - 0.5, 
             true, 
-            global_innovation_number)
+            global_innovation_number++)
             );
+
+    debugMessage("mutateAddConnection", "Added a connection from: " + std::to_string(node_gene_in->node_id) + " To: " + std::to_string(node_gene_out->node_id));
+
+    debugMessage("mutateAddConnection", "Offspring Genome is Now: " + this->toString());
 }
 
 void Genome::mutateAddNode()
@@ -120,7 +123,7 @@ void Genome::mutateAddNode()
         }
     }
 
-    debugMessage("mutateAddNode", "Connection Gene Selected for Node Placement: " + random_connection_gene->toString());
+    // debugMessage("mutateAddNode", "Connection Gene Selected for Node Placement: " + random_connection_gene->toString());
 
     double prev_weight = random_connection_gene->weight;
     // disable the existing connection
@@ -145,8 +148,8 @@ void Genome::mutateAddNode()
     std::sort(this->connection_genes.begin(), this->connection_genes.end(), [](const ConnectionGene &a, const ConnectionGene &b)
               { return a.innovation_number < b.innovation_number;});
 
-    std::cout
-        << "Added Node: " << new_node_id << " With node_in: " << base_node_in << " And node_out: " << final_node_out << std::endl;
+    debugMessage("mutateAddNode", "Added Node: " + std::to_string(new_node_id) + " With node_in: " + std::to_string(base_node_in) + " And node_out: " + std::to_string(final_node_out));
+    debugMessage("mutateAddConnection", "Offspring Genome is Now: " + this->toString());
 }
 
 void Genome::mutateChangeWeight()

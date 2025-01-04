@@ -53,13 +53,13 @@ int main()
     std::cout << "Base Genome is:" << std::endl;
     std::cout << base_genome.toString() << std::endl;
     std::cout << "-------------------------------------------------------------------" << std::endl;
-    int max_generations = 1000;
-    int population_size = 100;
+    int max_generations = 50;
+    int population_size = 10;
     float elite_ratio = 0.2;
 
     double weight_mutation_rate = 0.8;
-    double  add_connection_mutation_rate = 0.2;
-    double add_node_mutation_rate = 0.03;
+    double  add_connection_mutation_rate = 0.7;
+    double add_node_mutation_rate = 0.7;
     std::uniform_real_distribution<> dis(0.0, 1.0);
 
 
@@ -131,18 +131,20 @@ int main()
 
             //perform mutations
             if (dis(gen) < weight_mutation_rate)
-            {
+            {   
+                std::cout << "Going To Mutate by Changing a Connection" << std::endl;
                 offspring_genome.mutateChangeWeight();
-                std::cout << "Offspring Genome is now: " << offspring_genome.toString() << std::endl;
             }
-            // if (dis(gen) < add_connection_mutation_rate)
-            // {
-            //     offspring_genome.mutateAddConnection();
-            // }
-            // if (dis(gen) < add_node_mutation_rate)
-            // {
-            //     offspring_genome.mutateAddNode();
-            // }
+            if (dis(gen) < add_connection_mutation_rate)
+            {   
+                std::cout << "Going To Mutate by Adding a Connection" << std::endl;
+                offspring_genome.mutateAddConnection();
+            }
+            if (dis(gen) < add_node_mutation_rate)
+            {
+                std::cout << "Going To Mutate by Adding a Node" << std::endl;
+                offspring_genome.mutateAddNode();
+            }
 
             // std::cout << "New Mutated Genome is: " << offspring_genome.toString() << std::endl;
 
