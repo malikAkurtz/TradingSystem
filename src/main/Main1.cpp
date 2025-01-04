@@ -142,6 +142,7 @@ int main()
             if (dis(gen) < add_node_mutation_rate)
             {
                 offspring_genome.mutateAddNode();
+                std::cout << "Offspring's Mutated Genome Looks like: " << offspring_genome.toString() << std::endl;
             }
 
             // std::cout << "New Mutated Genome is: " << offspring_genome.toString() << std::endl;

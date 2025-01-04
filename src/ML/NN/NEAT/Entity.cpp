@@ -28,6 +28,7 @@ Genome Entity::crossover(Entity &other_parent)
     }
 
     // offspring inherits topology of most fit parent (https://ai.stackexchange.com/questions/9667/using-neat-will-the-child-of-two-parent-genomes-always-have-the-same-structure)
+
     offspring.node_genes = most_fit->genome.node_genes;
 
     std::vector<ConnectionGene> most_fit_sorted = most_fit->genome.connection_genes;
@@ -48,7 +49,6 @@ Genome Entity::crossover(Entity &other_parent)
     {
         if (most_fit_it->innovation_number == least_fit_it->innovation_number)
         {
-
             if (rand() % 2)
             {
                 offspring.connection_genes.push_back(*most_fit_it);

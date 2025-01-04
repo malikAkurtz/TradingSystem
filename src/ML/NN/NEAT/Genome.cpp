@@ -110,15 +110,14 @@ void Genome::mutateAddConnection()
 void Genome::mutateAddNode()
 {   
     // 1.) pick a random existing connection
-    ConnectionGene &random_connection_gene = this->connection_genes[rand() % this->connection_genes.size()];
-
+    ConnectionGene *random_connection_gene = &this->connection_genes[rand() % this->connection_genes.size()];
 
     int initial_attempts = 10 * this->connection_genes.size();
     int attempts = initial_attempts;
 
-    while (random_connection_gene.enabled == false)
+    while (random_connection_gene->enabled == false)
     {
-        random_connection_gene = this->connection_genes[rand() % this->connection_genes.size()];
+        random_connection_gene = &this->connection_genes[rand() % this->connection_genes.size()];
         attempts--;
         if (attempts <= 0)
         {
@@ -126,16 +125,16 @@ void Genome::mutateAddNode()
         }
     }
 
-    debugMessage("mutateAddNode", "Connection Gene Selected for Node Placement: " + random_connection_gene.toString());
+    debugMessage("mutateAddNode", "Connection Gene Selected for Node Placement: " + random_connection_gene->toString());
 
-    double prev_weight = random_connection_gene.weight;
+    double prev_weight = random_connection_gene->weight;
     // disable the existing connection
-    random_connection_gene.enabled = false;
+    random_connection_gene->enabled = false;
 
     // get in node
-    int base_node_in = random_connection_gene.node_in;
+    int base_node_in = random_connection_gene->node_in;
     // get out node
-    int final_node_out = random_connection_gene.node_out;
+    int final_node_out = random_connection_gene->node_out;
 
     // 2.) generate the new node_id
     int new_node_id = node_genes.size();
