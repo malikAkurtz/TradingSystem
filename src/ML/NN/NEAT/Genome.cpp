@@ -149,7 +149,7 @@ void Genome::mutateAddNode()
               { return a.innovation_number < b.innovation_number;});
 
     debugMessage("mutateAddNode", "Added Node: " + std::to_string(new_node_id) + " With node_in: " + std::to_string(base_node_in) + " And node_out: " + std::to_string(final_node_out));
-    debugMessage("mutateAddConnection", "Offspring Genome is Now: " + this->toString());
+    debugMessage("mutateAddNode", "Offspring Genome is Now: " + this->toString());
 }
 
 void Genome::mutateChangeWeight()

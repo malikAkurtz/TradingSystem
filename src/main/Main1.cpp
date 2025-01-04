@@ -15,21 +15,51 @@ int global_innovation_number = 1;
 int global_entity_id = 0;
 std::map<std::pair<int, int>, int> global_connection_map;
 
+Genome createBaseGenome(int num_features, int num_labels)
+{       
+    Genome base_genome;
+    std::vector<ConnectionGene> connection_genes;
+    std::vector<NodeGene> node_genes;
+
+    for (int i = 0; i < num_features; i++)
+    {
+        node_genes.emplace_back(NodeGene(i + 1, INPUT)); // add the input nodes
+    }
+    // add the bias node
+    node_genes.emplace_back(NodeGene(-1, BIAS));
+
+    // add the output nodes
+    for (int i = 0; i < num_labels; i++)
+    {
+        node_genes.emplace_back(NodeGene(node_genes.size(), OUTPUT));
+        for (int j = 0; j < num_features; j++)
+        {
+            connection_genes.emplace_back(ConnectionGene((j+1), node_genes.back().node_id, static_cast<double>(rand()) / RAND_MAX - 0.5, true, global_innovation_number++));
+        }
+        // add the bias connection
+        connection_genes.emplace_back(ConnectionGene(-1, node_genes.back().node_id, static_cast<double>(rand()) / RAND_MAX - 0.5, true, global_innovation_number++));
+    }
+
+    base_genome.node_genes = node_genes;
+    base_genome.connection_genes = connection_genes;
+
+    return base_genome;
+}
+
 int main()
 {
-    std::vector<std::vector<double>> data = data3;
+    std::vector<std::vector<double>> data = stockDataTrain;
 
-    std::vector<std::vector<double>> labels = LinearAlgebra::vector1DtoColumnVector(LinearAlgebra::getColumn(data, 2));
-    std::vector<std::vector<double>> other_label = LinearAlgebra::vector1DtoColumnVector(LinearAlgebra::getColumn(data, 3));
-
-    LinearAlgebra::addColumn(labels, LinearAlgebra::columnVectortoVector1D(other_label));
+    std::vector<std::vector<double>> labels = LinearAlgebra::vector1DtoColumnVector(LinearAlgebra::getColumn(data, 6));
+    // std::vector<std::vector<double>> other_label = LinearAlgebra::vector1DtoColumnVector(LinearAlgebra::getColumn(data, 3));
+    //LinearAlgebra::addColumn(labels, LinearAlgebra::columnVectortoVector1D(other_label));
 
     std::cout << "Labels are: " << std::endl;
     printMatrix(labels);
 
 
-    LinearAlgebra::deleteColumn(data, 3);
-    LinearAlgebra::deleteColumn(data, 2);
+    LinearAlgebra::deleteColumn(data, 6);
+    // LinearAlgebra::deleteColumn(data, 2);
 
     
     std::vector<std::vector<double>> features_matrix = data;
@@ -41,42 +71,18 @@ int main()
     std::random_device rd;
     std::mt19937 gen(rd());
 
-    // Input Layer, depth 0
-    NodeGene ng1(1, INPUT);
-    NodeGene ng2(2, INPUT);
-    NodeGene bias(-1, BIAS);
-    
-    // Output Layer
-    NodeGene ng3(3, OUTPUT);
-    NodeGene ng4(4, OUTPUT);
+    Genome base_genome = createBaseGenome(features_matrix[0].size(), labels[0].size());
 
-    ConnectionGene cg1(1, 3, static_cast<double>(rand()) / RAND_MAX - 0.5, true, global_innovation_number++);
-
-    ConnectionGene cg2(1, 4, static_cast<double>(rand()) / RAND_MAX - 0.5, true, global_innovation_number++);
-
-    ConnectionGene cg3(2, 3, static_cast<double>(rand()) / RAND_MAX - 0.5, true, global_innovation_number++);
-
-    ConnectionGene cg4(2, 4, static_cast<double>(rand()) / RAND_MAX - 0.5, true, global_innovation_number++);
-
-    ConnectionGene bias_conn1(-1, 3, static_cast<double>(rand()) / RAND_MAX - 0.5, true, global_innovation_number++);
-
-    ConnectionGene bias_conn2(-1, 4, static_cast<double>(rand()) / RAND_MAX - 0.5, true, global_innovation_number++);
-
-    std::vector<ConnectionGene> connection_genes = {cg1, cg2, cg3, cg4, bias_conn1, bias_conn2};
-    std::vector<NodeGene> node_genes = {ng1, ng2, bias, ng3, ng4};
-
-    
-    Genome base_genome(connection_genes, node_genes);
     std::cout << "Base Genome is:" << std::endl;
     std::cout << base_genome.toString() << std::endl;
     std::cout << "-------------------------------------------------------------------" << std::endl;
-    int max_generations = 100;
+    int max_generations = 1000;
     int population_size = 100;
     float elite_ratio = 0.2;
 
     double weight_mutation_rate = 0.8;
-    double  add_connection_mutation_rate = 0.5;
-    double add_node_mutation_rate = 0.3;
+    double  add_connection_mutation_rate = 0.05;
+    double add_node_mutation_rate = 0.03;
     std::uniform_real_distribution<> dis(0.0, 1.0);
 
 

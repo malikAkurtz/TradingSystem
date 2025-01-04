@@ -28,7 +28,7 @@ public:
 
     Node(NodeGene node_gene);
 
-    double calculateNodeOutput(const std::vector<double>& input_vector);
+    // double calculateNodeOutput(const std::vector<double>& input_vector);
 
     void storeOutputs(std::vector<double> outputs);
 
