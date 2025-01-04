@@ -17,13 +17,13 @@ std::map<std::pair<int, int>, int> global_connection_map;
 
 int main()
 {
-    std::vector<std::vector<double>> data = data2;
+    std::vector<std::vector<double>> data = data1;
 
-    std::vector<std::vector<double>> labels = LinearAlgebra::vector1DtoColumnVector(LinearAlgebra::getColumn(data, 1));
+    std::vector<std::vector<double>> labels = LinearAlgebra::vector1DtoColumnVector(LinearAlgebra::getColumn(data, 2));
     std::cout << "Labels are: " << std::endl;
     printMatrix(labels);
 
-    LinearAlgebra::deleteColumn(data, 1);
+    LinearAlgebra::deleteColumn(data, 2);
 
     std::vector<std::vector<double>> features_matrix = data;
     std::cout << "Features Matrix is: " << std::endl;
@@ -34,19 +34,22 @@ int main()
     std::random_device rd;
     std::mt19937 gen(rd());
 
+    // Input Layer, depth 0
     NodeGene ng1(1, INPUT);
-    // NodeGene ng2(2, INPUT);
+    NodeGene ng2(2, INPUT);
     NodeGene bias(-1, BIAS);
-    NodeGene ng2(2, OUTPUT);
+    
+    // Output Layer
+    NodeGene ng3(3, OUTPUT);
 
-    ConnectionGene cg1(1, 2, static_cast<double>(rand()) / RAND_MAX - 0.5, true, global_innovation_number++);
-    global_connection_map.insert({{cg1.node_in, cg1.node_out}, cg1.innovation_number});
+    ConnectionGene cg1(1, 3, static_cast<double>(rand()) / RAND_MAX - 0.5, true, global_innovation_number++);
 
-    ConnectionGene bias_conn(-1, 2, static_cast<double>(rand()) / RAND_MAX - 0.5, true, global_innovation_number++);
-        global_connection_map.insert({{bias_conn.node_in, bias_conn.node_out}, bias_conn.innovation_number});
+    ConnectionGene cg2(2, 3, static_cast<double>(rand()) / RAND_MAX - 0.5, true, global_innovation_number++);
 
-    std::vector<ConnectionGene> connection_genes = {cg1, bias_conn};
-    std::vector<NodeGene> node_genes = {ng1, ng2, bias};
+    ConnectionGene bias_conn1(-1, 3, static_cast<double>(rand()) / RAND_MAX - 0.5, true, global_innovation_number++);
+
+    std::vector<ConnectionGene> connection_genes = {cg1, cg2, bias_conn1};
+    std::vector<NodeGene> node_genes = {ng1, ng2, bias, ng3};
 
     
     Genome base_genome(connection_genes, node_genes);
