@@ -17,14 +17,21 @@ std::map<std::pair<int, int>, int> global_connection_map;
 
 int main()
 {
-    std::vector<std::vector<double>> data = data1;
+    std::vector<std::vector<double>> data = data3;
 
     std::vector<std::vector<double>> labels = LinearAlgebra::vector1DtoColumnVector(LinearAlgebra::getColumn(data, 2));
+    std::vector<std::vector<double>> other_label = LinearAlgebra::vector1DtoColumnVector(LinearAlgebra::getColumn(data, 3));
+
+    LinearAlgebra::addColumn(labels, LinearAlgebra::columnVectortoVector1D(other_label));
+
     std::cout << "Labels are: " << std::endl;
     printMatrix(labels);
 
+
+    LinearAlgebra::deleteColumn(data, 3);
     LinearAlgebra::deleteColumn(data, 2);
 
+    
     std::vector<std::vector<double>> features_matrix = data;
     std::cout << "Features Matrix is: " << std::endl;
     printMatrix(features_matrix);
@@ -41,22 +48,29 @@ int main()
     
     // Output Layer
     NodeGene ng3(3, OUTPUT);
+    NodeGene ng4(4, OUTPUT);
 
     ConnectionGene cg1(1, 3, static_cast<double>(rand()) / RAND_MAX - 0.5, true, global_innovation_number++);
 
-    ConnectionGene cg2(2, 3, static_cast<double>(rand()) / RAND_MAX - 0.5, true, global_innovation_number++);
+    ConnectionGene cg2(1, 4, static_cast<double>(rand()) / RAND_MAX - 0.5, true, global_innovation_number++);
+
+    ConnectionGene cg3(2, 3, static_cast<double>(rand()) / RAND_MAX - 0.5, true, global_innovation_number++);
+
+    ConnectionGene cg4(2, 4, static_cast<double>(rand()) / RAND_MAX - 0.5, true, global_innovation_number++);
 
     ConnectionGene bias_conn1(-1, 3, static_cast<double>(rand()) / RAND_MAX - 0.5, true, global_innovation_number++);
 
-    std::vector<ConnectionGene> connection_genes = {cg1, cg2, bias_conn1};
-    std::vector<NodeGene> node_genes = {ng1, ng2, bias, ng3};
+    ConnectionGene bias_conn2(-1, 4, static_cast<double>(rand()) / RAND_MAX - 0.5, true, global_innovation_number++);
+
+    std::vector<ConnectionGene> connection_genes = {cg1, cg2, cg3, cg4, bias_conn1, bias_conn2};
+    std::vector<NodeGene> node_genes = {ng1, ng2, bias, ng3, ng4};
 
     
     Genome base_genome(connection_genes, node_genes);
     std::cout << "Base Genome is:" << std::endl;
     std::cout << base_genome.toString() << std::endl;
     std::cout << "-------------------------------------------------------------------" << std::endl;
-    int max_generations = 500;
+    int max_generations = 100;
     int population_size = 100;
     float elite_ratio = 0.2;
 

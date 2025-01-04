@@ -191,6 +191,14 @@ std::map<int, int> Genome::mapIDtoDepth()
     {
         id_to_depth[node_gene.node_id] = 0;
     }
+
+    for (const NodeGene& node_gene : this->node_genes)
+    {
+        if (node_gene.node_type == OUTPUT)
+        {
+            id_to_depth[node_gene.node_id] = INT_MAX;
+        }
+    }
     
     bool change_occurred = true;
 
@@ -309,8 +317,6 @@ std::string Genome::toGraphviz() const
     result += "}\n";
     return result;
 }
-
-
 
 
 

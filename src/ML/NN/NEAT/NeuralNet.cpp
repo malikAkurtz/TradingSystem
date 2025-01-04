@@ -11,14 +11,6 @@ NeuralNet::NeuralNet(Genome genome)
     this->id_to_node.clear();
     this->id_to_node = genome.mapIDtoNode();
 
-    // std::ostringstream oss;
-    // oss << "id_to_node Map:\n";
-    // for (const auto& pair : id_to_node)
-    // {
-    //     oss << "  Node ID: " << pair.first << ", Node ID: " << pair.second.node_id << "\n";
-    // }
-    // debugMessage("NeuralNet Constructer", "\n" + oss.str());
-
     this->id_to_depth.clear();
     this->id_to_depth = genome.mapIDtoDepth();
 
@@ -30,11 +22,13 @@ NeuralNet::NeuralNet(Genome genome)
 
 void NeuralNet::assignNodestoLayers()
 {
-    int greatest_depth = 0;
-    
+    int greatest_depth = 0; // the greatest depth not including the output layer
+
+
     for (const auto &[key, value] : this->id_to_depth)
-    {
-        if (value > greatest_depth)
+    {   
+        // if the node isnt an output node, since were initalizing them to infinity, then update the greatest_depth
+        if ((this->id_to_node.at(key).node_type != OUTPUT) && (value > greatest_depth))
         {
             greatest_depth = value;
         }
@@ -50,15 +44,23 @@ void NeuralNet::assignNodestoLayers()
 
     // debugMessage("assignNodestoLayers", "Node/Layer Depths Before Assignment:\n " + oss.str());
 
-    for (int i = 0; i < greatest_depth; i++)
+    for (int i = 0; i < greatest_depth + 1; i++) // + 1 to include the output layer
     {
         this->layers.emplace_back(Layer());
     }
 
     // for every node id mapped to its depth (the map is already sorted )
     for (const auto &[key, value] : this->id_to_depth)
-    {
-        this->layers[value].nodes.push_back(&this->id_to_node.at(key));
+    {   
+        if (this->id_to_node.at(key).node_type == OUTPUT)
+        {
+            this->layers[greatest_depth].nodes.push_back(&this->id_to_node.at(key));
+        }
+        else
+        {
+            this->layers[value].nodes.push_back(&this->id_to_node.at(key));
+        }
+        
     }
 
 }
@@ -66,7 +68,7 @@ void NeuralNet::assignNodestoLayers()
 std::vector<std::vector<double>> NeuralNet::feedForward(const std::vector<std::vector<double>> &features_matrix)
 {
     debugMessage("feedForward", "Beginning Feed Forwad With Feature Matrix: Rows = " + std::to_string(features_matrix.size()) + ", Columns = " + std::to_string(features_matrix[0].size()));
-    debugMessage("feedForward", "Neural Network Before Pass: " + this->toString());
+    debugMessage("feedForward", "Neural Network Before Pass: \n" + this->toString());
 
     this->loadInputs(features_matrix);
 
