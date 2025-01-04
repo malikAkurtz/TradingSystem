@@ -58,8 +58,8 @@ int main()
     float elite_ratio = 0.2;
 
     double weight_mutation_rate = 0.8;
-    double  add_connection_mutation_rate = 0.7;
-    double add_node_mutation_rate = 0.7;
+    double  add_connection_mutation_rate = 0.5;
+    double add_node_mutation_rate = 0.3;
     std::uniform_real_distribution<> dis(0.0, 1.0);
 
 
