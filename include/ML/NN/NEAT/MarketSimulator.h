@@ -17,6 +17,8 @@ public:
 
     MarketSimulator(Entity &entity, const std::vector<std::vector<double>> &features_matrix, const std::vector<std::vector<double>> &labels);
 
+    void setup();
+
     std::vector<std::vector<double>> makeDecision(const std::vector<std::vector<double>> &inputs);
 
     double simulate();
