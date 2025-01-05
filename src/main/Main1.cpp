@@ -78,8 +78,8 @@ int main()
     data = data_shortened;
 
     // IF WE JUST WANT TO USE SIMPLE DATA FROM TESTDATA.H
-    data = data2;
-    label_index = 1;
+    // data = data2;
+    // label_index = 1;
 
     // Separate labels from data before normalization
 
@@ -131,7 +131,7 @@ int main()
     std::cout << "Base Genome is:" << std::endl;
     std::cout << base_genome.toString() << std::endl;
     std::cout << "-------------------------------------------------------------------" << std::endl;
-    int max_generations = 1000;
+    int max_generations = 100;
     int population_size = 100;
     float elite_ratio = 0.2;
 
@@ -165,6 +165,7 @@ int main()
             // std::cout << "----Evalutating Fitness of Entity: " << entity.id << "-----" << std::endl << entity.genome.toString() << std::endl;
             // std::cout << "Neural Network looks like: " << std::endl << entity.brain.toString() << std::endl;
             entity.evaluateFitness(X_train, Y_train);
+            std::cout << entity.fitness << std::endl;
         }
         std::cout << "----------------END EVALUATING POPULATION FITNESS--------------" << std::endl;
 

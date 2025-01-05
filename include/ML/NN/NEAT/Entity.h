@@ -5,6 +5,7 @@
 #include "NeuralNet.h"
 #include "LossFunctions.h"
 #include "EntityID.h"
+#include "MarketSimulator.h"
 
 struct Entity
 {

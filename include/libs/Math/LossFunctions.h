@@ -6,11 +6,8 @@
 #include "LossFunctions.h"
 
 
-namespace LossFunctions
-{
-    double vectorizedModifiedSquarredError(const std::vector<double> &predictions, const std::vector<double> &labels);
-    double vectorizedLogLoss(const std::vector<double> &predictions, const std::vector<double> &labels);
+double vectorizedModifiedSquarredError(const std::vector<double> &predictions, const std::vector<double> &labels);
+double vectorizedLogLoss(const std::vector<double> &predictions, const std::vector<double> &labels);
 
-}
 
 #endif
