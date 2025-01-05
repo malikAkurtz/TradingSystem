@@ -12,7 +12,7 @@
 struct Layer
 {
 public:
-    std::vector<Node*> nodes;
+    std::vector<int> node_IDs;
 };
 
 class NeuralNet

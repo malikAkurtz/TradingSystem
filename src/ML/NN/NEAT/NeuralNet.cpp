@@ -54,11 +54,11 @@ void NeuralNet::assignNodestoLayers()
     {   
         if (this->id_to_node.at(key).node_type == OUTPUT)
         {
-            this->layers[greatest_depth].nodes.push_back(&this->id_to_node.at(key));
+            this->layers[greatest_depth].node_IDs.push_back(key);
         }
         else
         {
-            this->layers[value].nodes.push_back(&this->id_to_node.at(key));
+            this->layers[value].node_IDs.push_back(key);
         }
         
     }
@@ -70,7 +70,23 @@ std::vector<std::vector<double>> NeuralNet::feedForward(const std::vector<std::v
     debugMessage("feedForward", "Beginning Feed Forwad With Feature Matrix: Rows = " + std::to_string(features_matrix.size()) + ", Columns = " + std::to_string(features_matrix[0].size()));
     debugMessage("feedForward", "Neural Network Before Pass: \n" + this->toString());
 
+
+
+
     this->loadInputs(features_matrix);
+
+    printDebug("After Loading Inputs, Input Nodes Contain: ");
+    // for (Node *node : this->layers[0].nodes)
+    // {
+    //     if (node->node_type == INPUT)
+    //     {
+    //         printDebug("Node ID is: " + std::to_string(node->node_id));
+    //         printDebug("Outputs according to id_to_node map are: ");
+    //         printVectorDebug(this->id_to_node.at(node->node_id).outputs);
+    //         printDebug("Outputs according to layer pointers are: ");
+    //         printVectorDebug(node->outputs);
+    //     }
+    // }
 
     //std::cout << "Made it after load inputs" << std::endl;
     int last_layer_index = this->layers.size() - 1;
@@ -84,14 +100,17 @@ std::vector<std::vector<double>> NeuralNet::feedForward(const std::vector<std::v
     // starting at 1 to skip the input layer
     for (int l = 1; l < this->layers.size(); l++)
     {
-        Layer &this_layer = this->layers[l];
+        debugMessage("feedForward", "Processing Layer: " + std::to_string(l));
+        Layer *this_layer = &this->layers[l];
         // for every node in the layer, need to calculate its output and store it in that node
-        for (int n = 0; n < this_layer.nodes.size(); n++)
+        for (int n = 0; n < this_layer->node_IDs.size(); n++)
         {
-            std::vector<std::vector<double>> scaled_inputs;
+            debugMessage("feedForward", "Processing Node: " + std::to_string(this_layer->node_IDs[n]));
+            std::vector<std::vector<double>> scaled_inputs = {};
             // for every connection going into the node
-            for (const auto &connection : this_layer.nodes[n]->connections_in)
+            for (const auto &connection : this->id_to_node.at(this_layer->node_IDs[n]).connections_in)
             {    
+
                 // if the connection is disabled, skip it
                 if (!connection.enabled) 
                 {
@@ -107,6 +126,8 @@ std::vector<std::vector<double>> NeuralNet::feedForward(const std::vector<std::v
                 }
                 else
                 {
+                    debugMessage("feedForward", "Inputs Coming From Node ID: " + std::to_string(node_in) + " is: ");
+                    printVectorDebug(this->id_to_node.at(node_in).outputs);
                     input = this->id_to_node.at(node_in).outputs;
                 }
 
@@ -117,7 +138,7 @@ std::vector<std::vector<double>> NeuralNet::feedForward(const std::vector<std::v
             if (scaled_inputs.empty())
             {
                 std::vector<double> default_output(num_samples, 0);
-                this_layer.nodes[n]->storeOutputs(default_output);
+                id_to_node.at(this_layer->node_IDs[n]).storeOutputs(default_output);
                 continue;
             }
             std::vector<double> node_output(scaled_inputs[0].size(), 0);
@@ -126,12 +147,15 @@ std::vector<std::vector<double>> NeuralNet::feedForward(const std::vector<std::v
             {
                 // debugMessage("feedForward", "A Vector in Scaled Inputs Looks like: ");
                 // printVectorDebug(vector);
+                debugMessage("feedForward", "A Vector in scaled_inputs: ");
+                printVectorDebug(vector);
+
                 node_output = LinearAlgebra::addVectors(node_output, vector);
             }
             // apply acivation
-            node_output = this_layer.nodes[n]->applyActivation(node_output);
+            node_output = id_to_node.at(this_layer->node_IDs[n]).applyActivation(node_output);
             
-            this_layer.nodes[n]->storeOutputs(node_output);
+            id_to_node.at(this_layer->node_IDs[n]).storeOutputs(node_output);
             if (l == last_layer_index) 
             {
                 LinearAlgebra::addColumn(network_outputs, node_output);
@@ -150,20 +174,23 @@ void NeuralNet::loadInputs(const std::vector<std::vector<double>>& features_matr
 
     int num_features = features_matrix[0].size();
     // for every feature column in the features_matrix
-    int num_input_nodes = this->layers[0].nodes.size() - 1; // not including bias
+    int num_input_nodes = this->layers[0].node_IDs.size() - 1; // not including bias
+
+    debugMessage("loadInputs", "features_matrix before loading into inputs looks like:");
+    printMatrixDebug(features_matrix);
 
     if (num_input_nodes != num_features)
     {
         throw std::invalid_argument("The Number of Input Nodes Does Not Match The Number of Features");
     }
 
-    std::vector<Node *> input_nodes;
+    std::vector<Node *> input_nodes = {};
 
-    for (Node* node : this->layers[0].nodes)
+    for (auto& [id, node] : this->id_to_node)
     {
-        if (node->node_type == INPUT)
+        if (node.node_type == INPUT)
         {
-            input_nodes.push_back(node);
+            input_nodes.push_back(&node);
         }
     }
 
@@ -171,7 +198,8 @@ void NeuralNet::loadInputs(const std::vector<std::vector<double>>& features_matr
     {
         // save it
         std::vector<double> feature_vector = LinearAlgebra::getColumn(features_matrix, j);
-
+        debugMessage("loadInputs", "Loading This Vector Into Input Node: ");
+        printVectorDebug(feature_vector);
         input_nodes[j]->storeOutputs(feature_vector);
     }
 }
@@ -189,9 +217,9 @@ std::string NeuralNet::toString() const
     {
         oss << "<<<<<<<<<Layer " << i << " >>>>>>>>>\n";
         
-        for (int j = 0; j < layers[i].nodes.size(); j++)
+        for (int j = 0; j < layers[i].node_IDs.size(); j++)
         {
-            Node* node = layers[i].nodes[j];
+            const Node* node = &this->id_to_node.at(layers[i].node_IDs[j]);
             
             oss << "    Node ID: " << node->node_id << "\n";
             oss << "        Connections In:\n";
