@@ -44,6 +44,10 @@ std::vector<double> Node::applyActivation(const std::vector<double>& pre_activat
     }
 }
 
+void Node::setActivation(ActivationFunctionType activation)
+{
+    this->activation = activation;
+}
 
 std::string nodeTypeToString(NodeType type)
 {

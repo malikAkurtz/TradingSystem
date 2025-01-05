@@ -22,7 +22,7 @@ class Node
 public:
     int node_id;
     NodeType node_type;
-    ActivationFunctionType activation = RELU;
+    ActivationFunctionType activation = NONE;
     std::vector<Connection> connections_in;
     std::vector<double> outputs;
 
@@ -33,6 +33,8 @@ public:
     void storeOutputs(std::vector<double> outputs);
 
     std::vector<double> applyActivation(const std::vector<double> &pre_activation_outputs);
+
+    void setActivation(ActivationFunctionType activation);
 };
 
 #endif

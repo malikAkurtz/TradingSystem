@@ -2,6 +2,7 @@
 #define MARKET_SIM_H
 
 #include <vector>
+#include <cmath>
 
 struct Entity;
 

@@ -10,6 +10,7 @@
 #include <algorithm>
 #include "ReadCSV.h"
 #include "GenFunctions.h"
+#include <algorithm>
 
 bool DEBUG = false;
 
@@ -52,22 +53,16 @@ int main()
 {
     std::vector<std::vector<double>> data = parseCSV("/Users/malikkurtz/Coding/TradingSystem/data/csv/XRP Historical Data.csv");
 
+    std::reverse(data.begin(), data.end());
+
+
     // convert percentages to just up or down
     for (int i = 0; i < data.size(); i++)
     {
         data[i][5] = (data[i][5] >= 0) ? true : false;
     }
 
-    // shift label up one (predicing next day using todays data)
-    for (int i = 0; i < data.size()-1; i++)
-    {
-        // this rows 5th column is equal to the next rows 5th column
-        data[i][5] = data[i + 1][5];
-    }
-    // remove the last row (no data for the next day for it)
-    LinearAlgebra::deleteRow(data, (data.size() - 1));
 
-    
     int label_index = 5;
 
     float ratio = 0.05;
@@ -87,7 +82,7 @@ int main()
     LinearAlgebra::deleteColumn(data, label_index);
 
     // Normalize only the feature columns
-    data = normalizeData(data);
+    //data = normalizeData(data); ******************************* YOU COMMENTED THIS OUT************
 
     // Reattach labels to the data for splitting
     for (size_t i = 0; i < data.size(); i++) {
@@ -131,8 +126,8 @@ int main()
     std::cout << "Base Genome is:" << std::endl;
     std::cout << base_genome.toString() << std::endl;
     std::cout << "-------------------------------------------------------------------" << std::endl;
-    int max_generations = 100;
-    int population_size = 100;
+    int max_generations = 50;
+    int population_size = 50;
     float elite_ratio = 0.2;
 
     double weight_mutation_rate = 0.8;

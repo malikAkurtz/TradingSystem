@@ -186,6 +186,10 @@ std::map<int, Node> Genome::mapIDtoNode()
     {
         // add it to the map which maps ids to nodes
         id_to_node.emplace(node_gene.node_id, Node(node_gene));
+        if (node_gene.node_type == HIDDEN)
+        {
+            id_to_node.at(node_gene.node_id).setActivation(SIGMOID);
+        }
     }
 
     return id_to_node;
