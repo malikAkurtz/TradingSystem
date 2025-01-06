@@ -67,45 +67,28 @@ void NeuralNet::assignNodestoLayers()
 
 std::vector<std::vector<double>> NeuralNet::feedForward(const std::vector<std::vector<double>> &features_matrix)
 {
-    debugMessage("feedForward", "Beginning Feed Forwad With Feature Matrix: Rows = " + std::to_string(features_matrix.size()) + ", Columns = " + std::to_string(features_matrix[0].size()));
-    debugMessage("feedForward", "Neural Network Before Pass: \n" + this->toString());
-
-
+    // debugMessage("feedForward", "Beginning Feed Forwad With Feature Matrix: Rows = " + std::to_string(features_matrix.size()) + ", Columns = " + std::to_string(features_matrix[0].size()));
+    // debugMessage("feedForward", "Neural Network Before Pass: \n" + this->toString());
 
 
     this->loadInputs(features_matrix);
 
-    printDebug("After Loading Inputs, Input Nodes Contain: ");
-    // for (Node *node : this->layers[0].nodes)
-    // {
-    //     if (node->node_type == INPUT)
-    //     {
-    //         printDebug("Node ID is: " + std::to_string(node->node_id));
-    //         printDebug("Outputs according to id_to_node map are: ");
-    //         printVectorDebug(this->id_to_node.at(node->node_id).outputs);
-    //         printDebug("Outputs according to layer pointers are: ");
-    //         printVectorDebug(node->outputs);
-    //     }
-    // }
 
-    //std::cout << "Made it after load inputs" << std::endl;
     int last_layer_index = this->layers.size() - 1;
 
     int num_samples = features_matrix.size();
-    // int num_labels = this->layers[last_layer_index].nodes.size();
-    // std::cout << "num_labels: " << num_labels << std::endl;
 
     std::vector<std::vector<double>> network_outputs(num_samples);
 
     // starting at 1 to skip the input layer
     for (int l = 1; l < this->layers.size(); l++)
     {
-        debugMessage("feedForward", "Processing Layer: " + std::to_string(l));
+        // debugMessage("feedForward", "Processing Layer: " + std::to_string(l));
         Layer *this_layer = &this->layers[l];
         // for every node in the layer, need to calculate its output and store it in that node
         for (int n = 0; n < this_layer->node_IDs.size(); n++)
         {
-            debugMessage("feedForward", "Processing Node: " + std::to_string(this_layer->node_IDs[n]));
+            // debugMessage("feedForward", "Processing Node: " + std::to_string(this_layer->node_IDs[n]));
             std::vector<std::vector<double>> scaled_inputs = {};
             // for every connection going into the node
             for (const auto &connection : this->id_to_node.at(this_layer->node_IDs[n]).connections_in)
@@ -126,8 +109,8 @@ std::vector<std::vector<double>> NeuralNet::feedForward(const std::vector<std::v
                 }
                 else
                 {
-                    debugMessage("feedForward", "Inputs Coming From Node ID: " + std::to_string(node_in) + " is: ");
-                    printVectorDebug(this->id_to_node.at(node_in).outputs);
+                    // debugMessage("feedForward", "Inputs Coming From Node ID: " + std::to_string(node_in) + " is: ");
+                    // printVectorDebug(this->id_to_node.at(node_in).outputs);
                     input = this->id_to_node.at(node_in).outputs;
                 }
 
@@ -147,8 +130,8 @@ std::vector<std::vector<double>> NeuralNet::feedForward(const std::vector<std::v
             {
                 // debugMessage("feedForward", "A Vector in Scaled Inputs Looks like: ");
                 // printVectorDebug(vector);
-                debugMessage("feedForward", "A Vector in scaled_inputs: ");
-                printVectorDebug(vector);
+                // debugMessage("feedForward", "A Vector in scaled_inputs: ");
+                // printVectorDebug(vector);
 
                 node_output = LinearAlgebra::addVectors(node_output, vector);
             }
@@ -176,8 +159,8 @@ void NeuralNet::loadInputs(const std::vector<std::vector<double>>& features_matr
     // for every feature column in the features_matrix
     int num_input_nodes = this->layers[0].node_IDs.size() - 1; // not including bias
 
-    debugMessage("loadInputs", "features_matrix before loading into inputs looks like:");
-    printMatrixDebug(features_matrix);
+    // debugMessage("loadInputs", "features_matrix before loading into inputs looks like:");
+    // printMatrixDebug(features_matrix);
 
     if (num_input_nodes != num_features)
     {
@@ -198,8 +181,8 @@ void NeuralNet::loadInputs(const std::vector<std::vector<double>>& features_matr
     {
         // save it
         std::vector<double> feature_vector = LinearAlgebra::getColumn(features_matrix, j);
-        debugMessage("loadInputs", "Loading This Vector Into Input Node: ");
-        printVectorDebug(feature_vector);
+        // debugMessage("loadInputs", "Loading This Vector Into Input Node: ");
+        // printVectorDebug(feature_vector);
         input_nodes[j]->storeOutputs(feature_vector);
     }
 }

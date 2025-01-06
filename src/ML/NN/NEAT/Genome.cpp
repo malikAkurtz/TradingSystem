@@ -5,6 +5,28 @@ Genome::Genome() {};
 
 Genome::Genome(std::vector<ConnectionGene> connection_genes, std::vector<NodeGene> node_genes) : connection_genes(connection_genes), node_genes(node_genes) {};
 
+Genome::Genome(int num_input_nodes, int num_output_nodes)
+{
+    for (int i = 0; i < num_input_nodes; i++)
+    {
+        this->node_genes.emplace_back(NodeGene(i + 1, INPUT)); // add the input nodes
+    }
+    // add the bias node
+    this->node_genes.emplace_back(NodeGene(-1, BIAS));
+
+    // add the output nodes
+    for (int i = 0; i < num_output_nodes; i++)
+    {
+        node_genes.emplace_back(NodeGene(node_genes.size(), OUTPUT));
+        for (int j = 0; j < num_input_nodes; j++)
+        {
+            this->connection_genes.emplace_back(ConnectionGene((j+1), this->node_genes.back().node_id, static_cast<double>(rand()) / RAND_MAX - 0.5, true, global_innovation_number++));
+        }
+        // add the bias connection
+        this->connection_genes.emplace_back(ConnectionGene(-1, this->node_genes.back().node_id, static_cast<double>(rand()) / RAND_MAX - 0.5, true, global_innovation_number++));
+    }
+}
+
 
 std::string nodeToString(NodeType type)
 {
@@ -108,9 +130,9 @@ void Genome::mutateAddConnection()
             global_innovation_number++)
             );
 
-    debugMessage("mutateAddConnection", "Added a connection from: " + std::to_string(node_gene_in->node_id) + " To: " + std::to_string(node_gene_out->node_id));
+    // debugMessage("mutateAddConnection", "Added a connection from: " + std::to_string(node_gene_in->node_id) + " To: " + std::to_string(node_gene_out->node_id));
 
-    debugMessage("mutateAddConnection", "Offspring Genome is Now: " + this->toString());
+    // debugMessage("mutateAddConnection", "Offspring Genome is Now: " + this->toString());
 }
 
 void Genome::mutateAddNode()
@@ -156,8 +178,8 @@ void Genome::mutateAddNode()
     std::sort(this->connection_genes.begin(), this->connection_genes.end(), [](const ConnectionGene &a, const ConnectionGene &b)
               { return a.innovation_number < b.innovation_number;});
 
-    debugMessage("mutateAddNode", "Added Node: " + std::to_string(new_node_id) + " With node_in: " + std::to_string(base_node_in) + " And node_out: " + std::to_string(final_node_out));
-    debugMessage("mutateAddNode", "Offspring Genome is Now: " + this->toString());
+    // debugMessage("mutateAddNode", "Added Node: " + std::to_string(new_node_id) + " With node_in: " + std::to_string(base_node_in) + " And node_out: " + std::to_string(final_node_out));
+    // debugMessage("mutateAddNode", "Offspring Genome is Now: " + this->toString());
 }
 
 void Genome::mutateChangeWeight()
@@ -174,7 +196,7 @@ void Genome::mutateChangeWeight()
         random_connection_gene->weight = random_weight;
     }
 
-    debugMessage("mutateChangeWeight", "Connection Selected for Random Weight Change: " + random_connection_gene->toString());
+    // debugMessage("mutateChangeWeight", "Connection Selected for Random Weight Change: " + random_connection_gene->toString());
     
 }
 
@@ -189,6 +211,10 @@ std::map<int, Node> Genome::mapIDtoNode()
         if (node_gene.node_type == HIDDEN)
         {
             id_to_node.at(node_gene.node_id).setActivation(SIGMOID);
+        }
+        else if (node_gene.node_type == OUTPUT)
+        {
+            id_to_node.at(node_gene.node_id).setActivation(TANH);
         }
     }
 
@@ -219,8 +245,7 @@ std::map<int, int> Genome::mapIDtoDepth()
         change_occurred = false;
         for (const ConnectionGene &connection_gene : connection_genes)
         {
-            // std::cout << "Connection gene when mapping looks like: " << std::endl;
-            // std::cout << connection_gene.toString() << std::endl;
+
             int conn_node_in = connection_gene.node_in;
             int conn_node_out = connection_gene.node_out;
             

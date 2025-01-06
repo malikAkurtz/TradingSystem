@@ -8,7 +8,6 @@
 #include <fstream>
 #include <map>
 #include "InnovationNum.h"
-#include "ConnectionMap.h"
 
 struct Entity;
 
@@ -20,6 +19,8 @@ struct Genome
     Genome();
 
     Genome(std::vector<ConnectionGene> connection_genes, std::vector<NodeGene> node_genes);
+
+    Genome(int num_input_nodes, int num_output_nodes);
 
     void mutateAddConnection();
 

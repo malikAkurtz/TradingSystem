@@ -2,12 +2,13 @@
 #include "MarketSimulator.h"
 #include "Entity.h"
 
-MarketSimulator::MarketSimulator(Entity &entity, const std::vector<std::vector<double>> &features_matrix, const std::vector<std::vector<double>> &labels) : entity(&entity), features_matrix(features_matrix), labels(labels) {};
+MarketSimulator::MarketSimulator(Entity &entity, const std::vector<std::vector<double>> &features_matrix) : entity(&entity), features_matrix(features_matrix) {};
 
 void MarketSimulator::setup()
 {
-    this->cash = 10000;
+    this->cash = STARTING_CASH;
     this->units = 0;
+    this->portfolio_value = STARTING_CASH;
 }
 
 std::vector<std::vector<double>> MarketSimulator::makeDecision(const std::vector<std::vector<double>> &inputs)
@@ -21,49 +22,97 @@ double MarketSimulator::simulate()
     // use the data from yesterday to place a trade at market open today, hence why starting at i = 1
     this->setup();
 
-    double decision;
-    // decision will be as follows:
-    // if output is < -0.5, sell (1 * output)
-    // if output is > 0.5, buy (1 * output)
     for (int i = 1; i < features_matrix.size(); i++)
     {
-        std::cout << "----------------New Market Open----------------" << std::endl;
-        decision = makeDecision({features_matrix[i - 1]})[0][0];
-        if (decision < -0.01)
-        {
-            // std::cout << "Selling" << std::endl;
-            // double units_to_sell = abs((10 * decision));
-            // this->units -= units_to_sell;
-            // this->cash += units_to_sell * (features_matrix[i][1]);
-        }
-        else if (decision > 0.01)
-        {
-            double xrp_open_price = features_matrix[i][1];
-            std::cout << "XRP Open Price: " << xrp_open_price << std::endl;
-            double total_cash_available = this->cash;
-            std::cout << "Total Cash Available: " << total_cash_available << std::endl;
-            double cash_trade_size = decision * total_cash_available;
-            std::cout << "Cash Trade Size: " << cash_trade_size << std::endl;
-            int units_to_buy = floor(cash_trade_size / xrp_open_price);
-            std::cout << "Units To Purcahse: " << units_to_buy << std::endl;
-            this->units += units_to_buy;
-            this->cash -= units_to_buy * (features_matrix[i][1]);
-            std::cout << "Buying: " << units_to_buy << " XRP at Open Price of: " << features_matrix[i][1] << std::endl;
-            std::cout << "Cash Balance is Now: " << this->cash << std::endl;
+        debugMessage("--------------------New Day--------------------", "");
+        
+        double decision = makeDecision({features_matrix[i - 1]})[0][0];
+        debugMessage("Decision is: " + std::to_string(decision), "");
 
-            // at market close, sell
-            this->cash += this->units * (features_matrix[i][0]);
-            this->units -= this->units;
-            std::cout << "Selling XRP at Close Price of: " << features_matrix[i][0] << std::endl;
-            std::cout << "Cash Balance is Now: " << this->cash << std::endl;
+        double open_price = features_matrix[i][1];
+        debugMessage("Open Price is: " + std::to_string(open_price), "");
+        //double close_price = features_matrix[i][0];
+        // if the decision is below -0.2, sell 
+        if (decision < -0.2)
+        {   
+
+            int units_to_sell = floor(CAPITAL_AT_RISK / open_price);
+
+            if (this->units >= units_to_sell)
+            {
+                debugMessage("Selling " + std::to_string(units_to_sell) + " Units @ " + std::to_string(open_price), "");
+
+                this->executeSellOrder(units_to_sell, open_price, SLIPPAGE);
+
+                debugMessage("Cash on Hand: " + std::to_string(this->cash), "");
+                debugMessage("Units Held: " + std::to_string(this->units), "");
+            }
+            else
+            {
+                units_to_sell = this->units;
+
+                debugMessage("Selling " + std::to_string(units_to_sell) + " Units @ " + std::to_string(open_price), "");
+
+                this->executeSellOrder(units_to_sell, open_price, SLIPPAGE);
+
+                debugMessage("Cash on Hand: " + std::to_string(this->cash), "");
+                debugMessage("Units Held: " + std::to_string(this->units), "");
+            }
+        }
+        else if (decision > 0.2)
+        {
+
+            int units_to_buy = floor(CAPITAL_AT_RISK / open_price);
+            double trade_cost = units_to_buy * (open_price * (1 + SLIPPAGE));
+
+            if (this->cash >= trade_cost)
+            {   
+                debugMessage("Buying " + std::to_string(units_to_buy) + " Units @ " + std::to_string(open_price), "");
+
+                this->executeBuyOrder(units_to_buy, open_price, SLIPPAGE);
+
+                debugMessage("Cash on Hand: " + std::to_string(this->cash), "");
+                debugMessage("Units Held: " + std::to_string(this->units), "");
+            }
+            else
+            {
+                units_to_buy = floor(this->cash / open_price);
+
+                debugMessage("Buying " + std::to_string(units_to_buy) + " Units @ " + std::to_string(open_price), "");
+
+                this->executeBuyOrder(units_to_buy, open_price, SLIPPAGE);
+
+                debugMessage("Cash on Hand: " + std::to_string(this->cash), "");
+                debugMessage("Units Held: " + std::to_string(this->units), "");
+            }
         }
         else 
         {
         }
-        std::cout << "----------------Market Close----------------" << std::endl;
+        debugMessage("----------------End of Day----------------", "");
     }
-    std::cout << "Final Units Held: " << units << std::endl;
-    std::cout << "Final Cash Held: " << cash << std::endl;
-    double portfolio_value = cash + (units * features_matrix.back()[1]);
-    return portfolio_value;
+
+    this->portfolio_value = this->calculatePortfolioValue(this->cash, this->units, features_matrix.back()[1]);
+    debugMessage("Final Portfolio Value: " + std::to_string(this->portfolio_value), "");
+    double percentage_gain = (this->portfolio_value - STARTING_CASH) / STARTING_CASH;
+    debugMessage("Overall Percentage Gain: " + std::to_string(percentage_gain), "");
+    return this->portfolio_value;
+}
+
+void MarketSimulator::executeBuyOrder(int units_to_buy, double price_per_unit, float slippage)
+{
+    double trade_cost = units_to_buy * (price_per_unit * (1 + slippage));
+    this->cash -= trade_cost;
+    this->units += units_to_buy;
+}
+
+void MarketSimulator::executeSellOrder(int units_to_sell, double price_per_unit, float slippage)
+{
+    this->cash += units_to_sell * (price_per_unit * (1 - slippage));
+    this->units -= units_to_sell;
+}
+
+double MarketSimulator::calculatePortfolioValue(int cash_on_hand, int units_held, double last_price_per_unit)
+{
+    return cash_on_hand + (units_held * last_price_per_unit);
 }

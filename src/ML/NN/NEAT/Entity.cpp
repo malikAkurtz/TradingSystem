@@ -92,7 +92,7 @@ Genome Entity::crossover(Entity &other_parent)
     // if we didnt get to the end of least fit, just drop them they dont matter
 
 
-    debugMessage("crossover", "Performed Crossover Between Entities: " + std::to_string(this->id) + ", " + std::to_string(other_parent.id) + + " To Produce: " + offspring.toString());
+    // debugMessage("crossover", "Performed Crossover Between Entities: " + std::to_string(this->id) + ", " + std::to_string(other_parent.id) + + " To Produce: " + offspring.toString());
 
     return offspring;
 }
@@ -115,6 +115,6 @@ void Entity::evaluateFitness(const std::vector<std::vector<double>> &features_ma
     
     // this->fitness = -entity_loss; // negative because we want higher to be better
 
-    MarketSimulator simulator(*this, features_matrix, labels);
+    MarketSimulator simulator(*this, features_matrix);
     this->fitness = simulator.simulate();
 }

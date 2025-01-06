@@ -124,4 +124,16 @@ namespace ActivationFunctions
 
         return resultant;
     }
+
+
+    std::vector<double> vectorTanh(const std::vector<double> &v1)
+    {
+        std::vector<double> resultant = v1;
+        for (auto& value : resultant)
+        {
+            value = (exp(value) - exp(-value)) / (exp(value) + exp(-value));
+        }
+
+        return resultant;
+    }
 }

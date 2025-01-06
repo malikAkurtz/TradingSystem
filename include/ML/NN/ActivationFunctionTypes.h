@@ -4,6 +4,7 @@
 enum ActivationFunctionType {
     RELU,
     SIGMOID,
+    TANH,
     NONE
 };
 

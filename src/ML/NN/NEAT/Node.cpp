@@ -38,6 +38,10 @@ std::vector<double> Node::applyActivation(const std::vector<double>& pre_activat
     {
         return ActivationFunctions::vectorSigmoid(pre_activation_outputs);
     }
+    else if (this->activation == TANH)
+    {
+        return ActivationFunctions::vectorTanh(pre_activation_outputs);
+    }
     else
     {
         return pre_activation_outputs;
