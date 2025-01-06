@@ -210,12 +210,12 @@ std::map<int, Node> Genome::mapIDtoNode()
         id_to_node.emplace(node_gene.node_id, Node(node_gene));
         if (node_gene.node_type == HIDDEN)
         {
-            id_to_node.at(node_gene.node_id).setActivation(SIGMOID);
+            id_to_node.at(node_gene.node_id).setActivation(RELU);
         }
-        else if (node_gene.node_type == OUTPUT)
-        {
-            id_to_node.at(node_gene.node_id).setActivation(TANH);
-        }
+        // else if (node_gene.node_type == OUTPUT)
+        // {
+        //     id_to_node.at(node_gene.node_id).setActivation(TANH);
+        // }
     }
 
     return id_to_node;

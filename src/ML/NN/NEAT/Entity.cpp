@@ -99,22 +99,22 @@ Genome Entity::crossover(Entity &other_parent)
 
 void Entity::evaluateFitness(const std::vector<std::vector<double>> &features_matrix, const std::vector<std::vector<double>> &labels)
 {
-    // int num_samples = features_matrix.size();
+    int num_samples = features_matrix.size();
 
-    // std::vector<std::vector<double>> entity_outputs = this->brain.feedForward(features_matrix);
+    std::vector<std::vector<double>> entity_outputs = this->brain.feedForward(features_matrix);
 
-    // double cumError = 0;
+    double cumError = 0;
 
-    // for (int i = 0; i < num_samples; i++)
-    // {
-    //     cumError += vectorizedModifiedSquarredError(entity_outputs[i], labels[i]);
-    // }
+    for (int i = 0; i < num_samples; i++)
+    {
+        cumError += vectorizedModifiedSquarredError(entity_outputs[i], labels[i]);
+    }
 
-    // double entity_loss = cumError / num_samples;
-    // debugMessage("evaluateFitness", "Entity: " + std::to_string(this->id) + " Fitness: " + std::to_string(-entity_loss));
+    double entity_loss = cumError / num_samples;
+    debugMessage("evaluateFitness", "Entity: " + std::to_string(this->id) + " Fitness: " + std::to_string(-entity_loss));
     
-    // this->fitness = -entity_loss; // negative because we want higher to be better
+    this->fitness = -entity_loss; // negative because we want higher to be better
 
-    MarketSimulator simulator(*this, features_matrix);
-    this->fitness = simulator.simulate();
+    // MarketSimulator simulator(*this, features_matrix);
+    // this->fitness = simulator.simulate();
 }

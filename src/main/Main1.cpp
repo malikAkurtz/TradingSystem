@@ -95,13 +95,13 @@ int main()
     std::cout << "Base Genome is:" << std::endl;
     std::cout << base_genome.toString() << std::endl;
     std::cout << "-------------------------------------------------------------------" << std::endl;
-    int max_generations = 100;
-    int population_size = 50;
+    int max_generations = 1000;
+    int population_size = 100;
     float elite_ratio = 0.2;
 
     double weight_mutation_rate = 0.8;
-    double  add_connection_mutation_rate = 0.1;
-    double add_node_mutation_rate = 0.06;
+    double  add_connection_mutation_rate = 0.05;
+    double add_node_mutation_rate = 0.03;
     std::uniform_real_distribution<> dis(0.0, 1.0);
 
 

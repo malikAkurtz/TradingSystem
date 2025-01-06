@@ -8,98 +8,216 @@
 #include <TestData.h>
 #include "LinearAlgebra.h"
 #include <algorithm>
+#include "ReadCSV.h"
+#include "GenFunctions.h"
+#include <algorithm>
 
 bool DEBUG = false;
 
-int global_innovation_number = 0;
+int global_innovation_number = 1;
+int global_entity_id = 0;
 
-int main1()
+
+int main()
 {
-    srand(time(0)); 
+    std::vector<std::vector<double>> data = data2;
 
-    NodeGene ng1(1, INPUT);
-    NodeGene ng2(2, INPUT);
-    NodeGene ng3(3, INPUT);
-    NodeGene ng4(4, OUTPUT);
-    NodeGene ng5(5, HIDDEN);
-    std::vector<NodeGene> node_genes = {ng1, ng2, ng3, ng4, ng5};
-
-    ConnectionGene cg1(1, 4, 0.7, true, 1);
-    global_innovation_number++;
-    ConnectionGene cg2(2, 4, 0.5, false, 2);
-    global_innovation_number++;
-    ConnectionGene cg3(3, 4, 0.5, true, 3);
-    global_innovation_number++;
-    ConnectionGene cg4(2, 5, 0.2, true, 4);
-    global_innovation_number++;
-    ConnectionGene cg5(5, 4, 0.4, true, 5);
-    global_innovation_number++;
-    ConnectionGene cg6(1, 5, 0.6, true, 6);
-    global_innovation_number++;
+    int label_index = 1;
 
 
-    std::vector<ConnectionGene> connection_genes = {cg1, cg2, cg3, cg4, cg5, cg6};
+    // Separate labels from data before normalization
 
-    Genome genome(connection_genes, node_genes);
+    std::vector<std::vector<double>> labels = LinearAlgebra::vector1DtoColumnVector(LinearAlgebra::getColumn(data, label_index));
+    LinearAlgebra::deleteColumn(data, label_index);
 
-    while (true) 
-    {   
-        if (rand() % 2)
-        {
-            genome.mutateAddConnection();
-        }
-        else
-        {
-            genome.mutateAddNode();
-        }
-        std::this_thread::sleep_for(std::chrono::milliseconds(50));
-        genome.saveToDotFile("genome_graph.dot");
-        std::system("python3 graph_node.py");
+    //Normalize only the feature columns
+    data = normalizeData(data); //******************************* YOU COMMENTED THIS OUT************
+
+    // Reattach labels to the data for splitting
+    for (size_t i = 0; i < data.size(); i++) {
+        data[i].push_back(labels[i][0]);
     }
 
-    print(genome.toString());
+    // Split the data into training and validation sets
+    auto csv_data = splitData(data, 0.8);
 
-    
+    // Extract features and labels for training and validation
+    std::vector<std::vector<double>> X_train = csv_data.first;
+    std::vector<std::vector<double>> Y_train = LinearAlgebra::vector1DtoColumnVector(LinearAlgebra::getColumn(X_train, label_index));
+    LinearAlgebra::deleteColumn(X_train, label_index);
 
-    NeuralNet network(genome);
+    std::vector<std::vector<double>> X_val = csv_data.second;
+    std::vector<std::vector<double>> Y_val = LinearAlgebra::vector1DtoColumnVector(LinearAlgebra::getColumn(X_val, label_index));
+    LinearAlgebra::deleteColumn(X_val, label_index);
 
-    
+    // Neural Network Initialization
+    int num_features = X_train[0].size();
+    int num_labels = Y_train[0].size();
+
+    printDebug("X_train:");
+    printMatrixDebug(X_train);
+
+    printDebug("Y_train:");
+    printMatrixDebug(Y_train);
+
+    printDebug("X_val:");
+    printMatrixDebug(X_val);
+
+    printDebug("Y_val:");
+    printMatrixDebug(Y_val);
+
+    srand(time(0));
+    std::random_device rd;
+    std::mt19937 gen(rd());
+
+    Genome base_genome(num_features, num_labels);
+
+    std::cout << "Base Genome is:" << std::endl;
+    std::cout << base_genome.toString() << std::endl;
+    std::cout << "-------------------------------------------------------------------" << std::endl;
+    int max_generations = 1000;
+    int population_size = 100;
+    float elite_ratio = 0.2;
+
+    double weight_mutation_rate = 0.8;
+    double  add_connection_mutation_rate = 0.05;
+    double add_node_mutation_rate = 0.00;
+    std::uniform_real_distribution<> dis(0.0, 1.0);
 
 
-    std::vector<std::vector<double>> network_outputs = network.feedForward({{1, 2, 3}, {4, 5, 6}});
-    printMatrix(network_outputs);
+    //initialie the base population
+    std::vector<Entity> population;
+    population.reserve(population_size);
+
+    for (int i = 0; i < population_size; i++)
+    {
+        population.emplace_back(Entity(base_genome));
+    }
+
+
+    std::cout << "Base Entity Neural Network toString" << std::endl;
+    std::cout << population[0].brain.toString() << std::endl;
+
+    // for every generation
+    for (int i = 0; i < max_generations; i++)
+    {
+        std::cout << "------------------BEGINNING GENERATION " << i << "-------------------" << std::endl;
+        // evaluate the population
+        std::cout << "--------------START EVALUATING POPULATION FITNESS--------------" << std::endl;
+        for (auto &entity : population)
+        {
+            // std::cout << "----Evalutating Fitness of Entity: " << entity.id << "-----" << std::endl << entity.genome.toString() << std::endl;
+            // std::cout << "Neural Network looks like: " << std::endl << entity.brain.toString() << std::endl;
+            entity.evaluateFitness(X_train, Y_train);
+            std::cout << "Fitness of Entity: " << entity.id << " = " << entity.fitness << std::endl;
+        }
+        std::cout << "----------------END EVALUATING POPULATION FITNESS--------------" << std::endl;
+
+        std::sort(population.begin(), population.end(), [](const Entity &a, const Entity &b)
+                  { return a.fitness > b.fitness; }); 
+        
+        if (DEBUG)
+        {
+            std::cout << "Sorted Fitnesses in decreasing order:" << std::endl;
+            for (int j = 0; j < population.size(); j++)
+            {
+                std::cout << "Entity: " << population[j].id << " Fitness: " << population[j].fitness << std::endl;
+            }
+        }
+        
+        // select the top 20% for crossover
+        int num_elites = population_size * elite_ratio;
+        // std::cout << "Number of elites selected for crossover: " << num_elites << std::endl;
+        int offspring_required = population_size - num_elites;
+        // std::cout << "Number of offspring required: " << offspring_required << std::endl;
+
+        population.erase(population.begin() + num_elites, population.end());
+
+        if (DEBUG)
+        {
+            std::cout << "Elites For This Generation Are: " << std::endl;
+            for (int j = 0; j < population.size(); j++)
+            {
+                std::cout << "Entity: " << population[j].id << " Fitness: " << population[j].fitness << std::endl;
+            }
+        }
+        
+
+        // perform crossover
+        for (int j = 0; j < offspring_required; j++)
+        {
+            
+            int random_elite_index1 = rand() % num_elites;
+            int random_elite_index2 = rand() % num_elites;
+
+            while (random_elite_index2 == random_elite_index1)
+            {
+                random_elite_index2 = rand() % num_elites;
+            }
+            
+            Entity& random_elite1 = population[random_elite_index1];
+            Entity& random_elite2 = population[random_elite_index2];
+
+            Genome offspring_genome = random_elite1.crossover(random_elite2);
+            // std::cout << "New Offspring Genome is: " << offspring_genome.toString() << std::endl;
+
+            //perform mutations
+            if (dis(gen) < weight_mutation_rate)
+            {   
+                //std::cout << "Going To Mutate by Changing a Connection" << std::endl;
+                offspring_genome.mutateChangeWeight();
+            }
+            if (dis(gen) < add_connection_mutation_rate)
+            {   
+                //std::cout << "Going To Mutate by Adding a Connection" << std::endl;
+                offspring_genome.mutateAddConnection();
+            }
+            if (dis(gen) < add_node_mutation_rate)
+            {
+                //std::cout << "Going To Mutate by Adding a Node" << std::endl;
+                offspring_genome.mutateAddNode();
+            }
+
+            // std::cout << "New Mutated Genome is: " << offspring_genome.toString() << std::endl;
+
+            population.emplace_back(Entity(offspring_genome));
+        }
+        std::cout << "------------------FINISHED GENERATION " << i << "-------------------" << std::endl;
+    }
+
+    for (auto& entity : population)
+    {
+        entity.evaluateFitness(X_train, Y_train);
+    }
+    std::sort(population.begin(), population.end(), [](const Entity &a, const Entity &b)
+                { return a.fitness > b.fitness; });
+
+    Entity best_entity = population[0];
+
+    std::vector<std::vector<double>> training_predictions = best_entity.brain.feedForward(X_train);
+
+    std::cout << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" << std::endl;
+    std::cout << "Best Entity is: " << best_entity.id << std::endl;
+    std::cout << "Has Fitness: " << best_entity.fitness << std::endl;
+
+    std::cout << "Predictions are: " << std::endl;
+    printMatrix(training_predictions);
+
+    std::cout << "Final Genome" << std::endl;
+    std::cout << best_entity.genome.toString() << std::endl;
+
+    std::cout << "Final Neural Net" << std::endl;
+    std::cout << best_entity.brain.toString();
+
+    best_entity.genome.saveToDotFile("genome_graph.dot");
+
+    best_entity.evaluateFitness(X_val, Y_val);
+    std::vector<std::vector<double>> validation_predictions = best_entity.brain.feedForward(X_val);
+
+    std::cout << "Fitness on Validation Data: " << best_entity.fitness << std::endl;
+
+    std::cout << "Validation Predictions: " << std::endl;
+    printMatrix(validation_predictions);
 
     return 0;
 }
-
-int main3()
-{
-    srand(time(0)); 
-
-    std::vector<ConnectionGene> parent1_connection_genes = {
-        ConnectionGene(1, 4, 1, true, 1),
-        ConnectionGene(2, 4, 1, true, 2),
-        ConnectionGene(3, 4, 1, true, 3),
-        ConnectionGene(2, 5, 1, true, 4),
-        ConnectionGene(5, 4, 1, true, 5),
-        ConnectionGene(1, 5, 1, true, 8),
-    };
-
-    std::vector<ConnectionGene> parent2_connection_genes = {
-        ConnectionGene(1, 4, 0, true, 1),
-        ConnectionGene(2, 4, 0, true, 2),
-        ConnectionGene(3, 4, 0, true, 3),
-        ConnectionGene(2, 5, 0, true, 4),
-        ConnectionGene(5, 4, 0, true, 5),
-        ConnectionGene(5, 6, 0, true, 6),
-        ConnectionGene(6, 4, 0, true, 7),
-        ConnectionGene(3, 5, 0, true, 9),
-        ConnectionGene(1, 6, 0, true, 10),
-    };
-
-
-
-    return 0;
-
-}
-
