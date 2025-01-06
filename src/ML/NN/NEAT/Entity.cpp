@@ -58,16 +58,12 @@ Genome Entity::crossover(Entity &other_parent)
                 offspring.connection_genes.push_back(*least_fit_it);
             }
 
-            if (most_fit_it->enabled || least_fit_it->enabled)
+            if (!most_fit_it->enabled || !least_fit_it->enabled)
             {   
-                offspring.connection_genes.back().enabled = true;
-            }
-            else
-            {
-                if (rand() % 4 == 0)
+                if (rand() % 100 < 75)
                 {
                     offspring.connection_genes.back().enabled = false;
-                }
+                }           
             }
 
             most_fit_it++;

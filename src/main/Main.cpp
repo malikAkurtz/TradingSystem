@@ -20,9 +20,9 @@ int global_entity_id = 0;
 
 int main()
 {
-    std::vector<std::vector<double>> data = data2;
+    std::vector<std::vector<double>> data = data3;
 
-    int label_index = 1;
+    int label_index = 3;
 
 
     // Separate labels from data before normalization
@@ -77,11 +77,11 @@ int main()
     std::cout << "-------------------------------------------------------------------" << std::endl;
     int max_generations = 1000;
     int population_size = 100;
-    float elite_ratio = 0.2;
+    float elite_ratio = 0.1;
 
     double weight_mutation_rate = 0.8;
     double  add_connection_mutation_rate = 0.05;
-    double add_node_mutation_rate = 0.00;
+    double add_node_mutation_rate = 0.03;
     std::uniform_real_distribution<> dis(0.0, 1.0);
 
 

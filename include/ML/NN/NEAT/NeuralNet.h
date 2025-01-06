@@ -27,6 +27,12 @@ public:
 
     NeuralNet(Genome genome);
 
+    std::map<int, Node> mapIDtoNode(const Genome& genome);
+
+    std::map<int, int> mapIDtoDepth(const Genome& genome);
+
+    void assignConnectionsToNodes(const Genome& genome);
+
     void assignNodestoLayers();
 
     // want to return a matrix where each row is the networks predictions for that sample
