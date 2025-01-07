@@ -203,6 +203,84 @@ void Genome::mutateChangeWeight()
     
 }
 
+std::map<int, Node> Genome::mapIDtoNode()
+{
+    std::map<int, Node> id_to_node;
+    // for every node in the NodeGene sequence of the genome
+    for (const NodeGene& node_gene : this->node_genes)
+    {
+        // add it to the map which maps ids to nodes
+        id_to_node.emplace(node_gene.node_id, Node(node_gene));
+        if (node_gene.node_type == HIDDEN)
+        {
+            id_to_node.at(node_gene.node_id).setActivation(RELU);
+        }
+        // else if (node_gene.node_type == OUTPUT)
+        // {
+        //     id_to_node.at(node_gene.node_id).setActivation(TANH);
+        // }
+    }
+
+    return id_to_node;
+}
+
+std::map<int, int> Genome::mapIDtoDepth()
+{
+    std::map<int, int> id_to_depth;
+
+    for (const NodeGene& node_gene : this->node_genes)
+    {
+        if (node_gene.node_type == OUTPUT)
+        {
+            id_to_depth[node_gene.node_id] = INT_MAX;
+            
+        }
+        else
+        {
+            id_to_depth[node_gene.node_id] = 0;
+        }
+        
+    }
+    
+    bool change_occurred = true;
+
+    while (change_occurred)
+    {
+        change_occurred = false;
+        for (const ConnectionGene &connection_gene : this->connection_genes)
+        {
+            int conn_node_in = connection_gene.node_in;
+            int conn_node_out = connection_gene.node_out;
+            
+            int prev_conn_node_out_depth = id_to_depth[conn_node_out];
+
+            id_to_depth[conn_node_out] = std::max(id_to_depth[conn_node_out], id_to_depth[conn_node_in] + 1);
+
+            if (prev_conn_node_out_depth < id_to_depth[conn_node_out])
+            {
+                change_occurred = true;
+            }
+        }
+    }
+    
+    return id_to_depth;
+}
+
+void Genome::assignConnectionsToNodes(std::map<int, Node>& id_to_node)
+{
+    for (const auto& connection_gene : this->connection_genes)
+    {
+        int node_out = connection_gene.node_out;
+
+        auto it = id_to_node.find(node_out);
+        if (it != id_to_node.end()) {
+            it->second.connections_in.emplace_back(Connection(connection_gene));
+        } else {
+            std::cerr << "Error: Node " << node_out << " not found in id_to_node." << std::endl;
+        }
+    }
+}
+
 
 std::string Genome::toString() const
 {

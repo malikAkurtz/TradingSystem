@@ -8,91 +8,13 @@ NeuralNet::NeuralNet()
 
 NeuralNet::NeuralNet(Genome genome)
 {
-    this->id_to_node = this->mapIDtoNode(genome);
+    this->id_to_node = genome.mapIDtoNode();
 
-    this->id_to_depth = this->mapIDtoDepth(genome);
+    this->id_to_depth = genome.mapIDtoDepth();
 
-    this->assignConnectionsToNodes(genome);
-    this->layers.clear();
+    genome.assignConnectionsToNodes(this->id_to_node);
+    
     this->assignNodestoLayers();
-}
-
-std::map<int, Node> NeuralNet::mapIDtoNode(const Genome& genome)
-{
-    std::map<int, Node> id_to_node;
-    // for every node in the NodeGene sequence of the genome
-    for (const NodeGene& node_gene : genome.node_genes)
-    {
-        // add it to the map which maps ids to nodes
-        id_to_node.emplace(node_gene.node_id, Node(node_gene));
-        if (node_gene.node_type == HIDDEN)
-        {
-            id_to_node.at(node_gene.node_id).setActivation(RELU);
-        }
-        // else if (node_gene.node_type == OUTPUT)
-        // {
-        //     id_to_node.at(node_gene.node_id).setActivation(TANH);
-        // }
-    }
-
-    return id_to_node;
-}
-
-std::map<int, int> NeuralNet::mapIDtoDepth(const Genome& genome)
-{
-    std::map<int, int> id_to_depth;
-
-    for (const NodeGene& node_gene : genome.node_genes)
-    {
-        id_to_depth[node_gene.node_id] = 0;
-    }
-
-    for (const NodeGene& node_gene : genome.node_genes)
-    {
-        if (node_gene.node_type == OUTPUT)
-        {
-            id_to_depth[node_gene.node_id] = INT_MAX;
-        }
-    }
-    
-    bool change_occurred = true;
-
-    while (change_occurred)
-    {
-        change_occurred = false;
-        for (const ConnectionGene &connection_gene : genome.connection_genes)
-        {
-
-            int conn_node_in = connection_gene.node_in;
-            int conn_node_out = connection_gene.node_out;
-            
-            int prev_conn_node_out_depth = id_to_depth[conn_node_out];
-
-            id_to_depth[conn_node_out] = std::max(id_to_depth[conn_node_out], id_to_depth[conn_node_in] + 1);
-
-            if (prev_conn_node_out_depth < id_to_depth[conn_node_out])
-            {
-                change_occurred = true;
-            }
-        }
-    }
-    
-    return id_to_depth;
-}
-
-void NeuralNet::assignConnectionsToNodes(const Genome& genome)
-{
-    for (const auto& cg : genome.connection_genes)
-    {
-        int node_out = cg.node_out;
-
-        auto it = this->id_to_node.find(node_out);
-        if (it != this->id_to_node.end()) {
-            it->second.connections_in.emplace_back(Connection(cg));
-        } else {
-            std::cerr << "Error: Node " << node_out << " not found in id_to_node." << std::endl;
-        }
-    }
 }
 
 

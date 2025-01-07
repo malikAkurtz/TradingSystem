@@ -28,6 +28,12 @@ struct Genome
 
     void mutateChangeWeight();
 
+    std::map<int, Node> mapIDtoNode();
+
+    std::map<int, int> mapIDtoDepth();
+
+    void assignConnectionsToNodes(std::map<int, Node> &id_to_node);
+
     std::string toString() const;
 
     std::string toGraphviz() const;
