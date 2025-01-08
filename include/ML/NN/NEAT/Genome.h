@@ -34,6 +34,8 @@ struct Genome
 
     void assignConnectionsToNodes(std::map<int, Node> &id_to_node);
 
+    double Genome::calculateCompatibilityDist(const Genome &other_genome, double c1 = 1, double c2 = 1, double c3 = 1) const;
+
     std::string toString() const;
 
     std::string toGraphviz() const;

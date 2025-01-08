@@ -78,6 +78,7 @@ int main()
     int max_generations = 1000;
     int population_size = 100;
     float elite_ratio = 0.1;
+    double speciation_threshold = 3.0;
 
     double weight_mutation_rate = 0.8;
     double  add_connection_mutation_rate = 0.05;
@@ -86,22 +87,63 @@ int main()
 
 
     //initialie the base population
-    std::vector<Entity> population;
-    population.reserve(population_size);
+    std::map <int, std::vector<const Entity*>> this_speciated_population;
+
+    std::vector<Entity> this_population;
+
+    // for use during speciation
+    std::map <int, std::vector<const Entity*>> prev_speciated_population;
+
+    std::vector<Entity> prev_population;
 
     for (int i = 0; i < population_size; i++)
     {
-        population.emplace_back(Entity(base_genome));
+        prev_population.emplace_back(Entity(base_genome));
     }
 
+    this_population = prev_population;
 
     std::cout << "Base Entity Neural Network toString" << std::endl;
-    std::cout << population[0].brain.toString() << std::endl;
+    std::cout << this_population[0].brain.toString() << std::endl;
+
+    prev_speciated_population[1] = {};
+    // initial population is species 1
+    for (const auto& entity : prev_population)
+    {
+        prev_speciated_population[1].push_back(&entity);
+    }
+
+    this_speciated_population = prev_speciated_population;
 
     // for every generation
     for (int i = 0; i < max_generations; i++)
     {
         std::cout << "------------------BEGINNING GENERATION " << i << "-------------------" << std::endl;
+
+        // group the new population into species based on the prev population
+        // for every species in the previous population
+        for (const auto& [species_num, entity_members] : prev_speciated_population)
+        {
+            // get a species representative
+            const Entity *species_representative = prev_speciated_population[species_num][0];
+            // for every member in the population
+            for (const auto& new_entity : this_population)
+            {
+                // compare compatibility distance
+                double compatibility_dist = species_representative->genome.calculateCompatibilityDist(new_entity.genome);
+                if (compatibility_dist <= speciation_threshold)
+                {
+                    this_speciated_population[species_num].push_back(&new_entity);
+                }
+                else
+                {
+                    this_speciated_population[this_speciated_population.size() + 1].push_back(&new_entity);
+                }
+            }
+        }
+
+        
+
         // evaluate the population
         std::cout << "--------------START EVALUATING POPULATION FITNESS--------------" << std::endl;
         for (auto &entity : population)

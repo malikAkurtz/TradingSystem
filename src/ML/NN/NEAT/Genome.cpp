@@ -281,6 +281,77 @@ void Genome::assignConnectionsToNodes(std::map<int, Node>& id_to_node)
     }
 }
 
+double Genome::calculateCompatibilityDist(const Genome &other_genome, double c1 = 1, double c2 = 1, double c3 = 1) const
+{
+    const Genome *larger_genome;
+    const Genome *smaller_genome;
+
+    int normalization_factor = 1;
+
+    // figure out which genome is larger
+    if (this->connection_genes.size() > other_genome.connection_genes.size())
+    {
+        larger_genome = this;
+        smaller_genome = &other_genome;
+    }
+    else
+    {
+        larger_genome = &other_genome;
+        smaller_genome = this;
+    }
+
+    int largest_genome_size = larger_genome->connection_genes.size();
+
+    // figure out the normalization factors
+    if (largest_genome_size >= 20) 
+    {
+        normalization_factor = largest_genome_size;
+    }
+
+    int num_excess_genes = 0;
+    int num_disjoint_genes = 0;
+
+    double matching_weights_diff = 0;
+    int total_matching_genes = 0;
+    double avg_weights_diff;
+
+    auto larger_it = larger_genome->connection_genes.begin();
+    auto smaller_it = smaller_genome->connection_genes.begin();
+
+    // for every element in the smaller genome
+    while (smaller_it != smaller_genome->connection_genes.end())
+    {   
+        // if the innovation number match, figure out the abs weight difference and accumulate it
+        if (smaller_it->innovation_number == larger_it->innovation_number)
+        {
+            matching_weights_diff += abs(larger_it->weight - smaller_it->weight);
+            total_matching_genes++;
+        }
+        // otherwise increment disjoint genes
+        else if (smaller_it->innovation_number < larger_it->innovation_number)
+        {
+            num_disjoint_genes++;
+            smaller_it++;
+        }
+        else
+        {
+            num_disjoint_genes++;
+            larger_it++;
+        }
+        
+    }
+
+    avg_weights_diff = (matching_weights_diff / total_matching_genes);
+
+    // every remaining element in the larger genome is excess
+    while (larger_it != larger_genome->connection_genes.end())
+    {
+        num_excess_genes++;
+        larger_it++;
+    }
+
+    return ((c1 * num_excess_genes) / normalization_factor) + ((c2 * num_disjoint_genes) / normalization_factor) + avg_weights_diff;
+}
 
 std::string Genome::toString() const
 {
