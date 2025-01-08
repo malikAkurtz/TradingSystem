@@ -11,12 +11,13 @@
 #include "ReadCSV.h"
 #include "GenFunctions.h"
 #include <algorithm>
+#include "PopulationID.h"
 
 bool DEBUG = false;
 
 int global_innovation_number = 1;
 int global_entity_id = 0;
-
+int global_population_id = 0;
 
 int main()
 {
@@ -87,12 +88,12 @@ int main()
 
 
     //initialie the base population
-    std::map <int, std::vector<const Entity*>> this_speciated_population;
+    std::map <int, std::vector<std::shared_ptr<Entity>>> this_speciated_population;
 
     std::vector<Entity> this_population;
 
     // for use during speciation
-    std::map <int, std::vector<const Entity*>> prev_speciated_population;
+    std::map <int, std::vector<std::shared_ptr<Entity>>> prev_speciated_population;
 
     std::vector<Entity> prev_population;
 
@@ -106,11 +107,11 @@ int main()
     std::cout << "Base Entity Neural Network toString" << std::endl;
     std::cout << this_population[0].brain.toString() << std::endl;
 
-    prev_speciated_population[1] = {};
+    prev_speciated_population[global_population_id++] = {};
     // initial population is species 1
-    for (const auto& entity : prev_population)
+    for (auto& entity : prev_population)
     {
-        prev_speciated_population[1].push_back(&entity);
+        prev_speciated_population[0].push_back(std::shared_ptr<Entity>(&entity));
     }
 
     this_speciated_population = prev_speciated_population;
@@ -125,27 +126,67 @@ int main()
         for (const auto& [species_num, entity_members] : prev_speciated_population)
         {
             // get a species representative
-            const Entity *species_representative = prev_speciated_population[species_num][0];
+            const std::shared_ptr<Entity> species_representative = entity_members[0];
             // for every member in the population
-            for (const auto& new_entity : this_population)
+            for (auto& new_entity : this_population)
             {
                 // compare compatibility distance
                 double compatibility_dist = species_representative->genome.calculateCompatibilityDist(new_entity.genome);
                 if (compatibility_dist <= speciation_threshold)
                 {
-                    this_speciated_population[species_num].push_back(&new_entity);
+                    this_speciated_population[species_num].push_back(std::shared_ptr<Entity>(&new_entity));
                 }
                 else
                 {
-                    this_speciated_population[this_speciated_population.size() + 1].push_back(&new_entity);
+                    this_speciated_population[global_population_id++].push_back(std::shared_ptr<Entity>(&new_entity));
                 }
             }
         }
 
-        
+        std::map <int, double> species_cum_fitness;
+        double total_fitness = 0;
+
+        for (auto& [species_num, entity_members] : this_speciated_population)
+        {
+            for (auto& this_entity : entity_members)
+            {
+                this_entity->evaluateFitness(X_train, Y_train);
+                this_entity->fitness /= entity_members.size();
+                species_cum_fitness[species_num] += this_entity->fitness;
+                total_fitness += this_entity->fitness;
+            }
+        }
+
+        std::sort(this_population.begin(), this_population.end(), [](const Entity &a, const Entity &b)
+                  { return a.fitness > b.fitness; }); 
+
+        for (const auto& [species_num, entity_members] : this_speciated_population)
+        {
+            std::sort(entity_members.begin(), entity_members.end(), [](const Entity* entity1, const Entity* entity2)
+                  { return (entity1->fitness > entity2->fitness); });
+        }
+
+
+        int num_elites = population_size * elite_ratio;
+        // std::cout << "Number of elites selected for crossover: " << num_elites << std::endl;
+        int offspring_required = population_size - num_elites;
+        // std::cout << "Number of offspring required: " << offspring_required << std::endl;
+
+        this_population.erase(this_population.begin() + num_elites, this_population.end());
+
+        for (const auto& [species_num, entity_members] : this_speciated_population)
+        {
+            int num_offspring = floor((species_cum_fitness[species_num] / total_fitness) * offspring_required);
+
+            for (int i = 0 ; i < num_offspring; i++)
+            {
+                
+            }
+        }
 
         // evaluate the population
-        std::cout << "--------------START EVALUATING POPULATION FITNESS--------------" << std::endl;
+        std::cout
+            << "--------------START EVALUATING POPULATION FITNESS--------------" << std::endl;
         for (auto &entity : population)
         {
             // std::cout << "----Evalutating Fitness of Entity: " << entity.id << "-----" << std::endl << entity.genome.toString() << std::endl;
