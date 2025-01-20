@@ -281,7 +281,7 @@ void Genome::assignConnectionsToNodes(std::map<int, Node>& id_to_node)
     }
 }
 
-double Genome::calculateCompatibilityDist(const Genome &other_genome, double c1 = 1, double c2 = 1, double c3 = 1) const
+double Genome::calculateCompatibilityDist(const Genome &other_genome, double c1, double c2, double c3) const
 {
     const Genome *larger_genome;
     const Genome *smaller_genome;
@@ -319,13 +319,16 @@ double Genome::calculateCompatibilityDist(const Genome &other_genome, double c1 
     auto smaller_it = smaller_genome->connection_genes.begin();
 
     // for every element in the smaller genome
-    while (smaller_it != smaller_genome->connection_genes.end())
+    while (smaller_it != smaller_genome->connection_genes.end()
+            && larger_it != larger_genome->connection_genes.end())
     {   
         // if the innovation number match, figure out the abs weight difference and accumulate it
         if (smaller_it->innovation_number == larger_it->innovation_number)
         {
             matching_weights_diff += abs(larger_it->weight - smaller_it->weight);
             total_matching_genes++;
+            smaller_it++;
+            larger_it++;
         }
         // otherwise increment disjoint genes
         else if (smaller_it->innovation_number < larger_it->innovation_number)
