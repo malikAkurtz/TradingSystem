@@ -78,7 +78,7 @@ int main()
     std::cout << "-------------------------------------------------------------------" << std::endl;
     int max_generations = 1000;
     int population_size = 100;
-    float elite_ratio = 0.1;
+    float elite_ratio = 0.2;
     double speciation_threshold = 3.0;
 
     double weight_mutation_rate = 0.8;
@@ -108,12 +108,13 @@ int main()
     std::cout << this_population[0].brain.toString() << std::endl;
 
     prev_speciated_population[global_population_id++] = {};
-    // initial population is species 1
+    // initial population is species 0
     for (auto& entity : prev_population)
     {
         prev_speciated_population[0].push_back(std::shared_ptr<Entity>(&entity));
     }
 
+    // both maps point to the same entities initially
     this_speciated_population = prev_speciated_population;
 
     // for every generation
@@ -127,17 +128,20 @@ int main()
         {
             // get a species representative
             const std::shared_ptr<Entity> species_representative = entity_members[0];
-            // for every member in the population
+            // for every member in the new, post-mutated population
             for (auto& new_entity : this_population)
             {
                 // compare compatibility distance
                 double compatibility_dist = species_representative->genome.calculateCompatibilityDist(new_entity.genome);
+                // if the compatibility distance is less than the speciation threshold
                 if (compatibility_dist <= speciation_threshold)
-                {
+                {   
+                    // then push a pointer to the entity into the map with the current species being compared
                     this_speciated_population[species_num].push_back(std::shared_ptr<Entity>(&new_entity));
                 }
                 else
                 {
+                    // otherwise we need to create a new species
                     this_speciated_population[global_population_id++].push_back(std::shared_ptr<Entity>(&new_entity));
                 }
             }
@@ -146,10 +150,13 @@ int main()
         std::map <int, double> species_cum_fitness;
         double total_fitness = 0;
 
+        // for every species in the new, speciated population
         for (auto& [species_num, entity_members] : this_speciated_population)
         {
+            // for every member in the species
             for (auto& this_entity : entity_members)
             {
+                // evaluate the entities shared fitness
                 this_entity->evaluateFitness(X_train, Y_train);
                 this_entity->fitness /= entity_members.size();
                 species_cum_fitness[species_num] += this_entity->fitness;
@@ -157,9 +164,10 @@ int main()
             }
         }
 
+        // sort the entities by their fitness
         std::sort(this_population.begin(), this_population.end(), [](const Entity &a, const Entity &b)
                   { return a.fitness > b.fitness; }); 
-
+        // sort each species by each members fitness
         for (const auto& [species_num, entity_members] : this_speciated_population)
         {
             std::sort(entity_members.begin(), entity_members.end(), [](const Entity* entity1, const Entity* entity2)
@@ -172,15 +180,62 @@ int main()
         int offspring_required = population_size - num_elites;
         // std::cout << "Number of offspring required: " << offspring_required << std::endl;
 
-        this_population.erase(this_population.begin() + num_elites, this_population.end());
-
-        for (const auto& [species_num, entity_members] : this_speciated_population)
+        // for every species in the new population
+        for (auto& [species_num, entity_members] : this_speciated_population)
         {
+            // calculate the number of elites in this species
+            int num_species_elites = floor(elite_ratio * entity_members.size());
+            // calculate the number of offspring that this species gets to produce
             int num_offspring = floor((species_cum_fitness[species_num] / total_fitness) * offspring_required);
 
+            // nullify (erase) other members from the species
+            entity_members.erase(entity_members.begin() + num_species_elites, entity_members.end());
+
+            // want to create offspring out of the elites in this species
             for (int i = 0 ; i < num_offspring; i++)
             {
+                Genome offspring_genome;
+                // if theres only one elite
+                if (entity_members.size() == 1)
+                {   
+                    // just add copies of the elite to the species
+                    offspring_genome = entity_members[0]->genome;
+                }
+                else
+                {
+                    int parent1_index = rand() % entity_members.size();
+                    int parent2_index = rand() % entity_members.size();
+
+                    while (parent1_index == parent2_index)
+                    {
+                        parent2_index = rand() % entity_members.size();
+                    }
+
+                    std::shared_ptr<Entity> parent1 = entity_members[parent1_index];
+                    std::shared_ptr<Entity> parent2 = entity_members[parent2_index];
+
+                    offspring_genome = parent1->crossover(*parent2);
+                }
                 
+
+                //perform mutations
+                if (dis(gen) < weight_mutation_rate)
+                {   
+                    //std::cout << "Going To Mutate by Changing a Connection" << std::endl;
+                    offspring_genome.mutateChangeWeight();
+                }
+                if (dis(gen) < add_connection_mutation_rate)
+                {   
+                    //std::cout << "Going To Mutate by Adding a Connection" << std::endl;
+                    offspring_genome.mutateAddConnection();
+                }
+                if (dis(gen) < add_node_mutation_rate)
+                {
+                    //std::cout << "Going To Mutate by Adding a Node" << std::endl;
+                    offspring_genome.mutateAddNode();
+                }
+
+                this_population.emplace_back(Entity(offspring_genome));
             }
         }
 
