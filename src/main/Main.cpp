@@ -77,9 +77,9 @@ int main()
     std::cout << base_genome.toString() << std::endl;
     std::cout << "-------------------------------------------------------------------" << std::endl;
     int max_generations = 100;
-    int population_size = 50;
+    int population_size = 100;
     float elite_ratio = 0.2;
-    double speciation_threshold = 5.0;
+    double speciation_threshold = 4.0;
 
     double weight_mutation_rate = 0.8;
     double  add_connection_mutation_rate = 0.05;
