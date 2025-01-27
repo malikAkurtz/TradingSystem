@@ -79,7 +79,7 @@ int main()
     int max_generations = 1000;
     int population_size = 100;
     float elite_ratio = 0.2;
-    double speciation_threshold = 6.0;
+    double speciation_threshold = 3.0;
 
     double weight_mutation_rate = 0.8;
     double  add_connection_mutation_rate = 0.05;
@@ -174,7 +174,7 @@ int main()
             {
                 // evaluate the entities shared fitness
                 this_entity->evaluateFitness(X_train, Y_train);
-                this_entity->fitness /= entity_members.size();
+                //this_entity->fitness /= entity_members.size();
                 species_cum_fitness[species_num] += this_entity->fitness;
                 total_fitness += this_entity->fitness;
             }
@@ -209,13 +209,13 @@ int main()
         {
             if (entity_members.empty()) 
             {
-                // skip or remove that species
                 continue;
             }
             // calculate the number of elites in this species
             int num_species_elites = std::max(1, 
             static_cast<int>(std::floor(elite_ratio * entity_members.size())));
             // calculate the number of offspring that this species gets to produce
+
             int num_offspring = floor((species_cum_fitness[species_num] / total_fitness) * offspring_required);
 
             // nullify (erase) other members from the species
