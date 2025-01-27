@@ -21,9 +21,11 @@ int global_population_id = 0;
 
 int main()
 {
-    std::vector<std::vector<double>> data = data3;
+    std::vector<std::vector<double>> data = data2;
 
-    int label_index = 3;
+    int label_index = 1;
+
+    printMatrix(data);
 
     // Separate labels from data before normalization
     std::vector<std::vector<double>> labels = LinearAlgebra::vector1DtoColumnVector(LinearAlgebra::getColumn(data, label_index));
@@ -138,34 +140,42 @@ int main()
         // for every species in the previous population
         for (const auto& [species_num, entity_members] : prev_speciated_population)
         {
-            std::cout << "Speciating into Species Bucket: " << species_num << std::endl;
+            if (DEBUG)
+            {
+                std::cout << "Speciating into Species Bucket: " << species_num << std::endl;
+            }
             // get a species representative
+            if (entity_members.empty())
+            {
+                continue;
+            }
             const std::shared_ptr<Entity> species_representative = entity_members[0];
-            std::cout << "Species rep is: " << species_representative->id << std::endl;
+            
+            if (DEBUG) {std::cout << "Species rep is: " << species_representative->id << std::endl;}
             // for every member in the new, post-mutated population
             for (auto& new_entity : this_population)
             {
-                std::cout << "Classifying Entity: " << new_entity->id << std::endl;
+                if (DEBUG) {std::cout << "Classifying Entity: " << new_entity->id << std::endl;}
                 if (already_speciated[new_entity])
                 {
-                    std::cout << "Entity has Already Been Classified." << std::endl;
+                    if (DEBUG) {std::cout << "Entity has Already Been Classified." << std::endl;}
                     continue;
                 }
                 // compare compatibility distance
                 double compatibility_dist = species_representative->genome.calculateCompatibilityDist(new_entity->genome);
 
-                std::cout << "Compatibility Distance is: " << compatibility_dist << std::endl;
+                if (DEBUG) {std::cout << "Compatibility Distance is: " << compatibility_dist << std::endl;}
                 // if the compatibility distance is less than the speciation threshold
                 if (compatibility_dist <= speciation_threshold)
                 {   
                     // then push a pointer to the entity into the map with the current species being compared
-                    std::cout << "Classifying Entity: " << new_entity->id << " into Species: " << species_num << std::endl;
+                    if (DEBUG) {std::cout << "Classifying Entity: " << new_entity->id << " into Species: " << species_num << std::endl;}
                     this_speciated_population[species_num].push_back(new_entity);
                 }
                 else
                 {
                     // otherwise we need to create a new species
-                    std::cout << "Classifying Entity: " << new_entity->id << " into New Species: " << std::endl;
+                    if (DEBUG) {std::cout << "Classifying Entity: " << new_entity->id << " into New Species: " << std::endl;}
                     this_speciated_population[global_population_id++].push_back(new_entity);
                 }
 
@@ -184,11 +194,10 @@ int main()
                 std::cout << member->id << std::endl;
             }
         }
-        // }
 
         std::map <int, double> species_cum_fitness;
         double total_fitness = 0;
-
+        
         // for every species in the new, speciated population
         for (auto& [species_num, entity_members] : this_speciated_population)
         {
@@ -202,14 +211,14 @@ int main()
                 total_fitness += this_entity->fitness;
             }
         }
-
+        
         // sort the entities by their fitness
         std::sort(this_population.begin(), this_population.end(),
           [](const std::shared_ptr<Entity> &a, const std::shared_ptr<Entity> &b) {
               return a->fitness > b->fitness;
           });
 
-
+        
         // sort each species by each members fitness
         for (auto& [species_num, entity_members] : this_speciated_population)
         {
@@ -220,6 +229,7 @@ int main()
 
         }
 
+        
         int num_elites = population_size * elite_ratio;
         // std::cout << "Number of elites selected for crossover: " << num_elites << std::endl;
         int offspring_required = population_size - num_elites;
@@ -230,12 +240,18 @@ int main()
         for (auto& [species_num, entity_members] : this_speciated_population)
         {
             // calculate the number of elites in this species
-            int num_species_elites = floor(elite_ratio * entity_members.size());
+            int num_species_elites = std::max(1, 
+            static_cast<int>(std::floor(elite_ratio * entity_members.size())));
             // calculate the number of offspring that this species gets to produce
             int num_offspring = floor((species_cum_fitness[species_num] / total_fitness) * offspring_required);
 
             // nullify (erase) other members from the species
             entity_members.erase(entity_members.begin() + num_species_elites, entity_members.end());
+
+            for (const auto& entity_ptr : entity_members)
+            {
+                next_generation.push_back(entity_ptr);
+            }
 
             // want to create offspring out of the elites in this species
             for (int i = 0 ; i < num_offspring; i++)
