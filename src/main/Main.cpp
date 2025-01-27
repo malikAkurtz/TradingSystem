@@ -77,9 +77,9 @@ int main()
     std::cout << base_genome.toString() << std::endl;
     std::cout << "-------------------------------------------------------------------" << std::endl;
     int max_generations = 100;
-    int population_size = 100;
+    int population_size = 50;
     float elite_ratio = 0.2;
-    double speciation_threshold = 3.0;
+    double speciation_threshold = 5.0;
 
     double weight_mutation_rate = 0.8;
     double  add_connection_mutation_rate = 0.05;
@@ -131,55 +131,23 @@ int main()
         this_speciated_population.clear();
 
         // group the new population into species based on the prev population
-        std::map<std::shared_ptr<Entity>, bool> already_speciated;
+        // for every entity, we need to speciate it
         for (const auto& entity_ptr : this_population)
         {
-            already_speciated[entity_ptr] = 0; // not speciated by default
-        }
-        
-        // for every species in the previous population
-        for (const auto& [species_num, entity_members] : prev_speciated_population)
-        {
-            if (DEBUG)
+            bool speciated = false;
+            for (const auto &[species_num, entity_members] : prev_speciated_population)
             {
-                std::cout << "Speciating into Species Bucket: " << species_num << std::endl;
-            }
-            // get a species representative
-            if (entity_members.empty())
-            {
-                continue;
-            }
-            const std::shared_ptr<Entity> species_representative = entity_members[0];
-            
-            if (DEBUG) {std::cout << "Species rep is: " << species_representative->id << std::endl;}
-            // for every member in the new, post-mutated population
-            for (auto& new_entity : this_population)
-            {
-                if (DEBUG) {std::cout << "Classifying Entity: " << new_entity->id << std::endl;}
-                if (already_speciated[new_entity])
+                std::shared_ptr<Entity> species_rep = entity_members[0];
+                if (species_rep->genome.calculateCompatibilityDist(entity_ptr->genome) <= speciation_threshold)
                 {
-                    if (DEBUG) {std::cout << "Entity has Already Been Classified." << std::endl;}
-                    continue;
+                    this_speciated_population[species_num].push_back(entity_ptr);
+                    speciated = true;
+                    break;
                 }
-                // compare compatibility distance
-                double compatibility_dist = species_representative->genome.calculateCompatibilityDist(new_entity->genome);
-
-                if (DEBUG) {std::cout << "Compatibility Distance is: " << compatibility_dist << std::endl;}
-                // if the compatibility distance is less than the speciation threshold
-                if (compatibility_dist <= speciation_threshold)
-                {   
-                    // then push a pointer to the entity into the map with the current species being compared
-                    if (DEBUG) {std::cout << "Classifying Entity: " << new_entity->id << " into Species: " << species_num << std::endl;}
-                    this_speciated_population[species_num].push_back(new_entity);
-                }
-                else
-                {
-                    // otherwise we need to create a new species
-                    if (DEBUG) {std::cout << "Classifying Entity: " << new_entity->id << " into New Species: " << std::endl;}
-                    this_speciated_population[global_population_id++].push_back(new_entity);
-                }
-
-                already_speciated[new_entity] = 1;
+            }
+            if (!speciated)
+            {
+                this_speciated_population[global_population_id++].push_back(entity_ptr);
             }
         }
 
