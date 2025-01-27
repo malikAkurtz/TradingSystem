@@ -76,10 +76,10 @@ int main()
     std::cout << "Base Genome is:" << std::endl;
     std::cout << base_genome.toString() << std::endl;
     std::cout << "-------------------------------------------------------------------" << std::endl;
-    int max_generations = 100;
+    int max_generations = 1000;
     int population_size = 100;
     float elite_ratio = 0.2;
-    double speciation_threshold = 4.0;
+    double speciation_threshold = 6.0;
 
     double weight_mutation_rate = 0.8;
     double  add_connection_mutation_rate = 0.05;
@@ -207,6 +207,11 @@ int main()
         // for every species in the new population
         for (auto& [species_num, entity_members] : this_speciated_population)
         {
+            if (entity_members.empty()) 
+            {
+                // skip or remove that species
+                continue;
+            }
             // calculate the number of elites in this species
             int num_species_elites = std::max(1, 
             static_cast<int>(std::floor(elite_ratio * entity_members.size())));
