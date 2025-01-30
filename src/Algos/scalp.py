@@ -11,7 +11,7 @@ from alpaca.trading.requests import MarketOrderRequest
 from alpaca.trading.enums import OrderSide, TimeInForce
 from alpaca.data.live import StockDataStream, CryptoDataStream
 
-from config import API_KEY, API_SECRET, BASE_URL
+# from config import API_KEY, API_SECRET, BASE_URL
 from alpaca.trading.client import TradingClient
 
 # Initialize Alpaca Clients
