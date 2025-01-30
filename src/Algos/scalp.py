@@ -39,7 +39,7 @@ BB_STD = 2
 # Strategy Variables
 position = None
 units = 0
-current_day = datetime.datetime.today().day
+current_day = datetime.today().day
 traded_today = False
 
 
