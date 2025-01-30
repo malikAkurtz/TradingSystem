@@ -5,3 +5,4 @@ __pycache__/
 *.o
 output.txt
 out
+bot_key_pair.pem
