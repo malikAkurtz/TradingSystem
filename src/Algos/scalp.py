@@ -1,6 +1,6 @@
 import numpy as np
-import math
 import pandas as pd
+import os
 import asyncio
 from alpaca.data import StockHistoricalDataClient, CryptoHistoricalDataClient
 from alpaca.data.requests import StockBarsRequest
@@ -14,6 +14,8 @@ from alpaca.data.live import StockDataStream, CryptoDataStream
 # from config import API_KEY, API_SECRET, BASE_URL
 from alpaca.trading.client import TradingClient
 
+API_KEY = os.getenv("API_KEY")
+API_SECRET = os.getenv("API_SECRET")
 # Initialize Alpaca Clients
 trading_client = TradingClient(API_KEY, API_SECRET, paper=True)
 stock_data_client = StockHistoricalDataClient(API_KEY, API_SECRET)
