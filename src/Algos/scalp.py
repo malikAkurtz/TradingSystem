@@ -72,6 +72,7 @@ def check_trade_signals(df):
     global position
     global units
     global traded_today
+    global current_day
 
     if (datetime.today().day > current_day):
         current_day = datetime.datetime.today().day
