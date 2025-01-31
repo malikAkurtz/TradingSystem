@@ -1,21 +1,23 @@
 import numpy as np
 import pandas as pd
 import os
+import pytz
 import asyncio
+from datetime import datetime, time, timedelta
+from config import API_KEY, API_SECRET, BASE_URL
+
 from alpaca.data import StockHistoricalDataClient, CryptoHistoricalDataClient
 from alpaca.data.requests import StockBarsRequest
 from alpaca.data.timeframe import TimeFrame, TimeFrameUnit
-from datetime import datetime, time, timedelta
-import pytz
-from alpaca.trading.requests import MarketOrderRequest
-from alpaca.trading.enums import OrderSide, TimeInForce
 from alpaca.data.live import StockDataStream, CryptoDataStream
 
-# from config import API_KEY, API_SECRET, BASE_URL
+from alpaca.trading.requests import MarketOrderRequest
+from alpaca.trading.enums import OrderSide, TimeInForce
+
+
+
 from alpaca.trading.client import TradingClient
 
-API_KEY = os.getenv("API_KEY")
-API_SECRET = os.getenv("API_SECRET")
 # Initialize Alpaca Clients
 trading_client = TradingClient(API_KEY, API_SECRET, paper=True)
 stock_data_client = StockHistoricalDataClient(API_KEY, API_SECRET)
