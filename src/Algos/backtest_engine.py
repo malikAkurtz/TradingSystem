@@ -33,5 +33,36 @@ class BacktestEngine:
 
             current_time = timestamp.time()
 
-            if (self.start_time <= current_time <= self.end_time):
-                
+            if (position is not None and (self.eod_time.hour == current_time.hour and self.end_time.minute - current_time.minte <= 5)):
+                self.portfolio.flatten_position(row['SPY_close'])
+                continue
+
+            if not (self.start_time <= current_time <= self.end_time):
+                continue
+
+            signal = self.strategy.generate_signals(row, position)
+
+            if signal is not None:
+                if signal == "BUY_LONG":
+                    fill_price, fill_quantity = self.execution_handler("BUY", 4, row['SPXL'])
+                    self.portfolio.update_on_fill("SPXL", "BUY", fill_quantity, fill_price)
+                elif signal == "BUY_SHORT":
+                    fill_price, fill_quantity = self.execution_handler("BUY", 4, row['SPXS'])
+                    self.portfolio.update_on_fill("SPXS", "BUY", fill_quantity, fill_price)
+                elif signal == "PARTIAL_PROFIT_LONG":
+                    fill_price, fill_quantity = self.execution_handler("SELL", 1, row['SPXL'])
+                    self.portfolio.update_on_fill("SPXL", "SELL", fill_quantity, fill_price)
+                elif signal == "PARTIAL_PROFIT_SHORT":
+                    fill_price, fill_quantity = self.execution_handler("SELL", 1, row['SPXS'])
+                    self.portfolio.update_on_fill("SPXS", "SELL", fill_quantity, fill_price)
+                elif signal == "CLOSE_LONG":
+                    self.portfolio.flatten_position(row['SPXL'])
+                elif signal == "CLOSE_SHORT":
+                    self.portfolio.flatten_position(row['SPXS'])
+
+                self.trades.append((timestamp, signal, row['SPY']))
+
+            self.portfolio.update_equity(row)
+        
+        return self.portfolio.get_equity_curve(), self.trades
+            

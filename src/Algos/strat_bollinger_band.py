@@ -15,12 +15,12 @@ class BollingerBandStrat(strategy):
 
         return df
     
-    def generate_signals(self, row, position):
+    def generate_signals(self, row, holdings):
         close = row['close']
         upper_BB = row['Upper_BB']
         lower_BB = row['Lower_BB']
 
-        if position == None:
+        if holdings['SPXL'] == 0 and holdings['SPXS'] == 0:
             # If the latest bar closes above the upper bollinger band
             if close > upper_BB:
                 # Buy leveraged SPY
@@ -30,7 +30,7 @@ class BollingerBandStrat(strategy):
                 # Buy leveraged inverse SPY
                 return "BUY_SHORT"
         # If we are in a position
-        elif position == "long":
+        elif holdings['SPXL'] != 0:
             # If the latest bar closes above the upper bollinger band
             if close > upper_BB:
                 # Sell 1/4 of position
@@ -39,7 +39,7 @@ class BollingerBandStrat(strategy):
             elif close < lower_BB:
                 # Flatten position
                 return "CLOSE_LONG"
-        elif position == "short":
+        elif holdings['SPXS'] != 0:
             # If the latest bar closes below the lower bollinger band
             if close < lower_BB:
                 # Sell 1/4 of position

@@ -2,38 +2,37 @@ class Portfolio:
     def __init__(self, intial_capital=10000):
         self.initial_capital = intial_capital
         self.cash = intial_capital
-        self.position = None
-        self.trade_type = None # "long" meaning we bought SPXL and "short" meaning we bought SPXS
-        self.units = 0
+        self.holdings = {"SPXL": 0, "SPXS": 0}
         self.holdings_value = 0.0
         self.equity_curve = []
 
-    def update_on_fill(self, trade_type, side, quantity, price):
+    def update_on_fill(self, symbol, side, quantity, price):
         trade_cost = price * quantity
 
         if side == "BUY":
             self.cash -= trade_cost
-            self.units += quantity
+            self.holdings[symbol] += quantity
         elif side == "SELL":
             self.cash += trade_cost
-            self.units -= quantity
+            self.holdings[symbol] -= quantity
 
-        self.holding_symbol = trade_type
-
-    def update_equity(self, current_price):
-        self.holdings_value = self.units * current_price
+    def update_equity(self, row):
+        self.holdings_value = 0
+        for symbol, units in self.holdings:
+            self.holdings_value += units * row[symbol]
         total_equity = self.holdings_value + self.cash
         self.equity_curve.append(total_equity)
         return total_equity
     
-    def get_current_position(self):
-        return self.trade_type
+    def get_current_positions(self):
+        return self.holdings
     
-    def flatten_position(self, current_price):
-        if self.units > 0:
-            self.update_on_fill("SELL", self.units, current_price)
+    def flatten_positions(self, row):
+        for symbol, units in self.holdings:
+            if units > 0:
+                self.update_on_fill(symbol, "SELL", units, row[symbol])
+                self.holdings[symbol] = 0
 
-        self.units = 0
 
     def get_equity_curve(self):
         return self.equity_curve
