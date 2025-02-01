@@ -19,7 +19,6 @@ def main():
 
     df = data_handler.fetch_historical_data(start_time, end_time, symbols[0], time_frame)
     df.reset_index(inplace=True)
-    df.drop_duplicates(subset='timestamp', keep='last', inplace=True)
     df.set_index('timestamp', inplace=True)
     df.sort_index(inplace=True)
     print(df.index)

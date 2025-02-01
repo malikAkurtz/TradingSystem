@@ -5,6 +5,7 @@ from strat_bollinger_band import BollingerBandStrat
 from portfolio import Portfolio
 from execution import SimulatedExecutionHandler
 import matplotlib.pyplot as plt
+import datetime as datetime
 
 class BacktestEngine:
     def __init__(self, data_handler, strategy, portfolio, execution_handler, start_time=time(17,30), end_time=time(19,30), eod_time=time(21,00)):
@@ -25,13 +26,25 @@ class BacktestEngine:
 
         df['equity'] = float('nan')
 
+        current_day = None
+
+        days_starting_cash = self.portfolio.cash
+        days_ending_cash = None
         # iterate over every row in the dataframe
         for timestamp, row in df.iterrows():
-            print("-"*10)
-            print(timestamp)
-            print("-"*10)
+
+            current_time = timestamp.time()
+
+            if (current_day != timestamp.day):
+                current_day = timestamp.day
+                print("<"*15, "New Day", ">"*15)
+                print("Starting Cash: ", days_starting_cash)
+
+            print("-"*10, timestamp, "-"*10)
             # get the current state of the portfolio
             position = self.portfolio.get_current_positions()
+            print("Current Holdings: " , position)
+
             
             # need at least an initial amount of rows to calculate indicators
             if (pd.isna(row['SMA'])):
@@ -39,12 +52,21 @@ class BacktestEngine:
                 df.loc[timestamp, 'equity'] = equity
                 continue
 
-            current_time = timestamp.time()
+            
 
-            if (position is not None and (self.eod_time.hour == current_time.hour and self.end_time.minute - current_time.minute <= 5)):
+            current_dt = datetime.datetime.combine(datetime.date.today(), current_time)
+            eod_dt = datetime.datetime.combine(datetime.date.today(), self.eod_time)
+            diff = eod_dt - current_dt
+
+            if (abs(diff) <= datetime.timedelta(minutes=5) and (current_dt < eod_dt)):
+                print("Trade: Flattening Before Close")
                 self.portfolio.flatten_positions(row)
                 equity = self.portfolio.update_equity(row)
                 df.loc[timestamp, 'equity'] = equity
+                print("<"*15, "End of Day", ">"*15)
+                print("Ending Cash: ", self.portfolio.cash)
+                print("Days P/L: ", self.portfolio.cash - days_starting_cash)
+                days_starting_cash = self.portfolio.cash
                 continue
 
             if not (self.start_time <= current_time <= self.end_time):
@@ -93,7 +115,6 @@ class BacktestEngine:
 
             equity = self.portfolio.update_equity(row)
             df.loc[timestamp, 'equity'] = equity
-            print("-"*10)
         
         return df, self.trades
     
