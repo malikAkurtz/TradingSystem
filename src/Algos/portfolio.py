@@ -1,3 +1,4 @@
+
 class Portfolio:
     def __init__(self, intial_capital=10000):
         self.initial_capital = intial_capital
@@ -18,8 +19,8 @@ class Portfolio:
 
     def update_equity(self, row):
         self.holdings_value = 0
-        for symbol, units in self.holdings:
-            self.holdings_value += units * row[symbol]
+        for symbol, units in self.holdings.items():
+            self.holdings_value += units * row[symbol + "_close"]
         total_equity = self.holdings_value + self.cash
         self.equity_curve.append(total_equity)
         return total_equity
@@ -28,9 +29,9 @@ class Portfolio:
         return self.holdings
     
     def flatten_positions(self, row):
-        for symbol, units in self.holdings:
+        for symbol, units in self.holdings.items():
             if units > 0:
-                self.update_on_fill(symbol, "SELL", units, row[symbol])
+                self.update_on_fill(symbol, "SELL", units, row[symbol + "_close"])
                 self.holdings[symbol] = 0
 
 
