@@ -3,7 +3,7 @@ class Portfolio:
     def __init__(self, intial_capital=10000):
         self.initial_capital = intial_capital
         self.cash = intial_capital
-        self.holdings = {"SPXL": 0, "SPXS": 0}
+        self.holdings = {"SPY" : 0}
         self.holdings_value = 0.0
         self.equity_curve = []
 
@@ -32,6 +32,9 @@ class Portfolio:
         for symbol, units in self.holdings.items():
             if units > 0:
                 self.update_on_fill(symbol, "SELL", units, row[symbol + "_close"])
+                self.holdings[symbol] = 0
+            elif units < 0:
+                self.update_on_fill(symbol, "BUY", units, row[symbol + "_close"])
                 self.holdings[symbol] = 0
 
 

@@ -28,16 +28,16 @@ def main():
 
     df.rename(columns={'close' : symbols[0] + "_" + "close"}, inplace=True)
 
-    for symbol in symbols[1::]:
-        symbol_df = data_handler.fetch_historical_data(start_time, end_time, symbol, time_frame)
-        symbol_df.reset_index(inplace=True)
-        symbol_df.drop_duplicates(subset='timestamp', keep='last', inplace=True)
-        symbol_df.set_index('timestamp', inplace=True)
-        symbol_df.sort_index(inplace=True)
-        symbol_df.drop(['symbol', 'open', 'high', 'low', 'volume', 'trade_count', 'vwap'], axis=1, inplace=True)
-        symbol_df.rename(columns={'close' : symbol + "_" + "close"}, inplace=True)
+    # for symbol in symbols[1::]:
+    #     symbol_df = data_handler.fetch_historical_data(start_time, end_time, symbol, time_frame)
+    #     symbol_df.reset_index(inplace=True)
+    #     symbol_df.drop_duplicates(subset='timestamp', keep='last', inplace=True)
+    #     symbol_df.set_index('timestamp', inplace=True)
+    #     symbol_df.sort_index(inplace=True)
+    #     symbol_df.drop(['symbol', 'open', 'high', 'low', 'volume', 'trade_count', 'vwap'], axis=1, inplace=True)
+    #     symbol_df.rename(columns={'close' : symbol + "_" + "close"}, inplace=True)
 
-        df = pd.concat([df, symbol_df], axis=1, join="outer")
+    #     df = pd.concat([df, symbol_df], axis=1, join="outer")
 
     df.ffill(inplace=True)
 
