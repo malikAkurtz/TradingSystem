@@ -121,4 +121,23 @@ class BacktestEngine:
     def plot_equity(self, df):
         plt.plot(df.index, df['equity'])
         plt.show()
+
+    def plot_price_action(self, df, start_timestamp, end_timestamp):
+        sub_df = df.loc[start_timestamp:end_timestamp]
+        time_axis = sub_df.index
+        plt.plot(time_axis, sub_df["SPY_close"], marker="o", label = "SPY_close",)
+        for column in ["Upper_BB", "Lower_BB"]:
+            plt.plot(time_axis, sub_df[column], label = f"{column}")
+
+        unique_days = time_axis.normalize().unique()
+
+        for day in unique_days:
+            start_range = day + pd.Timedelta(hours=17, minutes=30)
+            end_range = day + pd.Timedelta(hours=19, minutes=30)
+
+            plt.axvspan(start_range, end_range, color='yellow', alpha=0.2)
+
+        plt.grid(True)
+        plt.legend()
+        plt.show()
             

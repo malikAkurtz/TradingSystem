@@ -21,7 +21,6 @@ def main():
     df.reset_index(inplace=True)
     df.set_index('timestamp', inplace=True)
     df.sort_index(inplace=True)
-    print(df.index)
 
     df.drop(['symbol', 'open', 'high', 'low', 'volume', 'trade_count', 'vwap'], axis=1, inplace=True)
 
@@ -49,12 +48,12 @@ def main():
     backtest_engine = BacktestEngine(data_handler=data_handler, strategy=strategy, portfolio=portfolio, execution_handler=execution_handler)
 
     output_df, trades = backtest_engine.run_backtest()
-
+    print(output_df)
 
     print(f"Final equity: {output_df.iloc[-1]['equity']:.2f}")
     print(f"Number of trades: {len(trades)}")
 
-    backtest_engine.plot_equity(output_df)
+    backtest_engine.plot_price_action(output_df, "2025-01-16 14:30:00+00:00", "2025-01-16 20:57:00+00:00")
 
 if __name__ == "__main__":
     main()

@@ -31,10 +31,10 @@ class Portfolio:
     def flatten_positions(self, row):
         for symbol, units in self.holdings.items():
             if units > 0:
-                self.update_on_fill(symbol, "SELL", units, row[symbol + "_close"])
+                self.update_on_fill(symbol, "SELL", abs(units), row[symbol + "_close"])
                 self.holdings[symbol] = 0
             elif units < 0:
-                self.update_on_fill(symbol, "BUY", units, row[symbol + "_close"])
+                self.update_on_fill(symbol, "BUY", abs(units), row[symbol + "_close"])
                 self.holdings[symbol] = 0
 
 
