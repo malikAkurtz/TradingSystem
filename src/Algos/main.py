@@ -6,21 +6,25 @@ from execution import SimulatedExecutionHandler
 from backtest_engine import BacktestEngine
 
 from datetime import datetime
+import matplotlib.pyplot as plt
 from alpaca.data.timeframe import TimeFrame, TimeFrameUnit
 import pytz
 
 def main():
     data_handler = DataHandler("/Users/malikkurtz/Coding/TradingSystem/src/Algos/data_csv")
 
-    start_time = datetime(2025, 1, 16, tzinfo=pytz.utc)
-    end_time = datetime.now(pytz.utc)
+    start_time = datetime(2024, 1, 29, tzinfo=pytz.utc)
+    end_time = datetime(2025, 1, 29, tzinfo=pytz.utc)
+    # end_time = datetime.now(pytz.utc)
     time_frame = TimeFrame(3, TimeFrameUnit.Minute)
     symbols = ["SPY", "SPXL", "SPXS"]
 
     df = data_handler.fetch_historical_data(start_time, end_time, symbols[0], time_frame)
+
     df.reset_index(inplace=True)
     df.set_index('timestamp', inplace=True)
     df.sort_index(inplace=True)
+
 
     df.drop(['symbol', 'open', 'high', 'low', 'volume', 'trade_count', 'vwap'], axis=1, inplace=True)
 
@@ -53,7 +57,8 @@ def main():
     print(f"Final equity: {output_df.iloc[-1]['equity']:.2f}")
     print(f"Number of trades: {len(trades)}")
 
-    backtest_engine.plot_price_action(output_df, "2025-01-16 14:30:00+00:00", "2025-01-16 20:57:00+00:00")
+    backtest_engine.save_price_action_plot(output_df, start_time, end_time)
+    backtest_engine.save_equity_plot(output_df)
 
 if __name__ == "__main__":
     main()
