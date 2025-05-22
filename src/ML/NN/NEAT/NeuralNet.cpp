@@ -80,7 +80,7 @@ std::vector<std::vector<double>> NeuralNet::feedForward(const std::vector<std::v
     for (int l = 1; l < this->layers.size(); l++)
     {
         // debugMessage("feedForward", "Processing Layer: " + std::to_string(l));
-        Layer *this_layer = &this->layers[l];
+        Layer* this_layer = &this->layers[l];
         // for every node in the layer, need to calculate its output and store it in that node
         for (int n = 0; n < this_layer->node_IDs.size(); n++)
         {
@@ -118,6 +118,11 @@ std::vector<std::vector<double>> NeuralNet::feedForward(const std::vector<std::v
             {
                 std::vector<double> default_output(num_samples, 0);
                 id_to_node.at(this_layer->node_IDs[n]).storeOutputs(default_output);
+                if (l == last_layer_index &&
+                    this->id_to_node.at(this_layer->node_IDs[n]).node_type == OUTPUT)
+                {
+                    LinearAlgebra::addColumn(network_outputs, default_output);
+                }
                 continue;
             }
             std::vector<double> node_output(scaled_inputs[0].size(), 0);
@@ -135,7 +140,7 @@ std::vector<std::vector<double>> NeuralNet::feedForward(const std::vector<std::v
             node_output = id_to_node.at(this_layer->node_IDs[n]).applyActivation(node_output);
             
             id_to_node.at(this_layer->node_IDs[n]).storeOutputs(node_output);
-            if (l == last_layer_index) 
+            if (l == last_layer_index && this->id_to_node.at(this_layer->node_IDs[n]).node_type == OUTPUT)
             {
                 LinearAlgebra::addColumn(network_outputs, node_output);
             }

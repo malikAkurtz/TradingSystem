@@ -76,14 +76,17 @@ int main()
     std::cout << "Base Genome is:" << std::endl;
     std::cout << base_genome.toString() << std::endl;
     std::cout << "-------------------------------------------------------------------" << std::endl;
-    int max_generations = 1000;
-    int population_size = 100;
-    float elite_ratio = 0.2;
-    double speciation_threshold = 3.0;
-
-    double weight_mutation_rate = 0.8;
-    double  add_connection_mutation_rate = 0.05;
-    double add_node_mutation_rate = 0.03;
+    const int max_generations                   = 200;
+    const int population_size                   = 100;
+    const float elite_ratio                     = 0.1;
+    double speciation_threshold                 = 3.0;
+    const double target_species                = 10.0;
+    const double adjust                         = 0.1;
+    const double min_speciation_threshold       = 0.5;
+    const double complexity_penalty_coeff       = 0.1;
+    const double weight_mutation_rate           = 0.8;
+    const double  add_connection_mutation_rate  = 0.05;
+    const double add_node_mutation_rate         = 0.015;
     std::uniform_real_distribution<> dis(0.0, 1.0);
 
 
@@ -174,7 +177,11 @@ int main()
             {
                 // evaluate the entities shared fitness
                 this_entity->evaluateFitness(X_train, Y_train);
-                //this_entity->fitness /= entity_members.size();
+                double raw_fitness = this_entity->fitness;
+                double complexity_penalty =
+                    complexity_penalty_coeff * (this_entity->genome.connection_genes.size() + this_entity->genome.node_genes.size());
+                double shared_fitness = raw_fitness / entity_members.size();
+                this_entity->fitness = shared_fitness - complexity_penalty;
                 species_cum_fitness[species_num] += this_entity->fitness;
                 total_fitness += this_entity->fitness;
             }
@@ -216,7 +223,7 @@ int main()
             static_cast<int>(std::floor(elite_ratio * entity_members.size())));
             // calculate the number of offspring that this species gets to produce
 
-            int num_offspring = floor((species_cum_fitness[species_num] / total_fitness) * offspring_required);
+            int num_offspring = std::max(1, static_cast<int>(round((species_cum_fitness[species_num] / total_fitness) * offspring_required)));
 
             // nullify (erase) other members from the species
             entity_members.erase(entity_members.begin() + num_species_elites, entity_members.end());
@@ -277,7 +284,17 @@ int main()
         prev_speciated_population = this_speciated_population;
         prev_population = this_population;
 
-        
+        std::size_t num_species = this_speciated_population.size();
+        if (num_species > target_species)
+        {
+            speciation_threshold += adjust;
+        }
+        else if (num_species < target_species)
+        {
+            speciation_threshold = std::max(min_speciation_threshold, speciation_threshold - adjust);
+        }
+       
+
         std::cout << "------------------FINISHED GENERATION " << i << "-------------------" << std::endl;
     }
 
